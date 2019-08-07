@@ -1,0 +1,13 @@
+{
+  "name": "week_4_image_share",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "babel-runtime": "^6.26.0",
+    "bcrypt": "^3.0.6",
+    "meteor-node-stubs": "~0.2.0"
+  }
+}

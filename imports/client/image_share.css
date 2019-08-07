@@ -1,0 +1,41 @@
+/* CSS declarations go here */
+.thumbnail {
+	height:500px;
+	word-wrap:break-word;
+}
+
+.thumbnail-img{
+	max-height:200px;
+}
+
+body{
+	padding-top:0px;
+}
+
+.single-img{
+	max-width:100%;
+}
+
+/* navbar */
+.nav-item{
+	font-size: 19px;
+}
+
+@media (min-width: 576px) { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
+  #ul-navbar {
+   flex-direction: row-reverse;
+  }
+}
+
+@media (max-width: 576px) { /* center nav links on collapsed menu */
+  #ul-navbar {
+   text-align: center;
+  }
+}
+
+.navbar .navbar-collapse #dropdown-menu-navbar{
+  text-align: center;
+}
+
+
+/* end - navbar */
