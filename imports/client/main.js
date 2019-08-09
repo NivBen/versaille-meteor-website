@@ -1,67 +1,16 @@
 import { Accounts } from "meteor/accounts-base";
-import { Router } from 'meteor/iron:router';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-/// routing
+
+
+//import 'imports/client/router.js';
+
 
 // Will be true if Bootstrap 3-4 is loaded, false if Bootstrap 2 or no Bootstrap
 var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
 console.log(bootstrap_enabled)
 
-Router.configure({
-  layoutTemplate: 'ApplicationLayout'
-});
-
-Router.route('/', function () {
-  this.render('navbar', {
-    to:"navbar"
-  });
-  this.render('welcome', {
-    to:"main"
-  });
-});
-
-Router.route('/aboutus', function () {
-  this.render('navbar', {
-    to:"navbar"
-  });
-  this.render('aboutus', {
-    to:"main"
-  });
-});
-
-Router.route('/login', function () {
-  this.render('navbar', {
-    to:"navbar"
-  });
-  this.render('login', {
-    to:"main",
-  });
-});
-
-Router.route('/images', function () {
-  this.render('navbar', {
-    to:"navbar"
-  });
-  this.render('images', {
-    to:"main"
-  });
-});
-
-Router.route('/image/:_id', function () {
-  this.render('navbar', {
-    to:"navbar"
-  });
-  this.render('image', {
-    to:"main",
-    data:function(){
-      return Images.findOne({_id:this.params._id});
-    }
-  });
-});
-
 /// infiniscroll
-
 Session.set("imageLimit", 8);
 lastScrollTop = 0;
 $(window).scroll(function(event){
@@ -77,9 +26,7 @@ if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
 
   lastScrollTop = scrollTop;
 }
-
 })
-
 
 /// accounts config
 Accounts.ui.config({
@@ -87,8 +34,6 @@ Accounts.ui.config({
 });
 
 ///
-
-
 Template.images.helpers({
 images:function(){
   if (Session.get("userFilter")){// they set a filter!
@@ -140,16 +85,35 @@ else {
 
 Template.images.events({
 'click .js-image':function(event){
-    $(event.target).css("width", "50px");
+    //$(event.target).css("width", "50px");
 },
 'click .js-del-image':function(event){
    var image_id = this._id;
-   console.log(image_id);
-   // use jquery to hide the image component
-   // then remove it at the end of the animation
-   $("#"+image_id).hide('slow', function(){
-    Images.remove({"_id":image_id});
-   })
+   if (Meteor.user()){
+     console.log("id of image quested for deletion: " + image_id);
+     $('.confirm-delete').click(function() {
+       $('#deleteModal').modal('hide');
+       Images.remove({"_id":image_id});
+       console.log("Deleted image of id: " + image_id);
+     });
+   } else{
+     alert("Sign in to delete")
+   }
+},
+'click .js-edit-image':function(event){
+   var image_id = this._id;
+   if (Meteor.user()){
+     console.log("id of image quested for edit: " + image_id);
+     $('.confirm-edit').click(function() {
+       $('#editModal').modal('hide');
+       alert("edited")
+       console.log("Edited image of id: " + image_id);
+       Images.update({_id:image_id},
+                     {$set: {rating:rating}}); //TODO: change here
+     });
+   } else{
+     alert("Sign in to delete")
+   }
 },
 'click .js-rate-image':function(event){
   var rating = $(event.currentTarget).data("userrating");
@@ -160,9 +124,9 @@ Template.images.events({
   Images.update({_id:image_id},
                 {$set: {rating:rating}});
 },
-'click .js-show-image-form':function(event){
-    console.log("showing the modal...");
-  $("#image_add_form").modal('show');
+'click .js-add_item_form':function(event){
+    console.log("showing add item modal...");
+  $("#add_item_form").modal('show');
 },
 'click .js-set-image-filter':function(event){
     Session.set("userFilter", this.createdBy);
@@ -173,9 +137,8 @@ Template.images.events({
 });
 
 
-
-Template.image_add_form.events({
-'submit .js-add-image':function(event){
+Template.add_item_form.events({
+'submit .js-add-item':function(event){
   var img_src, img_alt;
 
     img_src = event.target.img_src.value;
@@ -188,8 +151,9 @@ Template.image_add_form.events({
         createdOn:new Date(),
         createdBy:Meteor.user()._id
       });
+      console.log("added item")
   }
-    $("#image_add_form").modal('hide');
+    $("#add_item_form").modal('hide');
  return false;
 }
 });
