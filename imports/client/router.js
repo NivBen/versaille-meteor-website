@@ -5,9 +5,9 @@ Router.configure({
   layoutTemplate: 'main_Layout'
 });
 
-Router.route('/myImage', function () { //testing image modal
+Router.route('/test', function () { // area 51 testing
   //this.render('navbar', {to:"navbar"});
-  this.render('image_modal', {to:"main"});
+  this.render('test', {to:"main"});
 });
 
 Router.route('/', function () {

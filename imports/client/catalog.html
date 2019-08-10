@@ -50,9 +50,9 @@
                 <label data-error="wrong" data-success="right" for="watch-description">תיאור:</label>
                <textarea type="text" class="md-textarea form-control" id="watch-description" name="watch-description" rows="4" placeholder="תיאור של השעון"></textarea>
               </div>
-
-              <button class="btn btn-info" data-dismiss="modal">ביטול</button>
               <button class="btn btn-success confirm-add">הוסף</button>
+              <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+
             </form>
           </div> <!-- modal-body -->
 
@@ -66,16 +66,55 @@
 
 <!-- Single catalog item page -->
 <template name="image">
-  <div class="container d-flex justify-content-center" style="margin: 80px auto;">
-    <h2>{{img_alt}}</h2>
-    <a href="/images"><img class="single-img" src="{{img_src}}"/></a>
-  </div>
+  <article>
+		<div class="container-fluid">
+			<div class="row">
+
+				<div class="col-12 col-md-6 mb-3">
+					<div class="card bg-light py-1 text-center thumbnail h-100">
+
+						<a href="#" data-target="#zoomModal" data-toggle="modal"><img class="single-img" src="{{img_src}}" alt="{{img_alt}}" /></a>
+					</div> <!-- / image card -->
+				</div>
+
+				<div class="col-12 col-md-6 mb-0">
+					<div class="card bg-light border text-right thumbnail" >
+              תיאור של השעון
+              <h2>{{img_alt}}</h2>
+					</div> <!-- / description card -->
+				</div>
+
+			</div> <!-- / row -->
+		</div> <!-- / container -->
+
+
+
+    <!-- zoom modal-->
+		<div class="modal fade" id="zoomModal" role="dialog" tabindex="-1" aria-hidden="true" aria-labelledby="zoomModalLabel" >
+			<div class="modal-dialog modal-full" role="document">
+
+				<div class="modal-header"> <!-- modal-header -->
+					<button type="button" class="close push-right" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true" style="background-color: white">&times;</span>
+					</button>
+				</div> <!-- / modal-header -->
+
+				<div class="modal-content bg-dark">  <!-- modal-content -->
+					<div class="modal-body mb-0 p-0">
+						<img src="{{img_src}}" alt="{{img_alt}}" style="height:80vh; width:auto;">
+					</div>
+				</div>  <!-- / modal-content -->
+			</div>
+		</div> <!-- / zoom modal-->
+
+  </article>
 </template>
 
 
 <!-- Catalog page - cards -->
 <template name="images">
-  <div class="container-fluid my-4 js-container" style="padding-top: 60px;">
+<article>
+  <div class="container-fluid my-4 js-container">
 
     {{#if currentUser}}
       {{>add_item_form}}
@@ -86,35 +125,55 @@
       {{/if}}
     </h2>
 
-    <div class="row">
-      {{#each images}}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-           <div class="card mx-auto text-right thumbnail h-100" >
-             <a href="/image/{{_id}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="{{img_alt}}" style="object-fit: scale-down;"></a>
-             <div class="card-body">
-               <h3 class="card-title"><a href="#">Rating: {{rating}}</a></h3>
-               <p>{{img_alt}}</p>
-               <p>
-                 User:
-                 <a href="#" class="js-set-image-filter">{{getUser createdBy}}</a>
-               </p>
-               <p>
-                 {{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}
-               </p>
+    <div class="row"> <!-- row -->
 
-               {{#if currentUser}}
-                 <div class="btn-group">
-                   <button type="button" class="js-edit-image btn btn-warning" data-toggle="modal" data-target="#editModal">Edit</button>
-                   <button type="button" class="js-del-image btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
-                 </div>
-              {{/if}}
-             </div> <!-- / card-body -->
-           </div> <!-- / card -->
-         </div> <!-- / column item -->
-      {{/each}}
+      <div class="col-9 col-md-10"> <!-- catalog -->
+        <div class="row"> <!-- nested row -->
+          {{#each images}}
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+            <div class="card mx-auto text-right thumbnail h-100" >
+              <a href="/image/{{_id}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="{{img_alt}}" style="object-fit: scale-down;"></a>
+              <div class="card-body">
+                <h3 class="card-title"><a href="#">Rating: {{rating}}</a></h3>
+                <p>{{img_alt}}</p>
+                <p>
+                  User:
+                  <a href="#" class="js-set-image-filter">{{getUser createdBy}}</a>
+                </p>
+                <p>
+                  {{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}
+                </p>
+                <div class="btn-group">
+                {{#if currentUser}}
+                   <button type="button" class="js-del-image btn btn-danger" data-toggle="modal" data-target="#deleteModal">מחיקה</button>
+                   <button type="button" class="js-edit-image btn btn-warning" data-toggle="modal" data-target="#editModal">עריכה</button>
+                 {{/if}}
+                   <a href="/image/{{_id}}" type="button" class="btn btn-info">לפרטים נוספים</a>
+                </div> <!-- / btn-group -->
+              </div> <!-- / card-body -->
+            </div>  <!-- / card -->
+          </div> <!-- / nested column - for each image -->
+          {{/each}}
+        </div> <!-- / nested row -->
+      </div> <!-- / catalog -->
+
+      <div class="col-3 col-md-2"> <!-- sidebar -->
+				<div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
+				  <div class="sidebar-heading text-center">סינון</div>
+				  <div class="make-me-sticky list-group list-group-flush">
+  					<a href="#" class="list-group-item list-group-item-action bg-light">1100</a>
+  					<a href="#" class="list-group-item list-group-item-action bg-light">1600</a>
+  					<a href="#" class="list-group-item list-group-item-action bg-light">1700</a>
+  					<a href="#" class="list-group-item list-group-item-action bg-light">1800</a>
+  					<a href="#" class="list-group-item list-group-item-action bg-light">1900</a>
+  					<a href="#" class="list-group-item list-group-item-action bg-light">2600</a>
+				  </div>
+				</div>
+			</div> <!-- / sidebar -->
 
     </div> <!-- / row -->
   </div><!-- / container -->
+</article>
 
   <!-- delete Modal -->
   <div id="deleteModal" class="modal fade">

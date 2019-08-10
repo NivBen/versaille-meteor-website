@@ -9,7 +9,7 @@ import '/imports/client/aboutpage.html';
 import '/imports/client/navbar.html';
 import '/imports/client/footer.html';
 
-import '/imports/client/image_modal.html'; // testing area
+import '/imports/client/test.html'; // testing area
 
 // import the code that defines the collections
 import '/imports/api/collections.js';
