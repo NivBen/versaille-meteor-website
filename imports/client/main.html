@@ -1,7 +1,9 @@
 <head>
-  <title>שעוני ורסאי</title>
   <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>שעוני ורסאי</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 
 <body>
@@ -22,26 +24,24 @@
       <hr class="my-4" />
       <h3 align="center">{{> loginButtons }}</h3>
     </div>
-
   </div>
 </template>
 
 <template name="welcome">
   <!--Carousel Wrapper-->
-  <div id="carousel-example-2" class="carousel slide carousel-fade" data-ride="carousel" style="margin-top: 15px;">
+  <div id="carousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="6000" style="margin-top: 15px;">
     <!--Indicators-->
     <ol class="carousel-indicators">
-      <li data-target="#carousel-example-2" data-slide-to="0" class="active"></li>
-      <li data-target="#carousel-example-2" data-slide-to="1"></li>
-      <li data-target="#carousel-example-2" data-slide-to="2"></li>
+      <li data-target="#carousel" data-slide-to="0" class="active"></li>
+      <li data-target="#carousel" data-slide-to="1"></li>
+      <li data-target="#carousel" data-slide-to="2"></li>
     </ol>
     <!--/.Indicators-->
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
       <div class="carousel-item active">
         <div class="view">
-          <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(68).jpg"
-            alt="First slide">
+          <img class="d-block w-100" src="carousel1.png" alt="First slide">
           <div class="mask rgba-black-light"></div>
         </div>
         <div class="carousel-caption">
@@ -52,8 +52,7 @@
       <div class="carousel-item">
         <!--Mask color-->
         <div class="view">
-          <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(6).jpg"
-            alt="Second slide">
+          <img class="d-block w-100" src="carousel2.png" alt="Second slide">
           <div class="mask rgba-black-strong"></div>
         </div>
         <div class="carousel-caption">
@@ -64,8 +63,7 @@
       <div class="carousel-item">
         <!--Mask color-->
         <div class="view">
-          <img class="d-block w-100" src="https://mdbootstrap.com/img/Photos/Slides/img%20(9).jpg"
-            alt="Third slide">
+          <img class="d-block w-100" src="carousel3.png" alt="Third slide">
           <div class="mask rgba-black-slight"></div>
         </div>
         <div class="carousel-caption">
@@ -75,11 +73,11 @@
       </div>
     </div><!--/.Slides-->
     <!--Controls-->
-    <a class="carousel-control-prev" href="#carousel-example-2" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="sr-only">Previous</span>
     </a>
-    <a class="carousel-control-next" href="#carousel-example-2" role="button" data-slide="next">
+    <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="sr-only">Next</span>
     </a><!--/.Controls-->
@@ -89,16 +87,16 @@
     <div class="jumbotron">
       <h2 align="center" style="">!ברוכים הבאים לשעוני ורסאי</h2>
       <hr class="my-4" />
-	  <p class="text-center" dir="rtl">
-	  חברת <i>שעוני ורסאי</i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
-	  <br />
-	  החברה מתמחה בייצור, ייבוא, שיווק והפצה של שעוני גברים נשים וילדים המתאימים לכל יד וכיס.
-	  <br />
-	  שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב מהחומרים האיכותיים ביותר.
-	  </p>
-	  <div class="col text-center">
-		<a href="/images" class="btn btn-info">קטלוג</a>
-	  </div>
+  	  <p class="text-center" dir="rtl">
+  	  חברת <i>שעוני ורסאי</i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
+  	  <br />
+  	  החברה מתמחה בייצור, ייבוא, שיווק והפצה של שעוני גברים נשים וילדים המתאימים לכל יד וכיס.
+  	  <br />
+  	  שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב מהחומרים האיכותיים ביותר.
+  	  </p>
+  	  <div class="col text-center">
+  		    <a href="/images" class="btn btn-info">קטלוג</a>
+  	  </div>
     </div>
   </div>
 

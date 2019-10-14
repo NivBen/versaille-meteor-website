@@ -35,7 +35,7 @@ Router.route('/images', function () {
 
 Router.route('/image/:_id', function () {
   this.render('navbar', {to:"navbar"});
-  this.render('image', {
+  this.render('single_item', {
     to:"main",
     data: function(){
       return Images.findOne({_id:this.params._id});

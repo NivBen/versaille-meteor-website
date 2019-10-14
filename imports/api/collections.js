@@ -9,17 +9,17 @@ Images = new Mongo.Collection("images");
 Images.allow({
 
 	// we need to be able to update images for ratings.
-	update:function(userId, doc){
-		console.log("testing security on image update");
+	update: function(userId, doc){
+		//console.log("testing security on image update");
 		if (Meteor.user()){// they are logged in
 			return true;
-		} else {// user not logged in - do not let them update  (rate) the image.
+		} else {// user not logged in - do not let them update (rate) the image.
 			return false;
 		}
 	},
 
-	insert:function(userId, doc){
-		console.log("testing security on image insert");
+	insert: function(userId, doc){
+		//console.log("testing security on image insert");
 		if (Meteor.user()){// they are logged in
 			if (userId != doc.createdBy){// the user is messing about
 				return false;
@@ -32,7 +32,7 @@ Images.allow({
 			return false;
 		}
 	},
-	remove:function(userId, doc){
+	remove: function(userId, doc){
 		return true;
 	}
 })
