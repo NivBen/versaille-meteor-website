@@ -1,0 +1,44 @@
+<template name="searchBox">
+	  {{#EasySearch.Each index=imagesIndex }}
+    {{/EasySearch.Each}}
+
+	<article>
+    <div class="container-fluid my-4 js-container">
+
+      <div class="row"> <!-- row -->
+        <div class="col-9 col-md-10"> <!-- catalog -->
+          <div class="row"> <!-- nested row -->
+
+						{{#EasySearch.IfNoResults index=imagesIndex}}
+							<div class="col no-results text-center"><h4>לא נמצאו תוצאות לחיפוש</h4></div>
+						{{/EasySearch.IfNoResults}}
+
+            {{#each searchResults}}
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+                <div class="card mx-auto text-right thumbnail h-100" >
+                  <div class="card-header text-center text-white" style="background-color: #87cefa;">{{watch_code}}</div>
+                  <a href="/image/{{__originalId}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="" style="object-fit: scale-down;" /></a>
+                  <div class="card-body">
+
+                    <p class="card-text">מחיר: ₪{{watch_price}}.00</p>
+                    <p class="card-text">{{__originalId}}</p>
+
+                    <div class="btn-group">
+                       <a href="/image/{{__originalId}}" type="button" class="btn btn-info">לפרטים נוספים</a>
+                    </div> <!-- / btn-group -->
+                  </div> <!-- / card-body -->
+                </div>  <!-- / card -->
+              </div> <!-- / nested column - for each image -->
+            {{/each}}
+
+          </div> <!-- / nested row -->
+					{{> EasySearch.LoadMore index=imagesIndex attributes=loadmoreAttributes content="טעינת פריטים נוספים"}}
+        </div> <!-- / catalog -->
+
+        {{> sidebar}}
+
+      </div> <!-- / row -->
+    </div><!-- / container -->
+  </article>
+
+</template>
