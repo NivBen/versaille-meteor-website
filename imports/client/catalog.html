@@ -75,12 +75,14 @@
 
 				<div class="col-12 col-md-6 mb-3">
 					<div class="card bg-light border text-right thumbnail" >
-              <h4 align="center">דגם מספר: 99{{watch_code}}</h4>
+              <h4 align="center">דגם מספר: {{watch_code}}</h4>
               <hr class="my-2" />
               <h6>מחיר: ₪{{watch_price}}.00</h6>
               <p dir="rtl">
+              <br/>
           	  {{watch_description}}
-              <br>
+              <br/>
+              <br/>
               12 חודשי אחריות
               </p>
 
@@ -115,7 +117,7 @@
 
 
 <!-- Catalog page - cards -->
-<template name="images">
+<template name="catalog">
   <article>
     <div class="container-fluid my-4 js-container">
 
@@ -134,8 +136,8 @@
             {{#each images}}
               <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
                 <div class="card mx-auto text-right thumbnail h-100" >
-                  <div class="card-header text-center text-white" style="background-color: #87cefa;">99{{watch_code}}10</div>
-                  <a href="/image/{{_id}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="" style="object-fit: scale-down;"></a>
+                  <div class="card-header text-center text-white" style="background-color: #87cefa;">{{watch_code}}</div>
+                  <a href="/image/{{_id}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="" style="object-fit: scale-down;" /></a>
                   <div class="card-body">
 
                     <p class="card-text">מחיר: ₪{{watch_price}}.00</p>
@@ -165,58 +167,7 @@
           </div> <!-- / nested row -->
         </div> <!-- / catalog -->
 
-        <div class="col-3 col-md-2"> <!-- sidebar -->
-  				<div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
-            <div class="make-me-sticky">
-    				  <div class="sidebar-heading">סינון</div>
-    				  <div class="list-group list-group-flush" id="accordion">
-
-                <div class="card">
-                  <div class="card-header">
-                    <a class="card-link" data-toggle="collapse" href="#collapseOne">
-                      שעוני נשים
-                    </a>
-                  </div>
-                  <div id="collapseOne" class="collapse show" data-parent="#accordion">
-                    <div class="card-body">
-                      <a href="#" class="list-group-item list-group-item-action bg-light">1100</a>
-            					<a href="#" class="list-group-item list-group-item-action bg-light">1600</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card">
-                      <div class="card-header">
-                        <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
-                        שעוני גברים
-                      </a>
-                      </div>
-                      <div id="collapseTwo" class="collapse" data-parent="#accordion">
-                        <div class="card-body">
-                          <a href="#" class="list-group-item list-group-item-action bg-light">1700</a>
-                          <a href="#" class="list-group-item list-group-item-action bg-light">1800</a>
-                        </div>
-                      </div>
-                    </div>
-
-                <div class="card">
-                  <div class="card-header">
-                    <a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
-                      שעוני ילדים
-                    </a>
-                  </div>
-                  <div id="collapseThree" class="collapse" data-parent="#accordion">
-                    <div class="card-body">
-                      <a href="#" class="list-group-item list-group-item-action bg-light">1900</a>
-                      <a href="#" class="list-group-item list-group-item-action bg-light">2600</a>
-                    </div>
-                  </div>
-                </div>
-
-    				  </div>
-            </div>
-  				</div>
-  			</div> <!-- / sidebar -->
+        {{> sidebar}}
 
       </div> <!-- / row -->
     </div><!-- / container -->
@@ -304,4 +255,62 @@
     </div> <!-- / modal-dialog-->
   </div> <!-- / Edit image Modal -->
 
+</template>
+
+
+
+<template name='sidebar'>
+
+	<div class="col-3 col-md-2"> <!-- sidebar -->
+		<div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
+			<div class="make-me-sticky">
+				<div class="sidebar-heading">סינון</div>
+				<div class="list-group list-group-flush" id="accordion">
+
+					<div class="card">
+						<div class="card-header">
+							<a class="card-link" data-toggle="collapse" href="#collapseOne">
+								שעוני נשים
+							</a>
+						</div>
+						<div id="collapseOne" class="collapse show" data-parent="#accordion">
+							<div class="card-body">
+								<a href="#" class="list-group-item list-group-item-action bg-light">1100</a>
+								<a href="#" class="list-group-item list-group-item-action bg-light">1600</a>
+							</div>
+						</div>
+					</div>
+
+					<div class="card">
+								<div class="card-header">
+									<a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
+									שעוני גברים
+								</a>
+								</div>
+								<div id="collapseTwo" class="collapse" data-parent="#accordion">
+									<div class="card-body">
+										<a href="#" class="list-group-item list-group-item-action bg-light">1700</a>
+										<a href="#" class="list-group-item list-group-item-action bg-light">1800</a>
+									</div>
+								</div>
+							</div>
+
+					<div class="card">
+						<div class="card-header">
+							<a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
+								שעוני ילדים
+							</a>
+						</div>
+						<div id="collapseThree" class="collapse" data-parent="#accordion">
+							<div class="card-body">
+								<a href="#" class="list-group-item list-group-item-action bg-light">1900</a>
+								<a href="#" class="list-group-item list-group-item-action bg-light">2600</a>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div> <!-- / sidebar -->
 </template>

@@ -11,7 +11,7 @@ var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
 //console.log(bootstrap_enabled)
 
 /// infiniscroll
-Session.set("imageLimit", 8);
+Session.set("imageLimit", 8); //TDOD: maybe limit this differently
 lastScrollTop = 0;
 $(window).scroll(function(event){
 // test if we are near the bottom of the window
@@ -34,15 +34,15 @@ Accounts.ui.config({
 });
 
 ///
-Template.images.helpers({
-  images:function(){
+Template.catalog.helpers({
+/*  images:function(){
     if (Session.get("userFilter")){// they set a filter!
       return Images.find({createdBy:Session.get("userFilter")}, {sort:{createdOn: -1, rating:-1}});
     }
     else {
       return Images.find({}, {sort:{createdOn: -1, rating:-1}, limit:Session.get("imageLimit")});
     }
-  },
+  },*/
   filtering_images:function(){
     if (Session.get("userFilter")){// they set a filter!
       return true;
@@ -92,7 +92,7 @@ Template.images.helpers({
   },
 });
 
-Template.images.events({
+Template.catalog.events({
   'click .js-image':function(event){
       //$(event.target).css("width", "50px");
   },
@@ -154,9 +154,10 @@ Template.images.events({
         Images.update({_id: item_id},
                       {$set: {
                         img_src: img_src,
-                        watch_code: watch_code,
-                        watch_price: watch_price,
-                        watch_category: watch_category,
+                        watch_code: parseInt(watch_code, 10),
+                        watch_code_str: watch_code,
+                        watch_price: parseInt(watch_price, 10),
+                        watch_category: parseInt(watch_category, 10),
                         watch_description: watch_description,
                         editedOn: new Date(),
                         }
@@ -188,9 +189,10 @@ Template.add_item_form.events({
       if (Meteor.user()){
         Images.insert({
           img_src: img_src,
-          watch_code: watch_code,
-          watch_price: watch_price,
-          watch_category: watch_category,
+          watch_code: parseInt(watch_code, 10),
+          watch_code_str: watch_code,
+          watch_price: parseInt(watch_price, 10),
+          watch_category: parseInt(watch_category, 10),
           watch_description: watch_description,
           createdOn: new Date(),
           createdBy: Meteor.user().username
@@ -199,5 +201,69 @@ Template.add_item_form.events({
       }
       $("#add_item_form").modal('hide');
    return false;
+  }
+});
+
+/*Template.navbar.events({ // old search-bar
+  'keypress .js-search-item': function(event){
+    if (event.which === 13) {
+      event.preventDefault();
+      var search_input = event.currentTarget.search_input.value;
+      if(search_input){ //if not ""
+        console.log("Search triggered with value of: " + search_input)
+        Router.go('catalog',{}, {query: 'q='+search_input});
+        return false;
+      }
+    }
+  }
+});*/
+
+
+Template.searchBox.helpers({
+  imagesIndex() {
+    return ImagesIndex;
+  },
+  loadmoreAttributes: () => {
+    return {
+      type: 'button',
+      class: 'btn btn-info btn-lg btn-block',
+      dir: 'rtl',
+    }
+  },
+  searchResults: () => {
+     var items = ImagesIndex.config.mongoCollection.find().fetch().slice(1) //removing the first element - contains metadata
+     return items; //limited to the index show index
+   }
+});
+
+Template.navbar.helpers({
+  imagesIndex() {
+    return ImagesIndex;
+  },
+  inputAttributes: () => {
+    return {
+      placeholder: 'חיפוש',
+      type: 'search',
+      class: 'js-searchBox',
+      id: 'search_box_input',
+      name: 'search_box_input',
+      dir: 'rtl',
+      //value: Session.get(searchBoxValue),
+    }
+  }
+});
+
+
+Template.navbar.events({
+  'keypress .js-searchBox': function(event){
+    if (event.which === 13) {
+      event.preventDefault();
+      var search_input = $(event.target).val();
+      if(search_input != ''){
+        if(Router.current().route.getName() != 'search'){
+          Router.go('/search');
+        }
+      }
+    }
   }
 });

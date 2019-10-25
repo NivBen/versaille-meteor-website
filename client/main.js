@@ -5,9 +5,11 @@
 import '/imports/client/main.css';
 import '/imports/client/main.html';
 import '/imports/client/catalog.html';
+import '/imports/client/search.html';
 import '/imports/client/aboutpage.html';
 import '/imports/client/navbar.html';
 import '/imports/client/footer.html';
+
 
 import '/imports/client/test.html'; // testing area
 

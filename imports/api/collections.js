@@ -36,3 +36,9 @@ Images.allow({
 		return true;
 	}
 })
+
+ImagesIndex = new EasySearch.Index({
+  collection: Images,
+	fields: ['watch_code_str'],
+  engine: new EasySearch.MongoDB()
+});
