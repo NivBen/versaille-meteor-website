@@ -1,316 +1,442 @@
+<!-- Catalog page - cards -->
+<template name="catalog">
+    <article>
+        <div class="container-fluid my-4 js-container">
+
+            {{#if currentUser}}
+                {{>add_item_form}}
+            {{/if}}
+            <h2>
+                {{#if filtering_images}}
+                    Showing images by user {{getFilterUser}}. <a href="#" class="js-unset-image-filter">Show all
+                    images</a>
+                {{/if}}
+            </h2>
+
+            <div class="row"> <!-- row -->
+                <div class="col-8 col-md-10"> <!-- catalog -->
+                    <div class="row"> <!-- nested row -->
+                        {{#each images}}
+                            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-3 py-1 d-flex px-1">
+                                <div class="card mx-auto text-center thumbnail h-100 w-100">
+                                    <div id="catalog-card" class="card-header text-white">{{watch_code}}</div>
+
+                                    <div class="card-body py-0"></div>
+                                    <a href="/catalog_item/{{_id}}">
+                                        <img class="card-img-center my-1 thumbnail-img" src="{{img_src}}" alt="" style="object-fit: scale-down;"/>
+                                    </a>
+                                    <div class="card-body py-0"></div>
+
+                                    <!-- card footer -->
+                                    <div class="card-footer">
+                                        {{#if currentUser}}
+                                            <p align="center">{{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}</p>
+                                        {{/if}}
+                                        <p class="card-text">מחיר: ₪{{watch_price}}.00</p>
+                                        <div class="btn-group">
+                                            {{#if currentUser}}
+                                                <button type="button" class="js-del-image btn btn-danger"
+                                                        data-toggle="modal" data-target="#delete_modal">מחיקה
+                                                </button>
+                                                <button type="button" class="js-edit_item_button btn btn-outline-warning"
+                                                        data-toggle="modal" data-target="#edit_item_modal">עריכה
+                                                </button>
+                                            {{/if}}
+                                            <a href="/catalog_item/{{_id}}" type="button" class="btn btn-outline-secondary">לפרטים
+                                                נוספים</a>
+                                        </div> <!-- / btn-group -->
+                                    </div> <!-- / card-footer -->
+                                </div>  <!-- / card -->
+                            </div> <!-- / nested column - for each image -->
+                        {{/each}}
+                    </div> <!-- / nested row -->
+                    <button type="button" class="js-load-more btn btn-outline-secondary btn-lg btn-block" dir="rtl" style="margin-top: 20px;">
+                        טעינת פריטים נוספים
+                    </button>
+                </div> <!-- / catalog -->
+
+                {{> sidebar}}
+
+            </div> <!-- / row -->
+        </div><!-- / container -->
+    </article>
+
+    <!-- delete Modal -->
+    <div id="delete_modal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-trash fa-4x"></i><br/>מחיקה</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div> <!-- / modal-header -->
+
+                <div class="modal-body text-right"> <!-- modal-body -->
+                    <p dir="rtl">האם הנך בטוח שברצונך למחוק פריט זה? תהליך זה לא לא ניתן לשיחזור</p>
+                </div> <!-- modal-body -->
+
+                <div class="modal-footer d-flex justify-content-center"> <!-- modal-footer -->
+                    <button type="button" class="btn btn-info" data-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-danger confirm-delete" data-toggle="modal">מחיקה</button>
+                </div> <!-- / modal-footer -->
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
+    </div> <!-- / delete Modal -->
+
+    <!-- Edit modal -->
+    <div id="edit_item_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-edit fa-4x"></i><br/>עריכה</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> <!-- / modal-header -->
+
+                <div class="modal-body mx-3"> <!-- modal-body -->
+                    <form class="js-edit-item" style="direction: rtl; text-align: right;">
+
+                        <div class="form-group">
+                            <label for="img_src">לינק לתמונה:</label>
+                            <input type="text" class="form-control" id="img_src" value={{getImgSrc}} name="img_src"
+                                   required/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="second_img_src">לינק לתמונה משנית 2 (URL):</label>
+                            <input type="text" class="form-control" id="second_img_src" value={{getSecondImgSrc}} name="second_img_src"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="third_img_src">לינק לתמונה משנית 3 (URL):</label>
+                            <input type="text" class="form-control" id="third_img_src" value="{{getThirdImgSrc}}" name="third_img_src"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="forth_img_src">לינק לתמונה משנית 4 (URL):</label>
+                            <input type="text" class="form-control" id="forth_img_src" value="{{getForthImgSrc}}" name="forth_img_src"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fifth_img_src">לינק לתמונה משנית 5 (URL):</label>
+                            <input type="text" class="form-control" id="fifth_img_src" value="{{getFifthImgSrc}}" name="fifth_img_src"/>
+                        </div>
+
+                        <div class="form-group">
+                            <i class="fa fa-tag prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_code">מספר קטלוגי:</label>
+                            <input type="number" class="form-control validate" id="watch_code" value={{getWatchCode}}
+                                   name="watch_code" required/>
+                        </div>
+
+                        <div class="form-group">
+                            <i class="fa fa-dollar-sign prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
+                            <input type="number" class="form-control validate" id="watch_price" value={{getWatchPrice}}
+                                   name="watch_price" required/>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="browser-default custom-select form-control validate" id="watch_category"
+                                    name="watch_category" required>
+                                <option value="unmentioned" disabled>בחר קטגוריה</option>
+                                <option value="1">נשים ורסאי</option>
+                                <option value="2">גברים ורסאי</option>
+                                <option value="3">נשים וגאס</option>
+                                <option value="4">גברים וגאס</option>
+                                <option value="5">ילדים ודיגטליים</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <i class="fa fa-pencil prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
+                            <textarea type="text" class="md-textarea form-control" id="watch_description"
+                                      value={{getWatchDescription}} name="watch_description" rows="4"></textarea>
+                        </div>
+
+                        <button class="btn btn-success confirm-edit">ערוך</button>
+                        <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+
+                    </form>
+                </div> <!-- modal-body -->
+
+                <div class="modal-footer"> <!-- modal-footer --></div><!-- / modal-footer -->
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
+    </div> <!-- / Edit image Modal -->
+
+</template>
+
 <!-- Catalog page - add item button -->
 <template name="add_item_form">
-    <button type="button" class="btn btn-success js-add_item_form" data-toggle="modal" data-target="#addModal">הוספה</button>
+    <div class="text-center">
+        <button type="button" class="btn btn-success btn-lg btn-block js-add_item_form" data-toggle="modal"
+                data-target="#addModal">הוספת פריטים לקטלוג
+        </button>
+    </div>
+
     <!-- Add image Modal -->
-    <div id="add_item_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
+    <div id="add_item_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
 
-          <div class="modal-header text-center"> <!-- modal-header -->
-            <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-plus-square fa-4x"></i><br />הוספה</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div> <!-- / modal-header -->
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-plus-square fa-4x"></i><br/>הוספה
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> <!-- / modal-header -->
 
-          <div class="modal-body mx-3"> <!-- modal-body -->
-            <form class="js-add-item" style="direction: rtl; text-align: right;">
+                <div class="modal-body mx-3"> <!-- modal-body -->
+                    <form class="js-add-item" style="direction: rtl; text-align: right;">
 
-              <div class="form-group">
-                <label for="img_src">לינק לתמונה (URL):</label>
-                <input type="text" class="form-control" id="img_src" placeholder="url" name="img_src" required/>
-              </div>
+                        <div class="form-group">
+                            <label for="img_src">לינק לתמונה ראשית (URL):</label>
+                            <input type="text" class="form-control" id="img_src" placeholder="url" name="img_src"
+                                   required/>
+                        </div>
 
-              <div class="form-group">
-                <i class="fa fa-tag prefix grey-text"></i>
-                <label data-error="wrong" data-success="right" for="watch_code">מספר קטלוגי:</label>
-                <input type="number" class="form-control validate" id="watch_code" name="watch_code" placeholder="1100" required/>
-              </div>
+                        <div class="form-group">
+                            <label for="second_img_src">לינק לתמונה משנית 2 (URL):</label>
+                            <input type="text" class="form-control" id="second_img_src" placeholder="url" name="second_img_src"/>
+                        </div>
 
-              <div class="form-group">
-                <i class="fa fa-dollar-sign prefix grey-text"></i>
-                <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
-                <input type="number" class="form-control validate" id="watch_price" name="watch_price" placeholder="מחיר" required/>
-              </div>
+                        <div class="form-group">
+                            <label for="third_img_src">לינק לתמונה משנית 3 (URL):</label>
+                            <input type="text" class="form-control" id="third_img_src" placeholder="url" name="third_img_src"/>
+                        </div>
 
-              <div class="form-group">
-                <select class="browser-default custom-select form-control validate" id="watch_category" name="watch_category" required>
-                  <option selected disabled>בחר קטגוריה</option>
-                  <option value="1">גברים</option>
-                  <option value="2">נשים</option>
-                  <option value="3">ילדים</option>
-                </select>
-              </div>
+                        <div class="form-group">
+                            <label for="forth_img_src">לינק לתמונה משנית 4 (URL):</label>
+                            <input type="text" class="form-control" id="forth_img_src" placeholder="url" name="forth_img_src"/>
+                        </div>
 
-              <div class="form-group">
-                <i class="fa fa-pencil prefix grey-text"></i>
-                <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
-               <textarea type="text" class="md-textarea form-control" id="watch_description" name="watch_description" rows="4" placeholder="תיאור של השעון"></textarea>
-              </div>
-              <button class="btn btn-success confirm-add">הוסף</button>
-              <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+                        <div class="form-group">
+                            <label for="fifth_img_src">לינק לתמונה משנית 5 (URL):</label>
+                            <input type="text" class="form-control" id="fifth_img_src" placeholder="url" name="fifth_img_src"/>
+                        </div>
 
-            </form>
-          </div> <!-- modal-body -->
+                        <div class="form-group">
+                            <i class="fa fa-tag prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_code">מספר קטלוגי:</label>
+                            <input type="number" class="form-control validate" id="watch_code" name="watch_code"
+                                   placeholder="991100" required/>
+                        </div>
 
-          <div class="modal-footer"> <!-- modal-footer --></div><!-- / modal-footer -->
+                        <div class="form-group">
+                            <i class="fa fa-dollar-sign prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
+                            <input type="number" class="form-control validate" id="watch_price" name="watch_price"
+                                   placeholder="מחיר" required/>
+                        </div>
 
-        </div> <!-- / modal-content -->
-      </div> <!-- / modal-dialog-->
+                        <div class="form-group">
+                            <select class="browser-default custom-select form-control validate" id="watch_category"
+                                    name="watch_category" required>
+                                <option value="unmentioned" disabled>בחר קטגוריה</option>
+                                <option value="1">נשים ורסאי</option>
+                                <option value="2">גברים ורסאי</option>
+                                <option value="3">נשים וגאס</option>
+                                <option value="4">גברים וגאס</option>
+                                <option value="5">ילדים ודיגטליים</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <i class="fa fa-pencil prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
+                            <textarea type="text" maxlength="500" class="form-control" id="watch_description"
+                                      name="watch_description" rows="4" placeholder="תיאור של השעון"></textarea>
+                        </div>
+                        <button class="btn btn-success confirm-add">הוסף</button>
+                        <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+
+                    </form>
+                </div> <!-- modal-body -->
+
+                <div class="modal-footer"> <!-- modal-footer --></div><!-- / modal-footer -->
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
     </div> <!-- / Add image Modal -->
 
 </template>
 
 <!-- Single catalog item page -->
 <template name="single_item">
-  <article>
-		<div class="container-fluid">
-			<div class="row">
+    <article style="padding: 40px 0 0 0;">
+        <div class="container-fluid">
+            <div class="row">
 
-				<div class="col-12 col-md-6 mb-3">
-					<div class="card bg-light py-1 text-center thumbnail h-100">
-						<a href="#" data-target="#zoomModal" data-toggle="modal"><img class="single-img" src="{{img_src}}" alt="" /></a>
-					</div> <!-- / image card -->
-				</div>
-
-				<div class="col-12 col-md-6 mb-3">
-					<div class="card bg-light border text-right thumbnail" >
-              <h4 align="center">דגם מספר: {{watch_code}}</h4>
-              <hr class="my-2" />
-              <h6>מחיר: ₪{{watch_price}}.00</h6>
-              <p dir="rtl">
-              <br/>
-          	  {{watch_description}}
-              <br/>
-              <br/>
-              12 חודשי אחריות
-              </p>
-
-					</div> <!-- / description card -->
-				</div>
-
-			</div> <!-- / row -->
-		</div> <!-- / container -->
+                <div class="col-0 col-xl-1 col-md-0 mb-3"></div>
+                <div class="col-12 col-xl-5 col-md-6 mb-3">
+                    <div class="card border text-right thumbnail">
+                        <h4 align="center">דגם מספר: {{watch_code}}</h4>
+                        <hr class="my-2"/>
+                        <div class="card-body">
+                            <h6>מחיר: ₪{{watch_price}}.00</h6>
+                            <p dir="rtl">
+                                <br/>
+                                {{watch_description}}
+                                <br/>
+                                <br/>
+                                12 חודשי אחריות
+                            </p>
+                        </div>
 
 
+                    </div> <!-- / description card -->
+                </div>
 
-    <!-- zoom modal-->
-		<div class="modal fade" id="zoomModal" role="dialog" tabindex="-1" aria-hidden="true" aria-labelledby="zoomModalLabel" >
-			<div class="modal-dialog modal-full" role="document">
+                <div class="col-12 col-xl-5 col-md-6 mb-3">
+                    <div class="card py-1 text-center thumbnail">
+                        <a href="#" data-target="#zoomModal" data-toggle="modal">
+                            <img id="some_shitty_id" class="single-img" src="{{getSingleItemImgSrc}}" alt="" />
+                        </a>
+                    </div>
 
-				<div class="modal-header"> <!-- modal-header -->
-					<button type="button" class="close push-right" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true" style="background-color: white">&times;</span>
-					</button>
-				</div> <!-- / modal-header -->
+                    <!-- START - card deck -->
+                    <div class="row">
+                        <div class="card-deck-wrapper mx-auto" style="margin-top: 10px;">
+                            <div class="card-deck">
 
-				<div class="modal-content bg-dark">  <!-- modal-content -->
-					<div class="modal-body mb-0 p-0">
-						<img src="{{img_src}}" alt="" style="height:80vh; width:auto;">
-					</div>
-				</div>  <!-- / modal-content -->
-			</div>
-		</div> <!-- / zoom modal-->
+                                {{#if img_src}}
+                                <a class="js-first-img" href="#">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <img src="{{img_src}}" alt="" height="96">
+                                        </div>
+                                    </div>
+                                </a>
+                                {{/if}}
+                                {{#if second_img_src}}
+                                <a class="js-second-img" href="#">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <img src="{{second_img_src}}" alt="" height="96">
+                                        </div>
+                                    </div>
+                                </a>
+                                {{/if}}
+                                {{#if third_img_src}}
+                                <a class="js-third-img" href="#">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <img src="{{third_img_src}}" alt="" height="96">
+                                        </div>
+                                    </div>
+                                </a>
+                                {{/if}}
+                                {{#if forth_img_src}}
+                                <a class="js-forth-img" href="#">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <img src="{{forth_img_src}}" alt="" height="96">
+                                        </div>
+                                    </div>
+                                </a>
+                                {{/if}}
+                                {{#if fifth_img_src}}
+                                <a class="js-fifth-img" href="#">
+                                    <div class="card">
+                                        <div class="card-block">
+                                            <img src="{{fifth_img_src}}" alt="" height="96">
+                                        </div>
+                                    </div>
+                                </a>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div><!-- END - card deck -->
 
-  </article>
+                </div>
+                <div class="col-0 col-xl-1 col-md-0 mb-3"></div>
+
+            </div> <!-- / row -->
+        </div> <!-- / container -->
+
+        <!-- zoom modal-->
+        <div class="modal fade" id="zoomModal" role="dialog" tabindex="-1" aria-hidden="true"
+             aria-labelledby="zoomModalLabel">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="direction: rtl; text-align: right;">
+                        <button class="btn btn-outline-dark btn-sm" data-dismiss="modal" type="button">סגירה</button>
+                    </div>
+                    <div class="modal-body mb-0 p-0">
+                        <img class="single-img-modal" src="{{getSingleItemImgSrc}}" alt="">
+                    </div>
+                </div> <!-- / modal-content -->
+            </div>
+        </div> <!-- / zoom modal-->
+
+    </article>
 </template>
 
-
-<!-- Catalog page - cards -->
-<template name="catalog">
-  <article>
-    <div class="container-fluid my-4 js-container">
-
-      {{#if currentUser}}
-        {{>add_item_form}}
-      {{/if}}
-      <h2>
-        {{#if filtering_images}}
-        Showing images by user {{getFilterUser}}. <a href="#" class="js-unset-image-filter">Show all images</a>
-        {{/if}}
-      </h2>
-
-      <div class="row"> <!-- row -->
-        <div class="col-9 col-md-10"> <!-- catalog -->
-          <div class="row"> <!-- nested row -->
-            {{#each images}}
-              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-                <div class="card mx-auto text-right thumbnail h-100" >
-                  <div class="card-header text-center text-white" style="background-color: #87cefa;">{{watch_code}}</div>
-                  <a href="/image/{{_id}}"><img class="card-img-top js-image thumbnail-img img-fluid" src="{{img_src}}" alt="" style="object-fit: scale-down;" /></a>
-                  <div class="card-body">
-
-                    <p class="card-text">מחיר: ₪{{watch_price}}.00</p>
-                    <p class="card-text">{{_id}}</p>
-                    {{#if currentUser}}
-                      <a href="#">Rating: {{rating}}</a>
-                      <br/>
-                        User:
-                        <a href="#" class="js-set-image-filter">{{getUser createdBy}}</a>
-                      <p>{{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}</p>
-                    {{/if}}
-
-                    <div class="btn-group">
-                    {{#if currentUser}}
-                       <button type="button" class="js-del-image btn btn-danger" data-toggle="modal" data-target="#delete_modal">מחיקה</button>
-                       <button type="button" class="js-edit_item_button btn btn-warning"  data-toggle="modal" data-target="#edit_item_modal">עריכה</button>
-                     {{/if}}
-                       <a href="/image/{{_id}}" type="button" class="btn btn-info">לפרטים נוספים</a>
-                    </div> <!-- / btn-group -->
-                  </div> <!-- / card-body -->
-                </div>  <!-- / card -->
-              </div> <!-- / nested column - for each image -->
-
-
-
-            {{/each}}
-          </div> <!-- / nested row -->
-        </div> <!-- / catalog -->
-
-        {{> sidebar}}
-
-      </div> <!-- / row -->
-    </div><!-- / container -->
-  </article>
-
-  <!-- delete Modal -->
-  <div id="delete_modal" class="modal fade">
-   <div class="modal-dialog modal-confirm">
-     <div class="modal-content">
-
-       <div class="modal-header text-center"> <!-- modal-header -->
-         <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-trash fa-4x"></i><br />מחיקה</h4>
-         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-       </div> <!-- / modal-header -->
-
-       <div class="modal-body text-right"> <!-- modal-body -->
-         <p dir="rtl">האם הנך בטוח שברצונך למחוק פריט זה? תהליך זה לא לא ניתן לשיחזור</p>
-       </div> <!-- modal-body -->
-
-       <div class="modal-footer d-flex justify-content-center"> <!-- modal-footer -->
-         <button type="button" class="btn btn-info" data-dismiss="modal">ביטול</button>
-         <button type="button" class="btn btn-danger confirm-delete" data-toggle="modal">מחיקה</button>
-       </div> <!-- / modal-footer -->
-
-     </div> <!-- / modal-content -->
-   </div> <!-- / modal-dialog-->
-  </div> <!-- / delete Modal -->
-
-  <!-- Edit modal -->
-  <div id="edit_item_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-
-        <div class="modal-header text-center"> <!-- modal-header -->
-          <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-edit fa-4x"></i><br />עריכה</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div> <!-- / modal-header -->
-
-        <div class="modal-body mx-3"> <!-- modal-body -->
-          <form class="js-edit-item" style="direction: rtl; text-align: right;">
-
-            <div class="form-group">
-              <label for="img_src">לינק לתמונה:</label>
-              <input type="text" class="form-control" id="img_src" value={{getImgSrc}} name="img_src" required/>
-            </div>
-
-            <div class="form-group">
-              <i class="fa fa-tag prefix grey-text"></i>
-              <label data-error="wrong" data-success="right" for="watch_code">מספר קטלוגי:</label>
-              <input type="number" class="form-control validate" id="watch_code" value={{getWatchCode}} name="watch_code" required/>
-            </div>
-
-            <div class="form-group">
-              <i class="fa fa-dollar-sign prefix grey-text"></i>
-              <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
-              <input type="number" class="form-control validate" id="watch_price" value={{getWatchPrice}} name="watch_price" required/>
-            </div>
-
-            <div class="form-group">
-              <select class="browser-default custom-select form-control validate" id="watch_category" name="watch_category" required>
-                <option selected disabled>בחר קטגוריה</option>
-                <option value="1">גברים</option>
-                <option value="2">נשים</option>
-                <option value="3">ילדים</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <i class="fa fa-pencil prefix grey-text"></i>
-              <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
-             <textarea type="text" class="md-textarea form-control" id="watch_description" value={{getWatchDescription}} name="watch_description" rows="4"></textarea>
-            </div>
-
-            <button class="btn btn-success confirm-edit">ערוך</button>
-            <button class="btn btn-info" data-dismiss="modal">ביטול</button>
-
-          </form>
-        </div> <!-- modal-body -->
-
-        <div class="modal-footer"> <!-- modal-footer --></div><!-- / modal-footer -->
-
-      </div> <!-- / modal-content -->
-    </div> <!-- / modal-dialog-->
-  </div> <!-- / Edit image Modal -->
-
-</template>
-
-
-
+<!-- Catalog page sidebar -->
 <template name='sidebar'>
+    <div class="col-4 col-md-2"> <!-- sidebar -->
+        <div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
+            <div class="make-me-sticky">
+                <div class="sidebar-heading">
+                    <h2>סינון</h2>
+                </div>
 
-	<div class="col-3 col-md-2"> <!-- sidebar -->
-		<div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
-			<div class="make-me-sticky">
-				<div class="sidebar-heading">סינון</div>
-				<div class="list-group list-group-flush" id="accordion">
+                <ul class="list-group list-group-flush">
+                    <a href="catalog">
+                        <div class="card border-info">
+                            <li class="list-group-item">
+                                ביטול סינון
+                            </li>
+                        </div>
+                    </a>
+                    <a href="catalog?q=women-versaille">
+                        <div class="card">
+                            <li class="list-group-item">
+                                שעוני נשים - ורסאי
+                            </li>
+                        </div>
+                    </a>
+                    <a href="catalog?q=men-versaille">
+                        <div class="card">
+                            <li class="list-group-item">
+                                שעוני גברים - ורסאי
+                            </li>
+                        </div>
+                    </a>
+                    <a href="catalog?q=women-vegas">
+                        <div class="card">
+                            <li class="list-group-item">
+                                שעוני נשים - וגאס
+                            </li>
+                        </div>
+                    </a>
+                    <a href="catalog?q=men-vegas">
+                        <div class="card">
+                            <li class="list-group-item">
+                                שעוני גברים - וגאס
+                            </li>
+                        </div>
+                    </a>
+                    <a href="catalog?q=digital-children">
+                        <div class="card">
+                            <li class="list-group-item">
+                                ילדים ודיגטליים
+                            </li>
+                        </div>
+                    </a>
+                </ul>
 
-					<div class="card">
-						<div class="card-header">
-							<a class="card-link" data-toggle="collapse" href="#collapseOne">
-								שעוני נשים
-							</a>
-						</div>
-						<div id="collapseOne" class="collapse show" data-parent="#accordion">
-							<div class="card-body">
-								<a href="#" class="list-group-item list-group-item-action bg-light">1100</a>
-								<a href="#" class="list-group-item list-group-item-action bg-light">1600</a>
-							</div>
-						</div>
-					</div>
-
-					<div class="card">
-								<div class="card-header">
-									<a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
-									שעוני גברים
-								</a>
-								</div>
-								<div id="collapseTwo" class="collapse" data-parent="#accordion">
-									<div class="card-body">
-										<a href="#" class="list-group-item list-group-item-action bg-light">1700</a>
-										<a href="#" class="list-group-item list-group-item-action bg-light">1800</a>
-									</div>
-								</div>
-							</div>
-
-					<div class="card">
-						<div class="card-header">
-							<a class="collapsed card-link" data-toggle="collapse" href="#collapseThree">
-								שעוני ילדים
-							</a>
-						</div>
-						<div id="collapseThree" class="collapse" data-parent="#accordion">
-							<div class="card-body">
-								<a href="#" class="list-group-item list-group-item-action bg-light">1900</a>
-								<a href="#" class="list-group-item list-group-item-action bg-light">2600</a>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
-		</div>
-	</div> <!-- / sidebar -->
+            </div>
+        </div>
+    </div> <!-- / sidebar -->
 </template>
+<!-- / Catalog page sidebar -->

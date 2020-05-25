@@ -1,44 +1,111 @@
 // we need to use the Mongo compoent
 // so we need to import it
-import { Mongo } from 'meteor/mongo';
+import {Mongo} from 'meteor/mongo';
 
-// this is image_share.js
-Images = new Mongo.Collection("images");
+Accounts.config({
+    forbidClientAccountCreation: true
+});
+
+Images = new Mongo.Collection('images');
+PagesText = new Mongo.Collection('pages_text');
+// Easy-serach index
+ImagesIndex = new EasySearch.Index({
+    collection: Images,
+    fields: ['watch_code_str'],
+    engine: new EasySearch.MongoDB()
+});
+
 
 // set up security on Images collection
-Images.allow({
+if (Meteor.isServer) {
+    Meteor.publish('images', function itemsPublication() {
+        return Images.find();
+    });
 
-	// we need to be able to update images for ratings.
-	update: function(userId, doc){
-		//console.log("testing security on image update");
-		if (Meteor.user()){// they are logged in
-			return true;
-		} else {// user not logged in - do not let them update (rate) the image.
-			return false;
-		}
-	},
+    var admin = 'admin'
+    Images.allow({
 
-	insert: function(userId, doc){
-		//console.log("testing security on image insert");
-		if (Meteor.user()){// they are logged in
-			if (userId != doc.createdBy){// the user is messing about
-				return false;
-			}
-			else {// the user is logged in, the image has the correct user id
-				return true;
-			}
-		}
-		else {// user not logged in
-			return false;
-		}
-	},
-	remove: function(userId, doc){
-		return true;
-	}
-})
+        update: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                return false;
+            }
+        },
 
-ImagesIndex = new EasySearch.Index({
-  collection: Images,
-	fields: ['watch_code_str'],
-  engine: new EasySearch.MongoDB()
-});
+        insert: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                console.log("ha ha")
+                return false;
+            }
+        },
+
+        remove: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                return false;
+            }
+        }
+    })
+}
+
+
+if (Meteor.isServer) {
+    Meteor.publish('pages_text', function () {
+        return PagesText.find();
+    });
+    var admin = "admin";
+    PagesText.allow({
+
+        update: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                return false;
+            }
+        },
+
+        insert: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                return false;
+            }
+        },
+
+        remove: function (userId, doc) {
+            if (Meteor.user()) {// logged in
+                if (Meteor.user().username == admin) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {// user not logged in
+                return false;
+            }
+        }
+    })
+}

@@ -1,45 +1,71 @@
 <template name="navbar">
-  <nav class="navbar navbar-expand-sm navbar-light fixed-top" style="background-color: #87cefa;">
-    <a class="navbar-brand" href="/"><img src="logo.png" width="150px" height="50px" alt="versaille-logo"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <nav class="navbar navbar-expand-md navbar-light fixed-top">
+        <a class="navbar-brand" href="/"><img src="logo.png" width="150px" height="50px" alt="versaille-logo"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto mt-2 mt-lg-0" id="ul-navbar">
-        <li class="nav-item active"><a class="nav-link" href="/">ראשי<span class="sr-only">(current)</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="/catalog">קטלוג</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">אודותינו</a>
-          <div class="dropdown-menu" id="dropdown-menu-navbar">
-            <a class="dropdown-item" href="/aboutus#about">על שעוני ורסאי</a>
-            <a class="dropdown-item" href="/aboutus#store-location">חנות המפעל</a>
-            <a class="dropdown-item" href="/aboutus#warranty">אחריות</a>
-          </div>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="/" >צרו קשר</a></li>
-        {{#if currentUser}}
-          <li class="nav-item"><a class="nav-link" href="#">{{> loginButtons }}</a></li>
-        {{/if}}
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto mt-2" id="ul-navbar">
+                <li class="nav-item js-collapse-after-click active">
+                    <a class="nav-link" href="/" >ראשי<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item js-collapse-after-click">
+                    <a class="nav-link" href="/catalog">קטלוג</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">אודותינו</a>
+                    <div class="dropdown-menu dropdown-menu-right" id="dropdown-menu-navbar">
+                        <a class="dropdown-item js-collapse-after-click" href="/aboutus#about">על שעוני ורסאי</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item js-collapse-after-click" href="/aboutus#store-location" id="talkingabouttheshop">חנות המפעל</a>
+                        <a class="dropdown-item js-collapse-after-click" href="/aboutus#warranty">אחריות</a>
+                    </div>
+                </li>
+                <script>
+                    const $dropdown = $(".dropdown");
+                    const $dropdownToggle = $(".dropdown-toggle");
+                    const $dropdownMenu = $(".dropdown-menu");
+                    const showClass = "show";
 
-        <form id="search-form-navbar" class="js-search-item">
-          <div class="form-group">
-            <!-- old search bar - triggered when pressing Enter and only numbers are allowed -->
-        	   <!--<input id="search_input" name="search_input" type="search" placeholder="למשל: 991100" dir="rtl" onkeypress="return (event.charCode!=8 && event.charCode==0 || (event.charCode >= 48 && event.charCode <= 57))" />-->
-             {{> EasySearch.Input index=imagesIndex attributes=inputAttributes}}
-          </div>
-        </form>
+                    $(window).on("load resize", function () {
+                        if (this.matchMedia("(min-width: 768px)").matches) {
+                            $dropdown.hover(
+                                    function () {
+                                        const $this = $(this);
+                                        $this.addClass(showClass);
+                                        $this.find($dropdownToggle).attr("aria-expanded", "true");
+                                        $this.find($dropdownMenu).addClass(showClass);
+                                    },
+                                    function () {
+                                        const $this = $(this);
+                                        $this.removeClass(showClass);
+                                        $this.find($dropdownToggle).attr("aria-expanded", "false");
+                                        $this.find($dropdownMenu).removeClass(showClass);
+                                    }
+                            );
+                        } else {
+                            $dropdown.off("mouseenter mouseleave");
+                        }
+                    });
+                </script>
+                <li class="nav-item">
+                    <a class="nav-link js-collapse-after-click" href="/">צרו קשר</a>
+                </li>
+                {{#if currentUser}}
+                    <li class="nav-item">
+                        <a class="nav-link js-collapse-after-click" href="#">{{> loginButtons }}</a>
+                    </li>
+                {{/if}}
 
-        <!-- old search button
-        <form class="form-inline mr-3 my-2 my-lg-0">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-            <span class="fa fa-search fa-lg"></span>
-          </button>
-        </form>
-      -->
-      </ul>
-    </div>
-  </nav>
+                <form id="search-form-navbar" class="js-search-item">
+                    <div class="form-group">
+                        {{> EasySearch.Input index=imagesIndex attributes=inputAttributes}}
+                    </div>
+                </form>
 
-
+            </ul>
+        </div>
+    </nav>
 </template>

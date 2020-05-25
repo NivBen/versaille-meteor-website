@@ -1,19 +1,21 @@
-/* CSS declarations go here */
-.thumbnail {
-	height:500px;
+/*.thumbnail {
+	height: auto;
 	word-wrap:break-word;
-}
+}*/
 
 .thumbnail-img{
-	max-height:200px;
+	max-height: 360px;
+	max-width: 480px;
+	width: 100%;
 }
 
 body{
 	padding-top:60px;
 }
 
-.single-img{
-	max-width:100%;
+.card {
+    float: none;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
 /* navbar */
@@ -21,25 +23,53 @@ body{
 	font-size: 19px;
 }
 
-@media (min-width: 576px) { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
+@media (min-width: 768px) { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
   #ul-navbar {
    flex-direction: row-reverse;
   }
 }
 
-@media (max-width: 576px) { /* center nav links on collapsed menu */
-  #ul-navbar {
-   text-align: center;
-  }
+@media (max-width: 768px) { /* center nav links on collapsed menu */
+    #ul-navbar {
+        text-align: center;
+    }
 }
-
 .navbar .navbar-collapse #dropdown-menu-navbar{
   text-align: center;
+}
+@media (min-width: 768px) { /* reduce distance between button and dropdown-list on large display */
+    #dropdown-menu-navbar {
+        margin-top: -20px
+    }
+}
+
+.dropdown-menu {
+    margin-top: 0;
+}
+
+nav , #catalog-card{
+    background-color: #BFC9CA;
 }
 /* end - navbar */
 
 .modal-backdrop.show { /* modal backdrop opacity */
     opacity: 0.8;
+}
+
+.single-img-modal{
+    width: 100%;
+    object-fit: scale-down;
+}
+
+
+.single-img{
+    max-height: 768px;
+    width: 90%;
+    object-fit: scale-down;
+}
+
+.modal {
+    text-align: center;       /* Center the modal window. */
 }
 
 /* sidebar */
@@ -52,32 +82,65 @@ body{
 }
 
 .make-me-sticky {
-  position: -webkit-sticky;
-	position: sticky;
-	top: 70px;
-  padding: 0 15px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    padding: 0;
 }
 
 article {
-  background: #f1f1f1;
-  border-radius: 12px;
-  padding: 25px 0 100px;
+    background: #f1f1f1;
+    border-radius: 12px;
 }
 
 .sidebar-heading {
-  text-align: center;
-  padding: 20px;
+    text-align: center;
+    font-size: 20px;
+    padding: 20px;
 }
 
 .sidebar-item {
-  text-align: center;
+    text-align: center;
 }
 /* end - sidebar*/
 
+/* Carousel */
+#carousel {
+    background-image: linear-gradient(to right, white, grey);
+}
 
+.view {
+    height: 700px;
+}
 
+.view img {
+    max-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    object-fit: contain;
+}
 
+/* Smaller than standard 960 (devices and browsers) */
+@media only screen and (max-width: 959px) {}
 
+/* Tablet Portrait size to standard 960 (devices and browsers) */
+@media only screen and (min-width: 768px) and (max-width: 959px) {}
+
+/* All Mobile Sizes (devices and browser) */
+@media only screen and (max-width: 767px) {}
+
+/* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {}
+
+/* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
+@media only screen and (max-width: 479px) {}
+
+/* end - Carousel */
 
 
 
@@ -127,7 +190,6 @@ input::-webkit-input-placeholder {
 	color: #999;
 }
 
-/* Demo 2 */
 #search-form-navbar input[type=search] {
 	width: 15px;
 	padding-left: 10px;
@@ -152,3 +214,22 @@ input::-webkit-input-placeholder {
 }
 
 /*end - expandable search bar */
+
+
+
+/* testing zone*/
+
+.bold{
+    font-family: Helvetica, serif;
+    font-weight: bold;
+}
+.table-responsive>.table>tbody>tr>td{
+    horizontal-align: middle;
+}
+
+.black-color-box {
+    background-color: black;
+    margin: 0 auto;
+    width: 72px;
+    height: 96px;
+}
