@@ -14,10 +14,10 @@
             </h2>
 
             <div class="row"> <!-- row -->
-                <div class="col-8 col-md-10"> <!-- catalog -->
+                <div class="col-8 col-lg-10"> <!-- catalog -->
                     <div class="row"> <!-- nested row -->
                         {{#each images}}
-                            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-3 py-1 d-flex px-1">
+                            <div class="col-md-12 col-lg-6 col-xl-3 py-1 d-flex px-1">
                                 <div class="card mx-auto text-center thumbnail h-100 w-100">
                                     <div id="catalog-card" class="card-header text-white">{{watch_code}}</div>
 
@@ -32,11 +32,11 @@
                                         {{#if currentUser}}
                                             <p align="center">{{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}</p>
                                         {{/if}}
-                                        <p class="card-text">מחיר: ₪{{watch_price}}.00</p>
+                                        <p class="card-text">מחיר מומלץ: ₪{{watch_price}}.00</p>
                                         <div class="btn-group">
                                             {{#if currentUser}}
                                                 <button type="button" class="js-del-image btn btn-danger"
-                                                        data-toggle="modal" data-target="#delete_modal">מחיקה
+                                                        data-toggle="modal" data-target="#delete_item_modal">מחיקה
                                                 </button>
                                                 <button type="button" class="js-edit_item_button btn btn-outline-warning"
                                                         data-toggle="modal" data-target="#edit_item_modal">עריכה
@@ -62,7 +62,7 @@
     </article>
 
     <!-- delete Modal -->
-    <div id="delete_modal" class="modal fade">
+    <div id="delete_item_modal" class="modal fade">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
 
@@ -102,46 +102,46 @@
 
                         <div class="form-group">
                             <label for="img_src">לינק לתמונה:</label>
-                            <input type="text" class="form-control" id="img_src" value={{getImgSrc}} name="img_src"
+                            <input type="text" class="form-control" value={{getImgSrc}} name="img_src"
                                    required/>
                         </div>
 
                         <div class="form-group">
                             <label for="second_img_src">לינק לתמונה משנית 2 (URL):</label>
-                            <input type="text" class="form-control" id="second_img_src" value={{getSecondImgSrc}} name="second_img_src"/>
+                            <input type="text" class="form-control" value={{getSecondImgSrc}} name="second_img_src"/>
                         </div>
 
                         <div class="form-group">
                             <label for="third_img_src">לינק לתמונה משנית 3 (URL):</label>
-                            <input type="text" class="form-control" id="third_img_src" value="{{getThirdImgSrc}}" name="third_img_src"/>
+                            <input type="text" class="form-control" value="{{getThirdImgSrc}}" name="third_img_src"/>
                         </div>
 
                         <div class="form-group">
                             <label for="forth_img_src">לינק לתמונה משנית 4 (URL):</label>
-                            <input type="text" class="form-control" id="forth_img_src" value="{{getForthImgSrc}}" name="forth_img_src"/>
+                            <input type="text" class="form-control" value="{{getForthImgSrc}}" name="forth_img_src"/>
                         </div>
 
                         <div class="form-group">
                             <label for="fifth_img_src">לינק לתמונה משנית 5 (URL):</label>
-                            <input type="text" class="form-control" id="fifth_img_src" value="{{getFifthImgSrc}}" name="fifth_img_src"/>
+                            <input type="text" class="form-control" value="{{getFifthImgSrc}}" name="fifth_img_src"/>
                         </div>
 
                         <div class="form-group">
                             <i class="fa fa-tag prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="watch_code">מספר קטלוגי:</label>
-                            <input type="number" class="form-control validate" id="watch_code" value={{getWatchCode}}
+                            <input type="number" class="form-control validate" value={{getWatchCode}}
                                    name="watch_code" required/>
                         </div>
 
                         <div class="form-group">
                             <i class="fa fa-dollar-sign prefix grey-text"></i>
-                            <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
-                            <input type="number" class="form-control validate" id="watch_price" value={{getWatchPrice}}
+                            <label data-error="wrong" data-success="right" for="watch_price">מחיר מומלץ:</label>
+                            <input type="number" class="form-control validate" value={{getWatchPrice}}
                                    name="watch_price" required/>
                         </div>
 
                         <div class="form-group">
-                            <select class="browser-default custom-select form-control validate" id="watch_category"
+                            <select class="browser-default custom-select form-control validate"
                                     name="watch_category" required>
                                 <option value="unmentioned" disabled>בחר קטגוריה</option>
                                 <option value="1">נשים ורסאי</option>
@@ -155,7 +155,7 @@
                         <div class="form-group">
                             <i class="fa fa-pencil prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
-                            <textarea type="text" class="md-textarea form-control" id="watch_description"
+                            <textarea type="text" class="md-textarea form-control"
                                       value={{getWatchDescription}} name="watch_description" rows="4"></textarea>
                         </div>
 
@@ -233,9 +233,9 @@
 
                         <div class="form-group">
                             <i class="fa fa-dollar-sign prefix grey-text"></i>
-                            <label data-error="wrong" data-success="right" for="watch_price">מחיר:</label>
+                            <label data-error="wrong" data-success="right" for="watch_price">מחיר מומלץ:</label>
                             <input type="number" class="form-control validate" id="watch_price" name="watch_price"
-                                   placeholder="מחיר" required/>
+                                   placeholder="מחיר מומלץ" required/>
                         </div>
 
                         <div class="form-group">
@@ -276,16 +276,19 @@
         <div class="container-fluid">
             <div class="row">
 
-                <div class="col-0 col-xl-1 col-md-0 mb-3"></div>
-                <div class="col-12 col-xl-5 col-md-6 mb-3">
+                <div class="col-0 col-xl-1 col-lg-0 mb-3"></div>
+                <div class="col-12 col-xl-5 col-lg-6 mb-3">
                     <div class="card border text-right thumbnail">
-                        <h4 align="center">דגם מספר: {{watch_code}}</h4>
+                        <h4 align="center">דגם מספר: {{getWatchCode}}</h4>
                         <hr class="my-2"/>
                         <div class="card-body">
-                            <h6>מחיר: ₪{{watch_price}}.00</h6>
-                            <p dir="rtl">
+                            <h6>מחיר מומלץ: ₪{{getWatchPrice}}.00</h6>
+
+                            <p class="testing" dir="rtl">
                                 <br/>
-                                {{watch_description}}
+
+                                {{getWatchDescription}}
+
                                 <br/>
                                 <br/>
                                 12 חודשי אחריות
@@ -296,10 +299,10 @@
                     </div> <!-- / description card -->
                 </div>
 
-                <div class="col-12 col-xl-5 col-md-6 mb-3">
+                <div class="col-12 col-xl-5 col-lg-6 mb-3">
                     <div class="card py-1 text-center thumbnail">
                         <a href="#" data-target="#zoomModal" data-toggle="modal">
-                            <img id="some_shitty_id" class="single-img" src="{{getSingleItemImgSrc}}" alt="" />
+                            <img class="single-img" src="{{getMainImgSrc}}" alt="" />
                         </a>
                     </div>
 
@@ -308,47 +311,47 @@
                         <div class="card-deck-wrapper mx-auto" style="margin-top: 10px;">
                             <div class="card-deck">
 
-                                {{#if img_src}}
+                                {{#if getFirstImgSrc}}
                                 <a class="js-first-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{img_src}}" alt="" height="96">
+                                            <img src="{{getFirstImgThumbnail}}" alt="" height="96">
                                         </div>
                                     </div>
                                 </a>
                                 {{/if}}
-                                {{#if second_img_src}}
+                                {{#if getSecondImgSrc}}
                                 <a class="js-second-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{second_img_src}}" alt="" height="96">
+                                            <img src="{{getSecondImgThumbnail}}" alt="" height="96">
                                         </div>
                                     </div>
                                 </a>
                                 {{/if}}
-                                {{#if third_img_src}}
+                                {{#if getThirdImgSrc}}
                                 <a class="js-third-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{third_img_src}}" alt="" height="96">
+                                            <img src="{{getThirdImgThumbnail}}" alt="" height="96">
                                         </div>
                                     </div>
                                 </a>
                                 {{/if}}
-                                {{#if forth_img_src}}
+                                {{#if getForthImgSrc}}
                                 <a class="js-forth-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{forth_img_src}}" alt="" height="96">
+                                            <img src="{{getForthImgThumbnail}}" alt="" height="96">
                                         </div>
                                     </div>
                                 </a>
                                 {{/if}}
-                                {{#if fifth_img_src}}
+                                {{#if getFifthImgSrc}}
                                 <a class="js-fifth-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{fifth_img_src}}" alt="" height="96">
+                                            <img src="{{getFifthImgThumbnail}}" alt="" height="96">
                                         </div>
                                     </div>
                                 </a>
@@ -358,7 +361,7 @@
                     </div><!-- END - card deck -->
 
                 </div>
-                <div class="col-0 col-xl-1 col-md-0 mb-3"></div>
+                <div class="col-0 col-xl-1 col-lg-0 mb-3"></div>
 
             </div> <!-- / row -->
         </div> <!-- / container -->
@@ -372,7 +375,7 @@
                         <button class="btn btn-outline-dark btn-sm" data-dismiss="modal" type="button">סגירה</button>
                     </div>
                     <div class="modal-body mb-0 p-0">
-                        <img class="single-img-modal" src="{{getSingleItemImgSrc}}" alt="">
+                        <img class="single-img-modal" src="{{getMainImgSrc}}" alt="">
                     </div>
                 </div> <!-- / modal-content -->
             </div>
@@ -383,7 +386,7 @@
 
 <!-- Catalog page sidebar -->
 <template name='sidebar'>
-    <div class="col-4 col-md-2"> <!-- sidebar -->
+    <div class="col-4 col-lg-2"> <!-- sidebar -->
         <div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
             <div class="make-me-sticky">
                 <div class="sidebar-heading">

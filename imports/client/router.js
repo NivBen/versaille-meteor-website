@@ -5,12 +5,6 @@ Router.configure({
     layoutTemplate: 'main_Layout'
 });
 
-Router.route('/test', function () { // area 51 testing
-    document.title = 'Area 51';
-    this.render('test', {to: "main"});
-
-});
-
 Router.route('/', function () {
     document.title = 'שעוני ורסאי';
     this.render('navbar', {to: "navbar"});
@@ -19,7 +13,7 @@ Router.route('/', function () {
 });
 
 Router.route('/aboutus', function () {
-    document.title = 'על שעוני ורסאי';
+    document.title = 'אודות שעוני ורסאי';
     this.render('navbar', {to: "navbar"});
     this.render('aboutus', {to: "main"});
     this.render('footer', {to: "footer"});
@@ -36,6 +30,7 @@ Router.route('/search', function () {
     document.title = 'קטלוג שעוני ורסאי';
     this.render('navbar', {to: "navbar"});
     this.render('searchBox', {to: "main"});
+    // this.render('footer', {to: "footer"});
 });
 
 Router.route('/catalog', function () {
@@ -126,23 +121,17 @@ Router.route('/catalog', function () {
           }
         });*/
     }
+    // this.render('footer', {to: "footer"});
 }, {
     name: 'catalog'
 });  // No footer due to infinite scroll
 
-
 Router.route('/catalog_item/:_id', function () {
     document.title = 'שעוני ורסאי';
+    Session.set("single_item_object", Images.findOne({_id: this.params._id}));
+    Session.set("single_item_displayed_img_src", Session.get("single_item_object").img_src);
     this.render('navbar', {to: "navbar"});
-    this.render('single_item', {
-        to: "main",
-        data: function () {
-            var catalog_item = Images.findOne({_id: this.params._id})
-            Session.set("single_item", catalog_item);
-            Session.set("single_item_img_src", catalog_item.img_src);
-            return catalog_item;
-        }
-    });
+    this.render('single_item', {to: "main",});
     this.render('footer', {to: "footer"});
 }, {
     name: 'catalog.item'

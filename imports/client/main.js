@@ -2,10 +2,6 @@ import {Accounts} from "meteor/accounts-base";
 import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 
-// Will be true if Bootstrap 3-4 is loaded, false if Bootstrap 2 or no Bootstrap
-//var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
-//console.log(bootstrap_enabled)
-
 let imageLimit = 12;
 Session.set("imageLimit", imageLimit); // TODO: maybe limit this differently
 
@@ -25,11 +21,12 @@ $('.carousel').carousel({
 Template.add_item_form.onCreated(function bodyOnCreated() {
   Meteor.subscribe('images');
 });
-Template.single_item.onCreated(function bodyOnCreated() {
-  Meteor.subscribe('images');
-});
+
 Template.catalog.onCreated(function bodyOnCreated() {
   Meteor.subscribe('images');
+});
+Template.single_item.onCreated(function bodyOnCreated() {
+    Meteor.subscribe('images');
 });*/
 Template.searchBox.onCreated(function bodyOnCreated() {
     Meteor.subscribe('images');
@@ -133,6 +130,7 @@ Template.catalog.events({
                 $('#delete_' +
                     '').modal('hide');
                 Images.remove({"_id": image_id});
+                $("#delete_item_modal").modal('hide');
                 console.log("Deleted image of id: " + image_id);
             });
         } else {
@@ -141,9 +139,7 @@ Template.catalog.events({
     },
     'click .js-rate-image': function (event) {
         var rating = $(event.currentTarget).data("userrating");
-        //console.log(rating);
         var image_id = this.data_id;
-        //console.log(image_id);
 
         Images.update({_id: image_id},
             {$set: {rating: rating}});
@@ -168,18 +164,7 @@ Template.catalog.events({
         watch_price = event.target.watch_price.value;
         watch_category = event.target.watch_category.value;
         watch_description = event.target.watch_description.value;
-        if (img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            img_src = img_src.replace(/\bopen\b/g, 'uc');
-        } // changing google drive to presentable format
-        if (second_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            second_img_src = second_img_src.replace(/\bopen\b/g, 'uc');
-        } if (third_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            third_img_src = third_img_src.replace(/\bopen\b/g, 'uc');
-        } if (forth_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            forth_img_src = forth_img_src.replace(/\bopen\b/g, 'uc');
-        } if (fifth_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            fifth_img_src = fifth_img_src.replace(/\bopen\b/g, 'uc');
-        }
+
         if (Meteor.user()) {
             Images.update({_id: item_id},
                 {
@@ -207,6 +192,7 @@ Template.catalog.events({
     },
     'click .js-load-more': function (event) {
         Session.set("imageLimit", Session.get("imageLimit") + imageLimit);
+
     },
 });
 
@@ -224,18 +210,7 @@ Template.add_item_form.events({
         watch_code = event.target.watch_code.value;
         watch_category = event.target.watch_category.value;
         watch_description = event.target.watch_description.value;
-        if (img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            img_src = img_src.replace(/\bopen\b/g, 'uc');
-        } // changing google drive to presentable format
-        if (second_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            second_img_src = second_img_src.replace(/\bopen\b/g, 'uc');
-        } if (third_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            third_img_src = third_img_src.replace(/\bopen\b/g, 'uc');
-        } if (forth_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            forth_img_src = forth_img_src.replace(/\bopen\b/g, 'uc');
-        } if (fifth_img_src.match(/^https:\/\/drive.google.com\/open/g)) {
-            fifth_img_src = fifth_img_src.replace(/\bopen\b/g, 'uc');
-        }
+
         if (Meteor.user()) {
             Images.insert({
                 img_src: img_src,
@@ -261,30 +236,69 @@ Template.add_item_form.events({
 Template.single_item.events({
     // selecting which src to present as large photo
     'click .js-first-img': function (event) {
-        Session.set("single_item_img_src", Session.get("single_item").img_src);
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").img_src);
         return false;
     },
     'click .js-second-img': function (event) {
-        Session.set("single_item_img_src", Session.get("single_item").second_img_src);
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").second_img_src);
         return false;
     },
     'click .js-third-img': function (event) {
-        Session.set("single_item_img_src", Session.get("single_item").third_img_src);
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").third_img_src);
         return false;
     },
     'click .js-forth-img': function (event) {
-        Session.set("single_item_img_src", Session.get("single_item").forth_img_src);
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").forth_img_src);
         return false;
     },
     'click .js-fifth-img': function (event) {
-        Session.set("single_item_img_src", Session.get("single_item").fifth_img_src);
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").fifth_img_src);
         return false;
     }
 });
 
 Template.single_item.helpers({
-    getSingleItemImgSrc: function () {
-        return Session.get("single_item_img_src");
+    getWatchCode: function () {
+        return Session.get("single_item_object").watch_code;
+    },
+    getWatchPrice: function () {
+        return Session.get("single_item_object").watch_price;
+    },
+    getWatchDescription: function () {
+        return Session.get("single_item_object").watch_description;
+    },
+    getFirstImgSrc: function () {
+        return Session.get("single_item_object").img_src;
+    },
+    getFirstImgThumbnail: function () {
+        return Session.get("single_item_object").img_src;
+    },
+    getSecondImgSrc: function () {
+        return Session.get("single_item_object").second_img_src;
+    },
+    getSecondImgThumbnail: function () {
+        return Session.get("single_item_object").second_img_src;
+    },
+    getThirdImgSrc: function () {
+        return Session.get("single_item_object").third_img_src;
+    },
+    getThirdImgThumbnail: function () {
+        return Session.get("single_item_object").third_img_src;
+    },
+    getForthImgSrc: function () {
+        return Session.get("single_item_object").forth_img_src;
+    },
+    getForthImgThumbnail: function () {
+        return Session.get("single_item_object").forth_img_src;
+    },
+    getFifthImgSrc: function () {
+        return Session.get("single_item_object").fifth_img_src;
+    },
+    getFifthImgThumbnail: function () {
+        return Session.get("single_item_object").fifth_img_src;
+    },
+    getMainImgSrc: function () {
+        return Session.get("single_item_displayed_img_src");
     },
 });
 // END ---- CATALOG ----
@@ -426,21 +440,6 @@ var tinymce_init = function () {
 Template.test.onRendered(tinymce_init);
 Template.add_item_form.onRendered(tinymce_init);
 
-Template.welcome.onCreated(function bodyOnCreated() {
-    Meteor.subscribe('pages_text');
-});
-Template.welcome.helpers({
-    getInlineText: function () {
-        try {
-            var txt = PagesText.findOne({_id: "welcome_page_body_text"}).text;
-            console.log("helper: " + txt)
-            document.getElementById("welcome-body-text").innerHTML = txt;
-        } catch (e) {
-        }
-    },
-});
-
-
 Template.test.onCreated(function bodyOnCreated() {
     Meteor.subscribe('pages_text');
 });
@@ -448,13 +447,21 @@ Template.test.onCreated(function bodyOnCreated() {
 Template.test.events({
     'click .js-welcome-body-tinymce': function (event) {
         var txt = document.getElementById("welcome-body-tinymce").innerHTML;
-        console.log("events: " + txt)
+        //console.log("events: " + txt)
         if (Meteor.user()) {
-            PagesText.update(
-                { _id: "welcome_page_body_text" },
-                { $set: {text: txt} },
-                { upsert: true })
-        };
+
+            if (PagesText.findOne({ _id: "welcome_page_body_text" }) != null) {
+                PagesText.update(
+                    { _id: "welcome_page_body_text" },
+                    { $set: {text: txt} });
+            } else {
+                PagesText.insert({
+                    _id: "welcome_page_body_text",
+                    text: txt
+                });
+            }
+
+        }
         return false;
     },
 });
@@ -467,5 +474,9 @@ Template.test.helpers({
         } catch (e) {
         }
     },
+});
+
+Template.test.onCreated(function bodyOnCreated() {
+    Meteor.subscribe('pages_text');
 });
 // END ---- tinymce ----

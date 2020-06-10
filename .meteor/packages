@@ -28,6 +28,6 @@ natestrauser:font-awesome	    # for icons (like the search icon in the navigatio
 dynamic-import
 underscore
 
-meteortoys:allthings          # analyzing tools for developing TODO: remove later
+# meteortoys:allthings          # analyzing tools for developing TODO: remove later - use for developing
 easy:search                   # simple search engine
 teamon:tinymce

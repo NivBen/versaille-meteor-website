@@ -23,13 +23,13 @@ body{
 	font-size: 19px;
 }
 
-@media (min-width: 768px) { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
+@media (min-width: 992px) { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
   #ul-navbar {
    flex-direction: row-reverse;
   }
 }
 
-@media (max-width: 768px) { /* center nav links on collapsed menu */
+@media (max-width: 992px) { /* center nav links on collapsed menu */
     #ul-navbar {
         text-align: center;
     }
@@ -37,7 +37,7 @@ body{
 .navbar .navbar-collapse #dropdown-menu-navbar{
   text-align: center;
 }
-@media (min-width: 768px) { /* reduce distance between button and dropdown-list on large display */
+@media (min-width: 992px) { /* reduce distance between button and dropdown-list on large display */
     #dropdown-menu-navbar {
         margin-top: -20px
     }
@@ -109,10 +109,6 @@ article {
     background-image: linear-gradient(to right, white, grey);
 }
 
-.view {
-    height: 700px;
-}
-
 .view img {
     max-height: 100%;
     max-width: 100%;
@@ -125,14 +121,34 @@ article {
     object-fit: contain;
 }
 
-/* Smaller than standard 960 (devices and browsers) */
-@media only screen and (max-width: 959px) {}
+/* desktop and large displays*/
+@media only screen and (min-width: 1200px) {
+    .view {
+        height: 700px;
+    }
+}
+
+
+/* Smaller than standard 1200 (devices and browsers) */
+@media only screen and (min-width: 960px) and (max-width: 1200px) {
+    .view {
+        height: 600px;
+    }
+}
 
 /* Tablet Portrait size to standard 960 (devices and browsers) */
-@media only screen and (min-width: 768px) and (max-width: 959px) {}
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+    .view {
+        height: 500px;
+    }
+}
 
 /* All Mobile Sizes (devices and browser) */
-@media only screen and (max-width: 767px) {}
+@media only screen and (max-width: 767px) {
+    .view {
+        height: 400px;
+    }
+}
 
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) {}
@@ -187,7 +203,7 @@ input:-moz-placeholder {
 	color: #999;
 }
 input::-webkit-input-placeholder {
-	color: #999;
+	color: #999999;
 }
 
 #search-form-navbar input[type=search] {
@@ -214,22 +230,3 @@ input::-webkit-input-placeholder {
 }
 
 /*end - expandable search bar */
-
-
-
-/* testing zone*/
-
-.bold{
-    font-family: Helvetica, serif;
-    font-weight: bold;
-}
-.table-responsive>.table>tbody>tr>td{
-    horizontal-align: middle;
-}
-
-.black-color-box {
-    background-color: black;
-    margin: 0 auto;
-    width: 72px;
-    height: 96px;
-}

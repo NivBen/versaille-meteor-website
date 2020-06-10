@@ -24,10 +24,10 @@ Meteor.startup(function () {
     }*/
 
     // creating admin account
-    if (Meteor.users.find().count() == 0) {
+    if (Meteor.users.find().count() === 0) {
         var admin_id = Accounts.createUser({
             username: 'admin',
-            password: '123456'
+            password: 'admin613063'
         });
         //console.log("creating admin account with id: " + admin_id);
     }
