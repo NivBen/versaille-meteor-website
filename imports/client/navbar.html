@@ -1,6 +1,6 @@
 <template name="navbar">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <a class="navbar-brand" href="/"><img src="logo.png" width="150px" height="50px" alt="versaille-logo"></a>
+        <a class="navbar-brand" href="/"><img src="logo.png" class="versaille-logo" alt="versaille-logo"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -23,35 +23,12 @@
                         <a class="dropdown-item js-collapse-after-click" href="/aboutus#warranty">אחריות</a>
                     </div>
                 </li>
-                <script>
-                    const $dropdown = $(".dropdown");
-                    const $dropdownToggle = $(".dropdown-toggle");
-                    const $dropdownMenu = $(".dropdown-menu");
-                    const showClass = "show";
 
-                    $(window).on("load resize", function () {
-                        if (this.matchMedia("(min-width: 768px)").matches) {
-                            $dropdown.hover(
-                                    function () {
-                                        const $this = $(this);
-                                        $this.addClass(showClass);
-                                        $this.find($dropdownToggle).attr("aria-expanded", "true");
-                                        $this.find($dropdownMenu).addClass(showClass);
-                                    },
-                                    function () {
-                                        const $this = $(this);
-                                        $this.removeClass(showClass);
-                                        $this.find($dropdownToggle).attr("aria-expanded", "false");
-                                        $this.find($dropdownMenu).removeClass(showClass);
-                                    }
-                            );
-                        } else {
-                            $dropdown.off("mouseenter mouseleave");
-                        }
-                    });
-                </script>
-                <li class="nav-item">
+                <!--<li class="nav-item">
                     <a class="nav-link js-collapse-after-click" href="/">צרו קשר</a>
+                </li>-->
+                <li class="nav-item">
+                    <a class="nav-link js-collapse-after-click" href="/login">התחברות</a>
                 </li>
                 {{#if currentUser}}
                     <li class="nav-item">

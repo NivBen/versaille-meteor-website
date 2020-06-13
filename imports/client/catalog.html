@@ -1,20 +1,16 @@
 <!-- Catalog page - cards -->
 <template name="catalog">
-    <article>
+    <article id="catalog-article">
         <div class="container-fluid my-4 js-container">
 
             {{#if currentUser}}
-                {{>add_item_form}}
+                <div class="row" style="padding-top: 6vh;">
+                    {{>add_item_form}}
+                </div>
             {{/if}}
-            <h2>
-                {{#if filtering_images}}
-                    Showing images by user {{getFilterUser}}. <a href="#" class="js-unset-image-filter">Show all
-                    images</a>
-                {{/if}}
-            </h2>
 
             <div class="row"> <!-- row -->
-                <div class="col-8 col-lg-10"> <!-- catalog -->
+                <div class="col-8 col-lg-10 catalog-padding"> <!-- catalog -->
                     <div class="row"> <!-- nested row -->
                         {{#each images}}
                             <div class="col-md-12 col-lg-6 col-xl-3 py-1 d-flex px-1">
@@ -35,14 +31,14 @@
                                         <p class="card-text">מחיר מומלץ: ₪{{watch_price}}.00</p>
                                         <div class="btn-group">
                                             {{#if currentUser}}
-                                                <button type="button" class="js-del-image btn btn-danger"
+                                                <button type="button" class="js-del-image btn btn-responsive-font btn-danger"
                                                         data-toggle="modal" data-target="#delete_item_modal">מחיקה
                                                 </button>
-                                                <button type="button" class="js-edit_item_button btn btn-outline-warning"
+                                                <button type="button" class="js-edit_item_button btn btn-responsive-font btn-outline-warning"
                                                         data-toggle="modal" data-target="#edit_item_modal">עריכה
                                                 </button>
                                             {{/if}}
-                                            <a href="/catalog_item/{{_id}}" type="button" class="btn btn-outline-secondary">לפרטים
+                                            <a href="/catalog_item/{{_id}}" type="button" class="btn btn-responsive-font btn-outline-secondary">לפרטים
                                                 נוספים</a>
                                         </div> <!-- / btn-group -->
                                     </div> <!-- / card-footer -->
@@ -50,7 +46,7 @@
                             </div> <!-- / nested column - for each image -->
                         {{/each}}
                     </div> <!-- / nested row -->
-                    <button type="button" class="js-load-more btn btn-outline-secondary btn-lg btn-block" dir="rtl" style="margin-top: 20px;">
+                    <button type="button" class="js-load-more btn btn-outline-secondary btn-responsive-font btn-block" dir="rtl" style="margin-top: 20px;">
                         טעינת פריטים נוספים
                     </button>
                 </div> <!-- / catalog -->
@@ -76,8 +72,8 @@
                 </div> <!-- modal-body -->
 
                 <div class="modal-footer d-flex justify-content-center"> <!-- modal-footer -->
-                    <button type="button" class="btn btn-info" data-dismiss="modal">ביטול</button>
-                    <button type="button" class="btn btn-danger confirm-delete" data-toggle="modal">מחיקה</button>
+                    <button type="button" class="btn btn-responsive-font btn-info" data-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-responsive-font btn-danger confirm-delete" data-toggle="modal">מחיקה</button>
                 </div> <!-- / modal-footer -->
 
             </div> <!-- / modal-content -->
@@ -159,8 +155,8 @@
                                       value={{getWatchDescription}} name="watch_description" rows="4"></textarea>
                         </div>
 
-                        <button class="btn btn-success confirm-edit">ערוך</button>
-                        <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+                        <button class="btn btn-responsive-font btn-success confirm-edit">ערוך</button>
+                        <button class="btn btn-responsive-font btn-info" data-dismiss="modal">ביטול</button>
 
                     </form>
                 </div> <!-- modal-body -->
@@ -176,7 +172,7 @@
 <!-- Catalog page - add item button -->
 <template name="add_item_form">
     <div class="text-center">
-        <button type="button" class="btn btn-success btn-lg btn-block js-add_item_form" data-toggle="modal"
+        <button type="button" class="btn btn-responsive-font btn-success btn-block js-add_item_form" data-toggle="modal"
                 data-target="#addModal">הוספת פריטים לקטלוג
         </button>
     </div>
@@ -256,8 +252,8 @@
                             <textarea type="text" maxlength="500" class="form-control" id="watch_description"
                                       name="watch_description" rows="4" placeholder="תיאור של השעון"></textarea>
                         </div>
-                        <button class="btn btn-success confirm-add">הוסף</button>
-                        <button class="btn btn-info" data-dismiss="modal">ביטול</button>
+                        <button class="btn btn-responsive-font btn-success confirm-add">הוסף</button>
+                        <button class="btn btn-responsive-font btn-info" data-dismiss="modal">ביטול</button>
 
                     </form>
                 </div> <!-- modal-body -->
@@ -272,35 +268,32 @@
 
 <!-- Single catalog item page -->
 <template name="single_item">
-    <article style="padding: 40px 0 0 0;">
+    <article id="single-item-article">
         <div class="container-fluid">
             <div class="row">
 
                 <div class="col-0 col-xl-1 col-lg-0 mb-3"></div>
+
                 <div class="col-12 col-xl-5 col-lg-6 mb-3">
-                    <div class="card border text-right thumbnail">
+                    <div class="card border text-right thumbnail pt-5">
                         <h4 align="center">דגם מספר: {{getWatchCode}}</h4>
                         <hr class="my-2"/>
                         <div class="card-body">
-                            <h6>מחיר מומלץ: ₪{{getWatchPrice}}.00</h6>
+                            <h5>מחיר מומלץ: ₪{{getWatchPrice}}.00</h5>
 
                             <p class="testing" dir="rtl">
                                 <br/>
-
                                 {{getWatchDescription}}
-
                                 <br/>
                                 <br/>
                                 12 חודשי אחריות
                             </p>
                         </div>
-
-
                     </div> <!-- / description card -->
                 </div>
 
                 <div class="col-12 col-xl-5 col-lg-6 mb-3">
-                    <div class="card py-1 text-center thumbnail">
+                    <div class="card pb-1 pt-5 text-center thumbnail">
                         <a href="#" data-target="#zoomModal" data-toggle="modal">
                             <img class="single-img" src="{{getMainImgSrc}}" alt="" />
                         </a>
@@ -372,7 +365,7 @@
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header" style="direction: rtl; text-align: right;">
-                        <button class="btn btn-outline-dark btn-sm" data-dismiss="modal" type="button">סגירה</button>
+                        <button class="btn btn-responsive-font btn-outline-dark btn-sm" data-dismiss="modal" type="button">X</button>
                     </div>
                     <div class="modal-body mb-0 p-0">
                         <img class="single-img-modal" src="{{getMainImgSrc}}" alt="">
@@ -389,6 +382,7 @@
     <div class="col-4 col-lg-2"> <!-- sidebar -->
         <div class="sidebar-item bg-light border-left" id="sidebar-wrapper">
             <div class="make-me-sticky">
+
                 <div class="sidebar-heading">
                     <h2>סינון</h2>
                 </div>
@@ -436,10 +430,54 @@
                             </li>
                         </div>
                     </a>
+
+                    <div class="list-group list-group-flush">
+                        <div class="card">
+                            <a class="card-link" data-target="#catalog-order-modal" data-toggle="modal" href="#">
+                                <div class="card-header">
+                                    לפי מספור קטלוגי
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </ul>
 
             </div>
         </div>
     </div> <!-- / sidebar -->
+
+
+    <!-- zoom modal-->
+    <div class="modal fade" id="catalog-order-modal" role="dialog" tabindex="-1" aria-hidden="true"
+         aria-labelledby="catalog-order-modal-label">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="direction: rtl; text-align: right;">
+                    <button class="btn btn-responsive-font btn-outline-dark btn-sm" data-dismiss="modal" type="button">X</button>
+                </div>
+                <div class="modal-body mb-0 p-0">
+                    <div id="#sidebar-number-link">
+                        <a href="" class="sidebar-number-link4300 list-group-item list-group-item-action"><b>4300</b></a>
+                        <a href="" class="sidebar-number-link4200 list-group-item list-group-item-action"><b>4200</b></a>
+                        <a href="" class="sidebar-number-link4100 list-group-item list-group-item-action"><b>4100</b></a>
+                        <a href="" class="sidebar-number-link3900 list-group-item list-group-item-action"><b>3900</b></a>
+                        <a href="" class="sidebar-number-link4000 list-group-item list-group-item-action"><b>4000</b></a>
+                        <a href="" class="sidebar-number-link3800 list-group-item list-group-item-action"><b>3800</b></a>
+                        <a href="" class="sidebar-number-link2800 list-group-item list-group-item-action"><b>2800</b></a>
+                        <a href="" class="sidebar-number-link2700 list-group-item list-group-item-action"><b>2700</b></a>
+                        <a href="" class="sidebar-number-link2600 list-group-item list-group-item-action"><b>2600</b></a>
+                        <a href="" class="sidebar-number-link1900 list-group-item list-group-item-action"><b>1900</b></a>
+                        <a href="" class="sidebar-number-link1800 list-group-item list-group-item-action"><b>1800</b></a>
+                        <a href="" class="sidebar-number-link1700 list-group-item list-group-item-action"><b>1700</b></a>
+                        <a href="" class="sidebar-number-link1600 list-group-item list-group-item-action"><b>1600</b></a>
+                        <a href="" class="sidebar-number-link1500 list-group-item list-group-item-action"><b>1500</b></a>
+                        <a href="" class="sidebar-number-link1300 list-group-item list-group-item-action"><b>1300</b></a>
+                        <a href="" class="sidebar-number-link1100 list-group-item list-group-item-action"><b>1100</b></a>
+                    </div>
+                </div>
+            </div> <!-- / modal-content -->
+        </div>
+    </div> <!-- / zoom modal-->
+
 </template>
 <!-- / Catalog page sidebar -->

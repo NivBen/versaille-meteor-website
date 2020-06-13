@@ -7,9 +7,7 @@
 </head>
 
 <body>
-
 </body>
-
 
 <template name="main_Layout">
     {{> yield "navbar"}}
@@ -18,14 +16,18 @@
 </template>
 
 <template name="login">
-  <div class="container" style="margin-top: 40px;">
+  <div class="container py-5" style="margin-top: 40px;">
     <div class="jumbotron">
       {{#if currentUser}}
         <h2 align="center" style="">מחובר</h2>
       {{else}}
-        <h2 align="center" style="">התחבר למערכת</h2>
+        <h2 align="center" style="">התחברות למערכת</h2>
+        <p class="text-center" dir="rtl" style="font-size: 1.5rem;">
+          נכון לכרגע לא ניתן להתחבר למערכת<i class="fa fa-cog fa-spin fa-2x fa-fw"></i>
+        </p>
       {{/if}}
       <hr class="my-4" />
+
       <h3 align="center">{{> loginButtons }}</h3>
     </div>
   </div>
@@ -45,21 +47,21 @@
     <!--Slides-->
     <div class="carousel-inner" role="listbox">
       <div class="carousel-item active">
-        <div class="view">
+        <div class="carousel-view">
           <img class="d-block w-100" src="carousel1.png" alt="First slide">
           <div class="mask rgba-black-light"></div>
         </div>
       </div>
       <div class="carousel-item">
         <!--Mask color-->
-        <div class="view">
+        <div class="carousel-view">
           <img class="d-block w-100" src="carousel2.png" alt="Second slide">
           <div class="mask rgba-black-strong"></div>
         </div>
       </div>
       <div class="carousel-item">
         <!--Mask color-->
-        <div class="view">
+        <div class="carousel-view">
           <img class="d-block w-100" src="carousel3.png" alt="Third slide">
           <div class="mask rgba-black-slight"></div>
         </div>
@@ -79,7 +81,7 @@
 
   <div class="jumbotron jumbotron-fluid">
     <div class="container" style="margin-top: 10px; text-align: right;">
-      <h2 align="center" style="">!ברוכים הבאים לשעוני ורסאי</h2>
+      <h2 align="center">!ברוכים הבאים לשעוני ורסאי</h2>
       <hr class="my-4" />
         <p class="text-center" dir="rtl">
             חברת <i>שעוני ורסאי</i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
@@ -89,7 +91,7 @@
             שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב מהחומרים האיכותיים ביותר.
         </p>
   	  <div class="col text-center">
-          <a href="/catalog" class="btn btn-outline-secondary">לקטלוג לחצו כאן</a>
+          <a href="/catalog" class="btn btn btn-responsive-font btn-outline-secondary">לקטלוג לחצו כאן</a>
   	  </div>
     </div>
   </div>

@@ -48,7 +48,7 @@ Nice to have:
 ___
 versaille0.08 updates:
 * Fixed Bug:
-	can't access single item direct link (for example http://localhost:3000/catalog_item/gQ3RuZjyuBuK3PsNa)
+	can't access single item direct link
 	shows Images.findOne() is undefined when directly accessed and not through link
 	
 * removed footer from catalog and search (overlapping with sidebar)

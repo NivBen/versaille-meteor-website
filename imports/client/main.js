@@ -2,8 +2,8 @@ import {Accounts} from "meteor/accounts-base";
 import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 
-let imageLimit = 12;
-Session.set("imageLimit", imageLimit); // TODO: maybe limit this differently
+let imageLimit = 16; // TODO: maybe limit this differently
+Session.set("imageLimit", imageLimit);
 
 /// accounts config
 Accounts.ui.config({
@@ -39,30 +39,6 @@ Template.main_Layout.onCreated(function bodyOnCreated() {
 
 // Start ---- CATALOG ----
 Template.catalog.helpers({
-    /*  images:function(){
-        if (Session.get("userFilter")){// they set a filter!
-          return Images.find({createdBy:Session.get("userFilter")}, {sort:{createdOn: -1, rating:-1}});
-        }
-        else {
-          return Images.find({}, {sort:{createdOn: -1, rating:-1}, limit:Session.get("imageLimit")});
-        }
-      },*/
-    filtering_images: function () {
-        if (Session.get("userFilter")) {// they set a filter!
-            return true;
-        } else {
-            return false;
-        }
-    },
-    getFilterUser: function () {
-        if (Session.get("userFilter")) {// they set a filter!
-            var user = Meteor.users.findOne(
-                {_id: Session.get("userFilter")});
-            return user.username;
-        } else {
-            return false;
-        }
-    },
     getUser: function (user_id) {
         var user = Meteor.users.findOne({_id: user_id});
         if (user) {
@@ -187,12 +163,9 @@ Template.catalog.events({
         $("#edit_item_modal").modal('hide');
         return false;
     },
-    'click .js-unset-image-filter': function (event) {
-        Session.set("userFilter", undefined);
-    },
     'click .js-load-more': function (event) {
         Session.set("imageLimit", Session.get("imageLimit") + imageLimit);
-
+        $('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
     },
 });
 
@@ -301,6 +274,61 @@ Template.single_item.helpers({
         return Session.get("single_item_displayed_img_src");
     },
 });
+
+Template.sidebar.events({
+    'click .sidebar-number-link4300': function (event) {
+        location.replace("catalog?q=4300");
+    },
+    'click .sidebar-number-link4200': function (event) {
+        location.replace("catalog?q=4200");
+    },
+    'click .sidebar-number-link4100': function (event) {
+        location.replace("catalog?q=4100");
+    },
+    'click .sidebar-number-link4000': function (event) {
+        location.replace("catalog?q=4000");
+    },
+    'click .sidebar-number-link3900': function (event) {
+        location.replace("catalog?q=3900");
+    },
+    'click .sidebar-number-link3800': function (event) {
+        location.replace("catalog?q=3800");
+    },
+    'click .sidebar-number-link2800': function (event) {
+        location.replace("catalog?q=2800");
+    },
+    'click .sidebar-number-link2700': function (event) {
+        location.replace("catalog?q=2700");
+    },
+    'click .sidebar-number-link2600': function (event) {
+        location.replace("catalog?q=2600");
+    },
+    'click .sidebar-number-link1900': function (event) {
+        location.replace("catalog?q=1900");
+    },
+    'click .sidebar-number-link1800': function (event) {
+        location.replace("catalog?q=1800");
+    },
+    'click .sidebar-number-link1700': function (event) {
+        location.replace("catalog?q=1700");
+    },
+    'click .sidebar-number-link1600': function (event) {
+        location.replace("catalog?q=1600");
+    },
+    'click .sidebar-number-link1500': function (event) {
+        location.replace("catalog?q=1500");
+    },
+    'click .sidebar-number-link1400': function (event) {
+        location.replace("catalog?q=1400");
+    },
+    'click .sidebar-number-link1300': function (event) {
+        location.replace("catalog?q=1300");
+    },
+    'click .sidebar-number-link1100': function (event) {
+        location.replace("catalog?q=1100");
+    },
+
+});
 // END ---- CATALOG ----
 
 // Start ---- search bar ----
@@ -338,10 +366,6 @@ Template.navbar.helpers({
         }
     }
 });
-
-/*$('.navbar-nav>li>a').on('click', function(){
-    $('.navbar-collapse').collapse('hide');
-});*/
 
 Template.navbar.events({
     'keypress .js-searchBox': function (event) {

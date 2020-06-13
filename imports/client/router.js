@@ -51,7 +51,7 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find({'watch_category': '1'}, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
@@ -62,7 +62,7 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find({'watch_category': '2'}, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
@@ -73,7 +73,7 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find({'watch_category': '3'}, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
@@ -84,7 +84,7 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find({'watch_category': '4'}, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
@@ -95,7 +95,7 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find({'watch_category': '5'}, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
@@ -108,18 +108,13 @@ Router.route('/catalog', function () {
                 this.render('catalog', {
                     to: "main", data: {
                         images: Images.find(find_query, {
-                            sort: {watch_price: -1, rating: -1},
+                            sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
                         })
                     }
                 });
             // code block
         }
-        /*console.log("there's a filter");
-        this.render('catalog', {to: "main", data: {
-            images: Images.find({}, {sort:{watch_price: -1, rating:-1}, limit:Session.get("imageLimit")}) //.fetch()
-          }
-        });*/
     }
     // this.render('footer', {to: "footer"});
 }, {

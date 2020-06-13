@@ -10,7 +10,7 @@
                     <div class="row"> <!-- nested row -->
 
                         {{#EasySearch.IfNoResults index=imagesIndex}}
-                            <div class="col no-results text-center"><h4>לא נמצאו תוצאות לחיפוש</h4></div>
+                            <div class="col no-results text-center"><h1>לא נמצאו תוצאות לחיפוש</h1></div>
                         {{/EasySearch.IfNoResults}}
 
                         {{#each searchResults}}
@@ -32,7 +32,7 @@
 											 <button type="button" class="js-del-image btn btn-danger" data-toggle="modal" data-target="#delete_modal">מחיקה</button>
 											 <button type="button" class="js-edit_item_button btn btn-warning"  data-toggle="modal" data-target="#edit_item_modal">עריכה</button>
 										 {{/if}}-->
-                                            <a href="/catalog_item/{{_id}}" type="button" class="btn btn-outline-secondary">לפרטים
+                                            <a href="/catalog_item/{{_id}}" type="button" class="btn btn-responsive-font btn-outline-secondary">לפרטים
                                                 נוספים</a>
                                         </div> <!-- / btn-group -->
                                     </div> <!-- / card-footer -->
