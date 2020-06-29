@@ -27,13 +27,16 @@
                 <!--<li class="nav-item">
                     <a class="nav-link js-collapse-after-click" href="/">צרו קשר</a>
                 </li>-->
-                <li class="nav-item">
-                    <a class="nav-link js-collapse-after-click" href="/login">התחברות</a>
-                </li>
+
                 {{#if currentUser}}
                     <li class="nav-item">
                         <a class="nav-link js-collapse-after-click" href="#">{{> loginButtons }}</a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link js-collapse-after-click" href="/orders">הזמנות</a>
+                    </li>
+
                 {{/if}}
 
                 <form id="search-form-navbar" class="js-search-item">

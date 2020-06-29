@@ -8,6 +8,7 @@ import '/imports/client/catalog.html';
 import '/imports/client/search.html';
 import '/imports/client/aboutpage.html';
 import '/imports/client/navbar.html';
+import '/imports/client/orders.html';
 import '/imports/client/footer.html';
 
 

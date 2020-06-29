@@ -1,13 +1,14 @@
 // we need to use the Mongo compoent
 // so we need to import it
 import {Mongo} from 'meteor/mongo';
+import {Meteor} from "meteor/meteor";
 
 Accounts.config({
     forbidClientAccountCreation: true
 });
 
 Images = new Mongo.Collection('images');
-PagesText = new Mongo.Collection('pages_text');
+ShoppingCart = new Mongo.Collection("cart");
 // Easy-serach index
 ImagesIndex = new EasySearch.Index({
     collection: Images,
@@ -27,11 +28,7 @@ if (Meteor.isServer) {
 
         update: function (userId, doc) {
             if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return Meteor.user().username === admin;
             } else {// user not logged in
                 return false;
             }
@@ -39,24 +36,15 @@ if (Meteor.isServer) {
 
         insert: function (userId, doc) {
             if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return Meteor.user().username === admin;
             } else {// user not logged in
-                console.log("ha ha")
                 return false;
             }
         },
 
         remove: function (userId, doc) {
             if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return Meteor.user().username === admin;
             } else {// user not logged in
                 return false;
             }
@@ -64,48 +52,20 @@ if (Meteor.isServer) {
     })
 }
 
-
+// set up security on ShoppingCart collection
 if (Meteor.isServer) {
-    Meteor.publish('pages_text', function () {
-        return PagesText.find();
+    Meteor.publish('cart', function () {
+        return ShoppingCart.find();
     });
-    var admin = "admin";
-    PagesText.allow({
-
+    ShoppingCart.allow({
         update: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {// user not logged in
-                return false;
-            }
+            return !!Meteor.user();
         },
-
         insert: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {// user not logged in
-                return false;
-            }
+            return !!Meteor.user();
         },
-
         remove: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                if (Meteor.user().username == admin) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {// user not logged in
-                return false;
-            }
+            return !!Meteor.user();
         }
     })
 }

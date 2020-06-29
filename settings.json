@@ -1,9 +1,0 @@
-{
-  "galaxy.meteor.com": {
-    "env": {
-      "ENV": "staging",
-      "MONGO_URL": "mongodb://niv:id0nowns@cluster0-shard-00-00-nuquh.mongodb.net:27017,cluster0-shard-00-01-nuquh.mongodb.net:27017,cluster0-shard-00-02-nuquh.mongodb.net:27017/meteor?ssl=true&replicaSet=Cluster0-shard-0&readPreference=primaryPreferred&w=majority&authSource=admin",
-      "MONGO_OPLOG_URL": "mongodb://oplog_user:i6QOJ6Qd@cluster0-shard-00-00-nuquh.mongodb.net:27017,cluster0-shard-00-01-nuquh.mongodb.net:27017,cluster0-shard-00-02-nuquh.mongodb.net:27017/local?ssl=true&replicaSet=Cluster0-shard-0&readPreference=primaryPreferred&w=majority&authSource=admin"
-    }
-  }
-}

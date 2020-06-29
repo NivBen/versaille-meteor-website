@@ -3,9 +3,16 @@
     <article id="catalog-article">
         <div class="container-fluid my-4 js-container">
 
-            {{#if currentUser}}
+            {{#if isAgent}}
                 <div class="row" style="padding-top: 6vh;">
-                    {{>add_item_form}}
+                    {{#if isAdmin}}
+                        {{> add_item_form}}
+                    {{/if}}
+                    {{#if isThereAnOrderInPlace}}
+                        {{> close_order}}
+                    {{else}}
+                        {{> new_order_form}}
+                    {{/if}}
                 </div>
             {{/if}}
 
@@ -15,7 +22,7 @@
                         {{#each images}}
                             <div class="col-md-12 col-lg-6 col-xl-3 py-1 d-flex px-1">
                                 <div class="card mx-auto text-center thumbnail h-100 w-100">
-                                    <div id="catalog-card" class="card-header text-white">{{watch_code}}</div>
+                                    <div id="catalog-card" class="card-header text-white font-weight-bold">{{watch_code}}</div>
 
                                     <div class="card-body py-0"></div>
                                     <a href="/catalog_item/{{_id}}">
@@ -30,7 +37,7 @@
                                         {{/if}}
                                         <p class="card-text">מחיר מומלץ: ₪{{watch_price}}.00</p>
                                         <div class="btn-group">
-                                            {{#if currentUser}}
+                                            {{#if isAdmin}}
                                                 <button type="button" class="js-del-image btn btn-responsive-font btn-danger"
                                                         data-toggle="modal" data-target="#delete_item_modal">מחיקה
                                                 </button>
@@ -100,26 +107,36 @@
                             <label for="img_src">לינק לתמונה:</label>
                             <input type="text" class="form-control" value={{getImgSrc}} name="img_src"
                                    required/>
+                            <input type="text" class="form-control" id="first_img_description" name="first_img_description"
+                                   placeholder="תיאור התמונה הראשונה(צבע, לוח וכו')" value="{{getFirstImgDesc}}"/>
                         </div>
 
                         <div class="form-group">
                             <label for="second_img_src">לינק לתמונה משנית 2 (URL):</label>
                             <input type="text" class="form-control" value={{getSecondImgSrc}} name="second_img_src"/>
+                            <input type="text" class="form-control" id="second_img_description" name="second_img_description"
+                                   placeholder="תיאור התמונה השנייה(צבע, לוח וכו')" value="{{getSecondImgDesc}}"/>
                         </div>
 
                         <div class="form-group">
                             <label for="third_img_src">לינק לתמונה משנית 3 (URL):</label>
                             <input type="text" class="form-control" value="{{getThirdImgSrc}}" name="third_img_src"/>
+                            <input type="text" class="form-control" id="third_img_description" name="third_img_description"
+                                   placeholder="תיאור התמונה שלישית(צבע, לוח וכו')" value="{{getThirdImgDesc}}"/>
                         </div>
 
                         <div class="form-group">
                             <label for="forth_img_src">לינק לתמונה משנית 4 (URL):</label>
                             <input type="text" class="form-control" value="{{getForthImgSrc}}" name="forth_img_src"/>
+                            <input type="text" class="form-control" id="forth_img_description" name="forth_img_description"
+                                   placeholder="תיאור התמונה הרביעית(צבע, לוח וכו')" value="{{getForthImgDesc}}"/>
                         </div>
 
                         <div class="form-group">
                             <label for="fifth_img_src">לינק לתמונה משנית 5 (URL):</label>
                             <input type="text" class="form-control" value="{{getFifthImgSrc}}" name="fifth_img_src"/>
+                            <input type="text" class="form-control" id="fifth_img_description" name="fifth_img_description"
+                                   placeholder="תיאור התמונה החמישית(צבע, לוח וכו')" value="{{getFifthImgDesc}}"/>
                         </div>
 
                         <div class="form-group">
@@ -139,7 +156,7 @@
                         <div class="form-group">
                             <select class="browser-default custom-select form-control validate"
                                     name="watch_category" required>
-                                <option value="unmentioned" disabled>בחר קטגוריה</option>
+                                <option value="">בחר קטגוריה</option>
                                 <option value="1">נשים ורסאי</option>
                                 <option value="2">גברים ורסאי</option>
                                 <option value="3">נשים וגאס</option>
@@ -151,8 +168,7 @@
                         <div class="form-group">
                             <i class="fa fa-pencil prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
-                            <textarea type="text" class="md-textarea form-control"
-                                      value={{getWatchDescription}} name="watch_description" rows="4"></textarea>
+                            <textarea type="text" class="md-textarea form-control" name="watch_description" rows="4">{{getWatchDescription}}</textarea>
                         </div>
 
                         <button class="btn btn-responsive-font btn-success confirm-edit">ערוך</button>
@@ -171,11 +187,10 @@
 
 <!-- Catalog page - add item button -->
 <template name="add_item_form">
-    <div class="text-center">
-        <button type="button" class="btn btn-responsive-font btn-success btn-block js-add_item_form" data-toggle="modal"
-                data-target="#addModal">הוספת פריטים לקטלוג
-        </button>
-    </div>
+    <button type="button" class="btn btn-responsive-font btn-success btn-block" data-toggle="modal"
+            data-target="#add_item_form">הוספת פריטים לקטלוג
+    </button>
+
 
     <!-- Add image Modal -->
     <div id="add_item_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
@@ -198,26 +213,36 @@
                             <label for="img_src">לינק לתמונה ראשית (URL):</label>
                             <input type="text" class="form-control" id="img_src" placeholder="url" name="img_src"
                                    required/>
+                            <input type="text" class="form-control" name="first_img_description"
+                                   placeholder="תיאור התמונה הראשונה(צבע, לוח וכו')"/>
                         </div>
 
                         <div class="form-group">
                             <label for="second_img_src">לינק לתמונה משנית 2 (URL):</label>
                             <input type="text" class="form-control" id="second_img_src" placeholder="url" name="second_img_src"/>
+                            <input type="text" class="form-control" name="second_img_description"
+                                   placeholder="תיאור התמונה השנייה(צבע, לוח וכו')"/>
                         </div>
 
                         <div class="form-group">
                             <label for="third_img_src">לינק לתמונה משנית 3 (URL):</label>
                             <input type="text" class="form-control" id="third_img_src" placeholder="url" name="third_img_src"/>
+                            <input type="text" class="form-control" name="third_img_description"
+                                   placeholder="תיאור התמונה שלישית(צבע, לוח וכו')"/>
                         </div>
 
                         <div class="form-group">
                             <label for="forth_img_src">לינק לתמונה משנית 4 (URL):</label>
                             <input type="text" class="form-control" id="forth_img_src" placeholder="url" name="forth_img_src"/>
+                            <input type="text" class="form-control" name="forth_img_description"
+                                   placeholder="תיאור התמונה הרביעית(צבע, לוח וכו')"/>
                         </div>
 
                         <div class="form-group">
                             <label for="fifth_img_src">לינק לתמונה משנית 5 (URL):</label>
                             <input type="text" class="form-control" id="fifth_img_src" placeholder="url" name="fifth_img_src"/>
+                            <input type="text" class="form-control" name="fifth_img_description"
+                                   placeholder="תיאור התמונה החמישית(צבע, לוח וכו')"/>
                         </div>
 
                         <div class="form-group">
@@ -237,7 +262,7 @@
                         <div class="form-group">
                             <select class="browser-default custom-select form-control validate" id="watch_category"
                                     name="watch_category" required>
-                                <option value="unmentioned" disabled>בחר קטגוריה</option>
+                                <option value="">בחר קטגוריה</option>
                                 <option value="1">נשים ורסאי</option>
                                 <option value="2">גברים ורסאי</option>
                                 <option value="3">נשים וגאס</option>
@@ -250,16 +275,13 @@
                             <i class="fa fa-pencil prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="watch_description">תיאור:</label>
                             <textarea type="text" maxlength="500" class="form-control" id="watch_description"
-                                      name="watch_description" rows="4" placeholder="תיאור של השעון"></textarea>
+                                      name="watch_description" rows="4" placeholder="תיאור כללי של השעון"></textarea>
                         </div>
                         <button class="btn btn-responsive-font btn-success confirm-add">הוסף</button>
                         <button class="btn btn-responsive-font btn-info" data-dismiss="modal">ביטול</button>
 
                     </form>
                 </div> <!-- modal-body -->
-
-                <div class="modal-footer"> <!-- modal-footer --></div><!-- / modal-footer -->
-
             </div> <!-- / modal-content -->
         </div> <!-- / modal-dialog-->
     </div> <!-- / Add image Modal -->
@@ -276,18 +298,30 @@
 
                 <div class="col-12 col-xl-5 col-lg-6 mb-3">
                     <div class="card border text-right thumbnail pt-5">
-                        <h4 align="center">דגם מספר: {{getWatchCode}}</h4>
+                        <h4 align="center" class="text-responsive-font-size">דגם מספר: {{getWatchCode}}</h4>
                         <hr class="my-2"/>
                         <div class="card-body">
-                            <h5>מחיר מומלץ: ₪{{getWatchPrice}}.00</h5>
+                            <h5 class="text-responsive-font-size">מחיר מומלץ: ₪{{getWatchPrice}}.00</h5>
 
-                            <p class="testing" dir="rtl">
+                            <p dir="rtl">
                                 <br/>
                                 {{getWatchDescription}}
                                 <br/>
                                 <br/>
+                                {{getCurrentImgDesc}}
+                                <br/>
+                                <br/>
                                 12 חודשי אחריות
                             </p>
+
+                            {{#if and isThereAnOrderInPlace isAgent}}
+                                <div class="col text-center">
+                                    <button class="btn btn-light fa fa-minus-circle fa-4x js-decrement-cart"></button>
+                                    <button class="btn btn-light fa-3x font-weight-bold">{{ orderAmount }}</button>
+                                    <button class="btn btn-light fa fa-plus-circle fa-4x js-increment-cart"></button>
+                                </div>
+                            {{/if}}
+
                         </div>
                     </div> <!-- / description card -->
                 </div>
@@ -308,7 +342,7 @@
                                 <a class="js-first-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{getFirstImgThumbnail}}" alt="" height="96">
+                                            <img src="{{getFirstImgThumbnail}}" class="single-item-thumbnail" alt="">
                                         </div>
                                     </div>
                                 </a>
@@ -317,7 +351,7 @@
                                 <a class="js-second-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{getSecondImgThumbnail}}" alt="" height="96">
+                                            <img src="{{getSecondImgThumbnail}}" class="single-item-thumbnail" alt="">
                                         </div>
                                     </div>
                                 </a>
@@ -326,7 +360,7 @@
                                 <a class="js-third-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{getThirdImgThumbnail}}" alt="" height="96">
+                                            <img src="{{getThirdImgThumbnail}}" class="single-item-thumbnail" alt="">
                                         </div>
                                     </div>
                                 </a>
@@ -335,7 +369,7 @@
                                 <a class="js-forth-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{getForthImgThumbnail}}" alt="" height="96">
+                                            <img src="{{getForthImgThumbnail}}" class="single-item-thumbnail" alt="">
                                         </div>
                                     </div>
                                 </a>
@@ -344,7 +378,7 @@
                                 <a class="js-fifth-img" href="#">
                                     <div class="card">
                                         <div class="card-block">
-                                            <img src="{{getFifthImgThumbnail}}" alt="" height="96">
+                                            <img src="{{getFifthImgThumbnail}}" class="single-item-thumbnail" alt="">
                                         </div>
                                     </div>
                                 </a>
@@ -442,6 +476,13 @@
                     </div>
                 </ul>
 
+                <div class="container card-footer text-muted">
+                    <b>טווח מחירים</b>
+                    <div class="col">
+                        <div id="price-slider"></div>
+                        <p>{{slider.[0]}}₪ - {{slider.[1]}}₪</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div> <!-- / sidebar -->
