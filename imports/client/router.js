@@ -48,7 +48,7 @@ Router.route('/orders', function () {
         this.render('orders', {
             to: "main",
             data: { // status: -1 means open orders will show first
-                cart: ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: 10}) // TODO: load more button or next set of orders
+                cart: ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")}) // TODO: load more button or next set of orders
             }
         });
     }

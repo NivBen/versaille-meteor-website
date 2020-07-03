@@ -1,20 +1,6 @@
 Meteor based website for Versaille Watches LTD 
 
-Currently deployed at http://versaille.co.il
-
-**Notes:**
-
-### Dumping catalog data:
-#### backing up one collection
-mongodump --forceTableScan -h 127.0.0.1 --port 3001 -d meteor -c images
-mongorestore -h 127.0.0.1 --port 3001 -d meteor dump/meteor/images.bson -c images
-
-#### on windows
-mongodump --forceTableScan -h 127.0.0.1 --port 3001 -d meteor -c images
-mongorestore -h 127.0.0.1 --port 3001 -d meteor C:\Users\<user>\WebstormProjects\versaille0.08\dump\meteor\images.bson -c images
-
-
-
+Currently deployed at https://www.versaille.co.il
 
 ___
 BUG list:
@@ -23,8 +9,6 @@ BUG list:
 () MAJOR: removed tinyMCE for the time being
 			tinyMCE - mainly just upsert issue(should upsert on server startup.js), 
 			 also for some reason doesn't always show up - probably local run issue	 
-
-() MINOR: adding item form saves values from store to store (submit does not clean the form for the next input)
 
 () MINOR: on small enough displays the mini cards on single item are vertically aligned
 

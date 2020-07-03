@@ -32,7 +32,7 @@
 
                                     <!-- card footer -->
                                     <div class="card-footer">
-                                        {{#if currentUser}}
+                                        {{#if isAdmin}}
                                             <p align="center">{{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}</p>
                                         {{/if}}
                                         <p class="card-text">מחיר מומלץ: ₪{{watch_price}}.00</p>

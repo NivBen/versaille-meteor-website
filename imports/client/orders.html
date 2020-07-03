@@ -1,5 +1,4 @@
 <template name="orders">
-
     <!--================Cart Area =================-->
     <section style="padding: 100px 0 0 0;" >
         <div class="bg-light mt-0" id="about" name="about">
@@ -15,7 +14,7 @@
         </div>
     </section>
 
-    <section class="cart_area">
+    <section class="cart_area" style="overflow-y: auto; overflow-x: auto;">
         <div class="container overflow-auto" style="direction: rtl; text-align: right;">
             <div class="row">
 
@@ -36,14 +35,14 @@
                         <tr>
                             <th scope="row">{{store_name}}</th>
                             <td>{{sent_date}}</td>
-                            <td>TODO</td>
+                            <td>{{manager_notes}}</td>
 
                             {{#if isAdmin}}
                                 <td>{{username}}</td>
                                 {{#if checkmark }}
-                                    <td><button class="btn btn-light fa fa-check-circle fa-3x"></button></td>
+                                    <td><button class="btn btn-light fa fa-check-circle fa-3x js-flip-checkmark"></button></td>
                                 {{else}}
-                                    <td><button class="btn btn-light fa fa-times-circle-o fa-3x"></button></td>
+                                    <td><button class="btn btn-light fa fa-times-circle-o fa-3x js-flip-checkmark"></button></td>
                                 {{/if}}
                             {{/if}}
 
@@ -54,16 +53,17 @@
                     </tbody>
                 </table>
             </div>
+            <button type="button" class="js-load-more-orders btn btn-outline-secondary btn-responsive-font btn-block" dir="rtl" style="margin-top: 20px; margin-bottom: 50px;">
+                טעינת הזמנות נוספות
+            </button>
         </div>
     </section>
     <!--================End Cart Area =================-->
-
 </template>
-
 
 <template name="single_order">
 
-    <section style="padding: 100px 0 0 0;" >
+    <section class="order_header_area"  style="padding: 100px 0 0 0;" >
         <div class="bg-light mt-0" id="about" name="about">
             <div class="container">
                 <div class="row flex-row-reverse">
@@ -74,12 +74,19 @@
                         </h1>
                         {{#if isAdmin}}
                         <h2 class="display-5 text-info text-center">
-                            {{#if getStatus }}
+                            {{#if getCheckmark }}
                                 <button class="btn btn-white fa fa-check-circle fa-3x js-flip-checkmark"></button>
                             {{else}}
                                 <button class="btn btn-white fa fa-times-circle-o fa-3x js-flip-checkmark"></button>
                             {{/if}}
                             :מצב ההזמנה
+
+                        <br />
+                            <button type="button" class="btn btn-responsive-font btn-primary" data-toggle="modal"
+                                    data-target="#manager_notes_form">
+                                <b>הערת מנהל</b>
+                            </button>
+
                         </h2>
                         {{/if}}
                     </div>
@@ -95,7 +102,7 @@
         </div>
     </section>
 
-    <section class="cart_area">
+    <section class="order_details_area" style="padding: 0 0 100px 0;">
         <div class="container" style="direction: rtl; text-align: right;">
             <div class="row">
 
@@ -119,12 +126,16 @@
                                 <img src="{{getWatchImgURL}}" class="img-fluid single-item-thumbnail img-thumbnail" alt="re">
                             </td>
 
-                            <td>תיאור השעון</td>
+                            <td>{{getWatchImgDescription}} </td>
 
                             <td>
-                                <button type="button" class="btn btn-success btn-circle"><i class="fa fa-plus"></i></button>
-                                {{ getAmount }}
-                                <button type="button" class="btn btn-danger  btn-circle"><i class="fa fa-minus"></i></button>
+                                {{#if isOpenOrder }}
+                                    <button type="button" class="btn btn-success btn-circle js-increment-cart"><i class="fa fa-plus"></i></button>
+                                    {{ getAmount }}
+                                    <button type="button" class="btn btn-danger  btn-circle js-decrement-cart"><i class="fa fa-minus"></i></button>
+                                {{else}}
+                                    {{ getAmount }}
+                                {{/if }}
                             </td>
 
                             <td>{{getWatchPrice}} ₪</td>
@@ -155,6 +166,40 @@
         </div>
     </section>
 
+
+    <!-- Manager Notes Modal -->
+    <div id="manager_notes_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="managerNoteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold">
+                        <i class="fa fa-sticky-note fa-3x"></i>
+                        <br/>הערות מנהל להזמנה
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> <!-- / modal-header -->
+
+                <div class="modal-body mx-3"> <!-- modal-body -->
+                    <form class="js-manager-notes" style="direction: rtl; text-align: right;">
+                        <div class="form-group">
+                            <i class="fa fa-commenting-o prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="final_notes">הערות:</label>
+                            <input type="text" class="form-control validate" maxlength="500" id="manager_notes" name="manager_notes"/>
+                        </div>
+
+                        <button class="btn btn-responsive-font btn-success">סיום</button>
+                        <button class="btn btn-responsive-font btn-danger" data-dismiss="modal">ביטול</button>
+
+                    </form>
+                </div> <!-- modal-body -->
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
+    </div> <!-- / Manager Notes Modal -->
 </template>
 
 <!-- Catalog page - new order button -->
@@ -211,7 +256,7 @@
 
 
     <!-- Send Order Modal -->
-    <div id="send_order_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendrderModalLabel"
+    <div id="send_order_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="senderModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

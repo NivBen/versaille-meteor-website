@@ -4,7 +4,9 @@ import {Template} from 'meteor/templating';
 //import { Slingshot } from 'meteor/edgee:slingshot';
 
 let imageLimit = 16; // TODO: maybe limit this differently
+let ordersLimit = 8;
 Session.set("imageLimit", imageLimit);
+Session.set("ordersLimit", ordersLimit);
 
 /// accounts config
 Accounts.ui.config({
@@ -143,9 +145,10 @@ Template.catalog.events({
     'click .js-rate-image': function (event) {
         var rating = $(event.currentTarget).data("userrating");
         var image_id = this.data_id;
-
-        Images.update({_id: image_id},
-            {$set: {rating: rating}});
+        if (is_admin_logged_in()) {
+            Images.update({_id: image_id},
+                {$set: {rating: rating}});
+        }
     },
     'click .js-edit_item_button': function (event) {
         Session.set("item_id_to_edit", this._id);
@@ -174,7 +177,7 @@ Template.catalog.events({
         forth_img_description = event.target.forth_img_description.value;
         fifth_img_description = event.target.fifth_img_description.value;
 
-        if (Meteor.user()) {
+        if (is_admin_logged_in()) {
             Images.update({_id: item_id},
                 {
                     $set: {
@@ -449,7 +452,7 @@ Template.navbar.helpers({
             class: 'js-searchBox',
             id: 'search_box_input',
             name: 'search_box_input',
-            dir: 'rtl',
+            dir: 'ltr',
             //value: Session.get(searchBoxValue),
         }
     }
@@ -521,16 +524,7 @@ Template.catalog.events({
                     hebrew_day = 'שבת';
                     break;
             }
-
-            ShoppingCart.update({_id: opened_order._id, username: Meteor.user().username},
-                {
-                    $set: {
-                        status: "closed",
-                        notes: notes,
-                        sent_date: date.getUTCDate() + '.' + (date.getUTCMonth() + 1) + '.' + date.getUTCFullYear() + ', ' + hebrew_day + ', ' + addZero(date.getUTCHours()) + ':' + addZero(date.getUTCMinutes()),
-                        sent_time: date.getTime()
-                    }
-                });
+            Meteor.call('server_close_order', opened_order._id, Meteor.user().username, notes, hebrew_day);
         } else {
             alert("לא קיימת הזמנה פתוחה");
         }
@@ -541,11 +535,6 @@ Template.catalog.events({
         $("#delete_order_modal").modal('hide');
 }
 })
-
-function addZero(i) { // for date
-    if (i < 10) { i = "0" + i; }
-    return i;
-}
 
 Template.catalog.helpers({
     isAdmin: function () {
@@ -571,13 +560,25 @@ let is_admin_logged_in = function() {
     }
 }
 
-let update_cart = function(image_id, flag) {
+let single_item_update_cart = function(image_id, flag) {
     let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
     if (opened_order){
         let displayed_image_index = Session.get("cart_quested_item_index");
         let products_array = opened_order.products;
         let products_array_index = find_product_index(products_array, image_id, displayed_image_index);
-        Meteor.call('server_update_cart', flag, opened_order, products_array_index, image_id, displayed_image_index);
+        Meteor.call('server_single_item_update_cart', flag, opened_order, products_array_index, image_id, displayed_image_index);
+    } else {
+        alert("לא קיימת הזמנה פתוחה");
+    }
+}
+
+let single_order_update_cart = function(id_index_amount_array, flag) {
+    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+    if (opened_order){
+        let image_id = id_index_amount_array[0];
+        let displayed_image_index = id_index_amount_array[1];
+        let current_amount = parseInt(id_index_amount_array[2]);
+        Meteor.call('server_single_order_update_cart', flag, opened_order, image_id, displayed_image_index, current_amount);
     } else {
         alert("לא קיימת הזמנה פתוחה");
     }
@@ -618,19 +619,41 @@ Template.single_item.events({
     'click .js-increment-cart': function (event) {
         event.preventDefault();
         let image_id = Session.get("single_item_object")._id; // grabbing image id
-        update_cart(image_id, '+');
+        single_item_update_cart(image_id, '+');
     },
     'click .js-decrement-cart': function (event) {
         event.preventDefault();
         let image_id = Session.get("single_item_object")._id; // grabbing image id
-        update_cart(image_id, '-');
+        single_item_update_cart(image_id, '-');
     }
 });
-
 
 Template.orders.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
+    },
+});
+
+Template.orders.events({
+    'click .js-flip-checkmark': function () {
+        if (is_admin_logged_in()) { // only admin can do this
+            let checkmark_status = parseInt(this.checkmark);
+            if (checkmark_status === 1) {
+                checkmark_status = 0;
+            } else {
+                checkmark_status = 1;
+            } // logical not
+            ShoppingCart.update({_id: this._id},
+                {
+                    $set: {
+                        checkmark: checkmark_status
+                    }
+                });
+        }
+    },
+    'click .js-load-more-orders': function (event) {
+        Session.set("ordersLimit", Session.get("ordersLimit") + ordersLimit);
+        // $('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
     },
 });
 
@@ -649,20 +672,46 @@ Template.single_order.events({
                         checkmark: checkmark_status
                     }
                 });
-            alert("מצב ההזמנה השתנה");
         }
-    }
+    },
+    'click .js-increment-cart': function (event) {
+        event.preventDefault();
+        single_order_update_cart(this.split("_"), '+');
+    },
+    'click .js-decrement-cart': function (event) {
+        event.preventDefault();
+        single_order_update_cart(this.split("_"), '-');
+    },
+    'submit .js-manager-notes': function(event) {
+        if (is_admin_logged_in()) { // only admin can do this
+            let order_id = Session.get("single_order_object")._id;
+            ShoppingCart.update({_id: order_id},
+                {
+                    $set: {
+                        manager_notes: event.target.manager_notes.value
+                    }
+                });
+        }
+        $("#manager_notes_form").modal('hide');
+        return false;
+}
 });
 
 Template.single_order.helpers({
+    isAdmin: function () {
+        return is_admin_logged_in();
+    },
     getStoreName: function () {
         return Session.get("single_order_object").store_name;
     },
     getDate: function () {
         return Session.get("single_order_object").sent_date;
     },
-    getStatus: function () {
+    getCheckmark: function () {
         return Session.get("single_order_object").checkmark;
+    },
+    isOpenOrder: function () { // return true only if order is open and the user logged in is the auther
+        return (Session.get("single_order_object").status === "open") && (Meteor.user().username === Session.get("single_order_object").username);
     },
     getAgentName: function () {
         return Session.get("single_order_object").username;
@@ -694,6 +743,23 @@ Template.single_order.helpers({
                 return image.fifth_img_src;
         }
         return "";
+    },
+    getWatchImgDescription: function () {
+        let values = this.split("_");
+        let image = Images.findOne({ _id: values[0] });
+        switch(parseInt(values[1])) {
+            case 1:
+                return image.first_img_desc;
+            case 2:
+                return image.second_img_desc;
+            case 3:
+                return image.third_img_desc;
+            case 4:
+                return image.forth_img_desc;
+            case 5:
+                return image.fifth_img_desc;
+        }
+        return image.watch_description;
     },
     getAmount: function () {
         let values = this.split("_");
