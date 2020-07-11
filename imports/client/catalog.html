@@ -26,7 +26,14 @@
 
                                     <div class="card-body py-0"></div>
                                     <a href="/catalog_item/{{_id}}">
-                                        <img class="card-img-center my-1 thumbnail-img" src="{{img_src}}" alt="" style="object-fit: scale-down;"/>
+                                        <div class="container" style="position: relative;">
+                                            <img class="card-img-center my-1 thumbnail-img" src="{{img_src}}" alt="" style="object-fit: scale-down;"/>
+                                            {{#if isOnSale}}
+                                                <div class="overlay">
+                                                    <b>!במבצע&nbsp;&nbsp;</b>
+                                                </div>
+                                            {{/if}}
+                                        </div>
                                     </a>
                                     <div class="card-body py-0"></div>
 
@@ -35,7 +42,13 @@
                                         {{#if isAdmin}}
                                             <p align="center">{{>starsRating mutable=true class="js-rate-image" data_id=_id rating=rating}}</p>
                                         {{/if}}
-                                        <p class="card-text">מחיר מומלץ: ₪{{watch_price}}.00</p>
+                                        {{#if isNotOnSale}}
+                                            <p class="card-text">מחיר מומלץ: ₪{{watch_price}}</p>
+                                        {{else}}
+                                            <p class="card-text">מחיר מומלץ: <del>{{watch_price}}</del> <strong>₪{{on_sale_price}}</strong></p>
+                                        {{/if}}
+
+
                                         <div class="btn-group">
                                             {{#if isAdmin}}
                                                 <button type="button" class="js-del-image btn btn-responsive-font btn-danger"
@@ -301,7 +314,11 @@
                         <h4 align="center" class="text-responsive-font-size">דגם מספר: {{getWatchCode}}</h4>
                         <hr class="my-2"/>
                         <div class="card-body">
-                            <h5 class="text-responsive-font-size">מחיר מומלץ: ₪{{getWatchPrice}}.00</h5>
+                            {{#if isNotOnSale}}
+                                <h5 class="text-responsive-font-size">מחיר מומלץ: ₪{{getWatchPrice}}.00</h5>
+                            {{else}}
+                                <h5 class="text-responsive-font-size">מחיר מומלץ: <del>{{getWatchPrice}}</del> <strong>₪{{getOnSalePrice}}</strong></h5>
+                            {{/if}}
 
                             <p dir="rtl">
                                 <br/>
@@ -320,6 +337,68 @@
                                     <button class="btn btn-light fa-3x font-weight-bold">{{ orderAmount }}</button>
                                     <button class="btn btn-light fa fa-plus-circle fa-4x js-increment-cart"></button>
                                 </div>
+                            {{/if}}
+
+                            {{#if and isNotOnSale isAdmin}}
+                                <div class="col">
+                                    <button type="button" class="btn btn-responsive-font btn-warning"
+                                            data-toggle="modal" data-target="#on_sale_form_modal">הוספה למבצעים</button>
+                                </div>
+
+                                <!-- Add On Sale Item Modal -->
+                                <div id="on_sale_form_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="onSaleModalLabel"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header text-center"> <!-- modal-header -->
+                                                <h4 class="modal-title w-100 font-weight-bold">
+                                                    <i class="fa fa-money fa-3x"></i>
+                                                    <br/>הוספה למבצעים
+                                                </h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div> <!-- / modal-header -->
+                                            <div class="modal-body mx-3"> <!-- modal-body -->
+                                                <form class="js-on-sale" style="direction: rtl; text-align: right;">
+                                                    <div class="form-group">מחיר מקורי: {{ getWatchPrice }}</div>
+                                                    <div class="form-group">
+                                                        <label data-error="wrong" data-success="right" for="new_sale_watch_price">מחיר מבצע:</label>
+                                                        <input type="number" min="1" max="{{ getWatchPrice }}" class="form-control validate" id="new_sale_watch_price" name="new_sale_watch_price"
+                                                               placeholder="מחיר מבצע" required/>
+                                                    </div>
+                                                    <button class="btn btn-responsive-font btn-success">סיום והוספה למבצעים</button>
+                                                    <button class="btn btn-responsive-font btn-danger" data-dismiss="modal">ביטול</button>
+                                                </form>
+                                            </div> <!-- modal-body -->
+                                        </div> <!-- / modal-content -->
+                                    </div> <!-- / modal-dialog-->
+                                </div> <!-- / Add On Sale Item Modal -->
+                            {{/if}}
+
+                            {{#if and isOnSale isAdmin}}
+                                <div class="col">
+                                    <button type="button" class="btn btn-responsive-font btn-danger"
+                                            data-toggle="modal" data-target="#remove_from_sale_modal">הסרה ממבצעים וחזרה למחיר המקורי</button>
+                                </div>
+
+                                <div id="remove_from_sale_modal" class="modal fade">
+                                    <div class="modal-dialog modal-confirm">
+                                        <div class="modal-content">
+                                            <div class="modal-header text-center"> <!-- modal-header -->
+                                                <h4 class="modal-title w-100 font-weight-bold"><br/>הסרה ממבצעים</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            </div> <!-- / modal-header -->
+                                            <div class="modal-body text-right"> <!-- modal-body -->
+                                                <p dir="rtl">האם הנך בטוח שברצונך להסיר פריט זה מהמבצעים? השעון יחזור למחירו המקורי</p>
+                                            </div> <!-- modal-body -->
+                                            <div class="modal-footer d-flex justify-content-center"> <!-- modal-footer -->
+                                                <button type="button" class="btn btn-responsive-font btn-info" data-dismiss="modal">ביטול</button>
+                                                <button type="button" class="btn btn-responsive-font btn-danger js-confirm-remove-from-sale" data-toggle="modal">הסר ממבצעים</button>
+                                            </div> <!-- / modal-footer -->
+                                        </div> <!-- / modal-content -->
+                                    </div> <!-- / modal-dialog-->
+                                </div> <!-- / remove from sale Modal -->
                             {{/if}}
 
                         </div>
@@ -464,6 +543,13 @@
                             </li>
                         </div>
                     </a>
+                    <a href="catalog?q=on-sale">
+                        <div class="card">
+                            <li class="list-group-item">
+                                מבצעים
+                            </li>
+                        </div>
+                    </a>
 
                     <div class="list-group list-group-flush">
                         <div class="card">
@@ -501,8 +587,8 @@
                         <a href="" class="sidebar-number-link4300 list-group-item list-group-item-action"><b>4300</b></a>
                         <a href="" class="sidebar-number-link4200 list-group-item list-group-item-action"><b>4200</b></a>
                         <a href="" class="sidebar-number-link4100 list-group-item list-group-item-action"><b>4100</b></a>
-                        <a href="" class="sidebar-number-link3900 list-group-item list-group-item-action"><b>3900</b></a>
                         <a href="" class="sidebar-number-link4000 list-group-item list-group-item-action"><b>4000</b></a>
+                        <a href="" class="sidebar-number-link3900 list-group-item list-group-item-action"><b>3900</b></a>
                         <a href="" class="sidebar-number-link3800 list-group-item list-group-item-action"><b>3800</b></a>
                         <a href="" class="sidebar-number-link2800 list-group-item list-group-item-action"><b>2800</b></a>
                         <a href="" class="sidebar-number-link2700 list-group-item list-group-item-action"><b>2700</b></a>

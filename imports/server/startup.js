@@ -4,7 +4,7 @@ import '/imports/api/collections.js';
 
 // ---- Startup function ----
 Meteor.startup(function () {
-    // creating admin account
+    // creating admin and agents accounts
     if (Meteor.users.find().count() === 0) {
         Accounts.createUser({
             username: 'admin',
@@ -19,9 +19,18 @@ Meteor.startup(function () {
             password: Meteor.settings.user_default_password.agent2_pass
         });
     }
+    // setting up MAIL_URL
+    let smtp = {
+        username: Meteor.settings.smtp.username,
+        password: Meteor.settings.smtp.password,
+        server:   Meteor.settings.smtp.server,
+        port: Meteor.settings.smtp.port
+    }
+    process.env.MAIL_URL = 'smtp://' + encodeURIComponent(smtp.username) + ':' + encodeURIComponent(smtp.password) + '@' + encodeURIComponent(smtp.server) + ':' + smtp.port;
 });
 
 Meteor.methods({
+    // method to update cart on *single item* page
     server_single_item_update_cart : function(flag, opened_order, products_array_index, image_id, displayed_image_index) {
         let products_array = opened_order.products;
         if(products_array_index < 0) { // amount is 0 and not in cart
@@ -55,7 +64,7 @@ Meteor.methods({
             }
         }
     },
-
+    // method to update cart on *single order* page
     server_single_order_update_cart : function(flag, opened_order, image_id, displayed_image_index, current_amount) {
         let products_array = opened_order.products;
         let new_amount = current_amount;
@@ -97,6 +106,16 @@ Meteor.methods({
                     console.log("ERROR CLOSING ORDER: " + err);
                 }
             });
+    },
+
+    server_send_email(options) {
+        // Make sure that all arguments are strings.
+        //check([to, from, subject, text], [String]);
+
+        // Let other method calls from the same client start running, without waiting for the email sending to complete.
+        this.unblock();
+
+        Email.send(options);
     }
 });
 

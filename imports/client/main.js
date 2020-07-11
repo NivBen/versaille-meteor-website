@@ -7,6 +7,8 @@ let imageLimit = 16; // TODO: maybe limit this differently
 let ordersLimit = 8;
 Session.set("imageLimit", imageLimit);
 Session.set("ordersLimit", ordersLimit);
+let sender_email = Meteor.settings.public.sender_email;
+let email_recipient_list = Meteor.settings.public.email_recipient_list;
 
 /// accounts config
 Accounts.ui.config({
@@ -18,6 +20,117 @@ $('.carousel').carousel({
     interval: "1000"
 })
 
+// START ---- local helper functions ----
+let is_agent_logged_in = function() {
+    return !!Meteor.user(); // TODO: change this to list of agents
+}
+
+let is_admin_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+
+let is_item_on_sale = function(item_id) {
+    let on_sale = Images.findOne({_id: item_id}).on_sale_price;
+    if(on_sale !== null) { // if not null
+        return on_sale > 0; // if positive
+    }
+
+    return false;
+}
+
+let is_item_not_on_sale = function(item_id) {
+    return !is_item_on_sale(item_id);
+}
+
+let single_item_update_cart = function(image_id, flag) {
+    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+    if (opened_order){
+        let displayed_image_index = Session.get("cart_quested_item_index");
+        let products_array = opened_order.products;
+        let products_array_index = find_product_index(products_array, image_id, displayed_image_index);
+        Meteor.call('server_single_item_update_cart', flag, opened_order, products_array_index, image_id, displayed_image_index);
+    } else {
+        alert("לא קיימת הזמנה פתוחה");
+    }
+}
+
+let single_order_update_cart = function(id_index_amount_array, flag) {
+    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+    if (opened_order){
+        let image_id = id_index_amount_array[0];
+        let displayed_image_index = id_index_amount_array[1];
+        let current_amount = parseInt(id_index_amount_array[2]);
+        Meteor.call('server_single_order_update_cart', flag, opened_order, image_id, displayed_image_index, current_amount);
+    } else {
+        alert("לא קיימת הזמנה פתוחה");
+    }
+}
+
+let find_product_index = function(products_array, image_id, index){
+    let values;
+    for (let i = 0; i < products_array.length; i++) {
+        values = products_array[i].split("_");
+        if(values[0] === image_id && values[1] == index) {
+            return i;
+        }
+    }
+    return -1; // not found
+}
+
+let email_template_new_products_format = function(opened_order) {
+    let products = opened_order.products;
+    let new_products_format = [], total_amount = 0, total_price = 0;
+    let image, displayed_image_index, values=[]; // helpers
+    let img_url = "", watch_code, watch_desc, amount = 0, price = 0; // per watch elements
+    for(let i=0; i<products.length; i++){
+        values = products[i].split("_");
+        image = Images.findOne({ _id: values[0] }); // image JSON
+        displayed_image_index = values[1];
+        amount = parseInt(values[2]);
+        price = parseInt(image.watch_price);
+        watch_code = parseInt(image.watch_code);
+        // Retrieve URL and Description
+        switch(parseInt(displayed_image_index)) {
+            case 1:
+                img_url = image.img_src;
+                watch_desc = image.first_img_desc
+                break;
+            case 2:
+                img_url = image.second_img_src;
+                watch_desc = image.second_img_desc
+                break;
+            case 3:
+                img_url = image.third_img_src;
+                watch_desc = image.third_img_desc
+                break;
+            case 4:
+                img_url = image.forth_img_src;
+                watch_desc = image.forth_img_desc
+                break;
+            case 5:
+                img_url = image.fifth_img_src;
+                watch_desc = image.fifth_img_desc
+                break;
+        }
+
+        new_products_format.push({
+            img_url: img_url,
+            watch_code: watch_code,
+            watch_desc: watch_desc,
+            amount: amount,
+            price: price
+        });
+        total_amount = total_amount + amount;
+        total_price = total_price + (amount * price);
+    }
+    return [new_products_format, total_amount, total_price];
+}
+// END ---- local helper functions ----
+
 Template.searchBox.onCreated(function bodyOnCreated() {
     Meteor.subscribe('images');
 });
@@ -27,7 +140,6 @@ Template.main_Layout.onCreated(function bodyOnCreated() {
     //Meteor.subscribe('s3_images');
     Meteor.subscribe('cart');
 });
-
 
 Template.registerHelper('and',(a,b)=>{
     return a && b;
@@ -118,6 +230,12 @@ Template.catalog.helpers({
         } catch (e) {
         }
     },
+    getOnSalePrice: function () {
+        try {
+            return Images.findOne({_id: Session.get("item_id_to_edit")}).on_sale_price;
+        } catch (e) {
+        }
+    },
     getWatchDescription: function () {
         try {
             return Images.findOne({_id: Session.get("item_id_to_edit")}).watch_description;
@@ -129,14 +247,14 @@ Template.catalog.helpers({
 Template.catalog.events({
     'click .js-del-image': function (event) {
         var image_id = this._id;
-        if (Meteor.user()) {
-            console.log("id of image quested for deletion: " + image_id);
+        if (is_admin_logged_in()) {
+            //console.log("id of image quested for deletion: " + image_id);
             $('.confirm-delete').click(function () {
                 $('#delete_' +
                     '').modal('hide');
                 Images.remove({"_id": image_id});
                 $("#delete_item_modal").modal('hide');
-                console.log("Deleted image of id: " + image_id);
+                //console.log("Deleted image of id: " + image_id);
             });
         } else {
             alert("Sign in to delete")
@@ -233,7 +351,7 @@ Template.add_item_form.events({
         forth_img_description = event.target.forth_img_description.value;
         fifth_img_description = event.target.fifth_img_description.value;
 
-        if (Meteor.user()) {
+        if (is_admin_logged_in()) {
             Images.insert({
                 img_src: img_src,
                 second_img_src: second_img_src,
@@ -300,6 +418,9 @@ Template.single_item.helpers({
     },
     getWatchPrice: function () {
         return Session.get("single_item_object").watch_price;
+    },
+    getOnSalePrice: function () {
+        return Session.get("single_item_object").on_sale_price;
     },
     getWatchDescription: function () {
         return Session.get("single_item_object").watch_description;
@@ -499,9 +620,9 @@ Template.catalog.events({
     'submit .js-close-order' : function (event) {
         let notes = event.target.final_notes.value;
         let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+        let hebrew_day = 'ראשון';
+        let date = new Date();
         if(opened_order) {
-            let date = new Date();
-            let hebrew_day = 'ראשון';
             switch(date.getDay()) { // day to hebrew
                 case 0:
                     break;
@@ -525,6 +646,37 @@ Template.catalog.events({
                     break;
             }
             Meteor.call('server_close_order', opened_order._id, Meteor.user().username, notes, hebrew_day);
+
+            // sending notification email
+            opened_order = ShoppingCart.findOne({_id: opened_order._id});
+            let new_products_format, total_amount, total_price;
+            [new_products_format, total_amount, total_price] = email_template_new_products_format(opened_order);
+
+            let dataContext={
+                order_store_name: opened_order.store_name,
+                order_notes: notes,
+                order_prodcuts: new_products_format,
+                /*
+                    img_url: img_url,
+                    watch_code: watch_code,
+                    watch_desc: watch_desc,
+                    amount: amount,
+                    price: price
+                */
+                order_total_amount: total_amount,
+                order_total_price: total_price,
+                order_website_url:"https://www.versaille.co.il/orders/" + opened_order._id,
+                order_sent_date: new Date().toLocaleString("en-US", {timeZone: "Asia/Jerusalem", hour12: false }) + " " + hebrew_day,
+                order_agent_name: opened_order.username
+            };
+            Meteor.call(
+                'server_send_email',
+                {
+                    to: email_recipient_list,
+                    from: sender_email,
+                    subject: "הזמנה חדשה מ-" + opened_order.store_name,
+                    html: Blaze.toHTMLWithData(Template.orderEmailContent, dataContext)
+                });
         } else {
             alert("לא קיימת הזמנה פתוחה");
         }
@@ -533,6 +685,8 @@ Template.catalog.events({
         let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
         ShoppingCart.remove({"_id": opened_order._id});
         $("#delete_order_modal").modal('hide');
+        location.reload(); // otherwise the page goes muted
+        return false;
 }
 })
 
@@ -543,61 +697,33 @@ Template.catalog.helpers({
     isAgent: function () {
        return is_agent_logged_in();
     },
+    isOnSale: function () {
+        let item_id = this._id;
+        return is_item_on_sale(item_id);
+    },
+    isNotOnSale: function () {
+        let item_id = this._id;
+        return is_item_not_on_sale(item_id);
+    },
     isThereAnOrderInPlace: function () {
         return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
     },
 });
 
-let is_agent_logged_in = function() {
-    return !!Meteor.user(); // TODO: change this to list of agents
-}
-
-let is_admin_logged_in = function() {
-    if(Meteor.user()) {
-        return Meteor.user().username === "admin";
-    } else{
-        return false;
-    }
-}
-
-let single_item_update_cart = function(image_id, flag) {
-    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
-    if (opened_order){
-        let displayed_image_index = Session.get("cart_quested_item_index");
-        let products_array = opened_order.products;
-        let products_array_index = find_product_index(products_array, image_id, displayed_image_index);
-        Meteor.call('server_single_item_update_cart', flag, opened_order, products_array_index, image_id, displayed_image_index);
-    } else {
-        alert("לא קיימת הזמנה פתוחה");
-    }
-}
-
-let single_order_update_cart = function(id_index_amount_array, flag) {
-    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
-    if (opened_order){
-        let image_id = id_index_amount_array[0];
-        let displayed_image_index = id_index_amount_array[1];
-        let current_amount = parseInt(id_index_amount_array[2]);
-        Meteor.call('server_single_order_update_cart', flag, opened_order, image_id, displayed_image_index, current_amount);
-    } else {
-        alert("לא קיימת הזמנה פתוחה");
-    }
-}
-
-let find_product_index = function(products_array, image_id, index){
-    let values;
-    for (let i = 0; i < products_array.length; i++) {
-        values = products_array[i].split("_");
-        if(values[0] === image_id && values[1] == index) {
-            return i;
-        }
-    }
-    return -1; // not found
-}
-
 Template.single_item.helpers({
+    isAdmin: function () {
+        return is_admin_logged_in();
+    },
     isAgent: function () {
         return is_agent_logged_in();
+    },
+    isOnSale: function () {
+        let item_id = Session.get("single_item_object")._id;
+        return is_item_on_sale(item_id);
+    },
+    isNotOnSale: function () {
+        let item_id = Session.get("single_item_object")._id;
+        return is_item_not_on_sale(item_id);
     },
     isThereAnOrderInPlace: function () {
         return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
@@ -625,7 +751,29 @@ Template.single_item.events({
         event.preventDefault();
         let image_id = Session.get("single_item_object")._id; // grabbing image id
         single_item_update_cart(image_id, '-');
-    }
+    },
+    'submit .js-on-sale': function (event) {
+        //event.preventDefault();
+        if(is_admin_logged_in()){
+            let item_id = Session.get("single_item_object")._id; // grabbing image id
+            let new_sale_watch_price = event.target.new_sale_watch_price.value;
+                Images.update( {_id: item_id},
+                    { $set: { on_sale_price: parseInt(new_sale_watch_price) } });
+        }
+        $("#on_sale_form_modal").modal('hide');
+        //return false;
+    },
+    'click .js-confirm-remove-from-sale': function (event) {
+        //event.preventDefault();
+        if(is_admin_logged_in()){
+            let item_id = Session.get("single_item_object")._id; // grabbing image id
+            Images.update( {_id: item_id},
+                { $set: { on_sale_price: -1 } });
+        }
+        $("#remove_from_sale_modal").modal('hide');
+        location.reload(); // otherwise the page goes muted
+        return false;
+    },
 });
 
 Template.orders.helpers({
@@ -776,13 +924,19 @@ Template.single_order.helpers({
     getTotalPrice: function () {
         let products = Session.get("single_order_object").products;
         let total_price = 0;
-        let values= [];
+        let values= [], image;
         for(let i=0; i<products.length; i++){
             let values = products[i].split("_");
-            total_price = total_price + parseInt(values[2]) * Images.findOne({ _id: values[0] }).watch_price;
+            image = Images.findOne({ _id: values[0] });
+            if(image) {
+                total_price = total_price + parseInt(values[2]) * image.watch_price;
+            }
         }
         return total_price;
     }
-})
+});
 // END ---- Shopping cart ----
 
+Template.Unsubscribe.events({
+    'click .js-unsubscribe': function(){alert("thank you!");}
+});

@@ -24,10 +24,11 @@ barbatus:stars-rating         # TODO: maybe remove later
 iron:router			          # for routing within pages
 session@1.2.0
 alexwine:bootstrap-4
-natestrauser:font-awesome	    # for icons (like the search icon in the navigation bar)
+natestrauser:font-awesome	  # for icons (like the search icon in the navigation bar)
 dynamic-import
 underscore
 
 meteortoys:allthings          # analyzing tools for developing TODO: remove later - use for developing
 easy:search                   # simple search engine
 rcy:nouislider                # price range slider
+email

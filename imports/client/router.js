@@ -13,12 +13,34 @@ Router.route('/', function () {
     this.render('footer', {to: "footer"});
 });
 
-// TODO: remove before commiting
-/*
-Router.route('/test', function () {
-    document.title = 'area 51';
-    this.render('test', {to: "main"});
-});*/
+let is_agent_logged_in = function() {
+    return !!Meteor.user(); // TODO: change this to list of agents
+}
+let is_admin_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+
+Router.route('/unsubscribe', {
+    onBeforeAction: function () { // only renders for logged in users
+        if (is_agent_logged_in()) {
+            this.next();
+        } else {
+            this.render('navbar', {to: "navbar"});
+            this.render("login", {to: "main"});
+        }
+    },
+    action: function () {
+        document.title = 'הסרה מרישום';
+        this.render('Unsubscribe', {
+            to: "main",
+        });
+    }
+});
+
 
 Router.route('/aboutus', function () {
     document.title = 'אודות שעוני ורסאי';
@@ -41,53 +63,57 @@ Router.route('/search', function () {
     // this.render('footer', {to: "footer"});
 });
 
-Router.route('/orders', function () {
-    document.title = 'הזמנות שעוני ורסאי';
-    this.render('navbar', {to: "navbar"});
-    if(Meteor.user().username === 'admin'){
-        this.render('orders', {
-            to: "main",
-            data: { // status: -1 means open orders will show first
-                cart: ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")}) // TODO: load more button or next set of orders
-            }
-        });
-    }
-    else {
-        this.render('orders', {
-            to: "main",
-            data: {
-                cart: ShoppingCart.find({username: Meteor.user().username}, {sort: {sent_time: -1}, limit: 10}) // TODO: load more button or next set of orders
-            }
-        });
-    }
-},{
+Router.route('/orders', {
     onBeforeAction: function(){ // only renders for logged in users
-        if(Meteor.user()){
+        if(is_agent_logged_in()){
             this.next();
         } else {
-            this.render("login");
+            this.render('navbar', {to: "navbar"});
+            this.render("login", {to: "main"});
+        }
+    },
+    action: function(){
+        document.title = 'הזמנות שעוני ורסאי';
+        this.render('navbar', {to: "navbar"});
+        if(is_admin_logged_in()){
+            this.render('orders', {
+                to: "main",
+                data: { // status: -1 means open orders will show first
+                    cart: ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")})
+                }
+            });
+        }
+        else { // other agents
+            this.render('orders', {
+                to: "main",
+                data: {
+                    cart: ShoppingCart.find({username: Meteor.user().username}, {sort: {sent_time: -1}, limit: 10})
+                }
+            });
         }
     }
 });
 
-Router.route('/orders/:_id', function () {
-    document.title = 'שעוני ורסאי';
-    Session.set("single_order_object", ShoppingCart.findOne({_id: this.params._id}));
-    this.render('navbar', {to: "navbar"});
-    this.render('single_order', {
-        to: "main",
-        data: {
-            order: ShoppingCart.findOne({ _id: this.params._id }) //.fetch()
-        }
-    });
-    this.render('footer', {to: "footer"});
-},{
+Router.route('/orders/:_id',{
     onBeforeAction: function(){ // only renders for logged in users
-        if(!Meteor.user()){
-            this.render("login");
-        } else {
+        if(is_agent_logged_in()){
             this.next();
+        } else {
+            this.render('navbar', {to: "navbar"});
+            this.render("login", {to: "main"});
         }
+    },
+    action: function() {
+        document.title = 'הזמנה';
+        Session.set("single_order_object", ShoppingCart.findOne({_id: this.params._id}));
+        this.render('navbar', {to: "navbar"});
+        this.render('single_order', {
+            to: "main",
+            data: {
+                order: ShoppingCart.findOne({ _id: this.params._id }) //.fetch()
+            }
+        });
+        this.render('footer', {to: "footer"});
     }
 });
 
@@ -165,6 +191,18 @@ Router.route('/catalog', function () {
                             {
                             sort: {watch_code: -1, rating: -1},
                             limit: Session.get("imageLimit")
+                            })
+                    }
+                });
+                break;
+
+            case 'on-sale':
+                this.render('catalog', {
+                    to: "main", data: {
+                        images: Images.find({ $and: [ {on_sale_price: { $gte: 0 }}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                            {
+                                sort: {watch_code: -1, rating: -1},
+                                limit: Session.get("imageLimit")
                             })
                     }
                 });
