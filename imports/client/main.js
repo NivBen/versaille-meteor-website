@@ -148,6 +148,56 @@ Template.registerHelper('or',(a,b)=>{
     return a || b;
 });
 
+// Start ---- Login ----
+Template.login.events({
+    'submit form': function(event){
+        event.preventDefault();
+        let input_username = event.target.loginUsername.value;
+        let input_password = event.target.loginPassword.value;
+        Meteor.loginWithPassword(input_username, input_password, function(error){
+            if(error){
+                let reason = error.reason;
+                if(reason === "Incorrect password" || reason === "User not found"){
+                    alert("פרטי התחברות שגויים")
+                }
+            } else {
+                //Router.go("main");
+            }
+        });
+    },
+    'click .js-logout': function(event){
+        event.preventDefault();
+        Meteor.logout();
+    }
+});
+
+Template.changePassword.events({
+    'submit form': function(event){
+        event.preventDefault();
+        let current_password = event.target.loginPassword.value;
+        let new_password = event.target.new_password.value;
+        let new_password_repeat = event.target.new_password_repeat.value;
+        let password_regex = new RegExp("^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\\w+");
+        if(!password_regex.test(new_password) || !password_regex.test(new_password_repeat)) {
+            alert("הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת");
+            return false;
+        }
+        if(new_password === new_password_repeat) {
+            Accounts.changePassword(current_password, new_password, function (error) {
+                if (error) {
+                    alert("סיסמא שגויה");
+                } else {
+                    alert("הסיסמא שונתה בהצלחה!");
+                    Router.go('/login')
+                }
+            });
+        } else {
+            alert("סיסמא חדשה לא תואמת")
+        }
+    }
+});
+// Start ---- Login ----
+
 // Start ---- CATALOG ----
 Template.catalog.helpers({
     getUser: function (user_id) {

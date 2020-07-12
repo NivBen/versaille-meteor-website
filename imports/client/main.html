@@ -16,21 +16,60 @@
 </template>
 
 <template name="login">
-  <div class="container py-5" style="margin-top: 40px;">
-    <div class="jumbotron">
-      {{#if currentUser}}
-        <h2 align="center" style="">מחובר</h2>
-      {{else}}
-        <h2 align="center" style="">התחברות למערכת</h2>
-        <p class="text-center" dir="rtl" style="font-size: 1.5rem;">
-          נכון לכרגע לא ניתן להתחבר למערכת<i class="fa fa-cog fa-spin fa-2x fa-fw"></i>
-        </p>
-      {{/if}}
-      <hr class="my-4" />
-
-      <h3 align="center">{{> loginButtons }}</h3>
+    <div class="container py-5" style="margin-top: 100px;">
+        <div class="jumbotron">
+        {{#if currentUser}}
+            <h2 align="center">מחובר</h2>
+                <hr class="my-4" />
+            <h2 class="text-center">
+              <button type="button" class="js-logout btn btn-responsive-font btn-info">
+                  <span class="fa fa-sign-out"></span>התנתקות
+              </button>
+            </h2>
+            <h2 class="text-center my-4">
+                <a href="changePassword"><u>שינוי סיסמא</u></a>
+            </h2>
+        {{else}}
+            <h2 align="center" style="">התחברות למערכת</h2>
+            <div class="wrapper">
+                <div id="formContent">
+                    <!-- Login Form -->
+                    <form>
+                        <input type="text" class="login_input_field" name="loginUsername" placeholder="שם משתמש" required>
+                        <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא" required>
+                        <input type="submit" class="login_submit_form" value="התחברות">
+                    </form>
+                    <!-- change password -->
+                </div>
+            </div>
+        {{/if}}
+        </div>
     </div>
-  </div>
+</template>
+
+<template name="changePassword">
+    <div class="container py-5" style="margin-top: 100px;">
+        <div class="jumbotron">
+            {{#if currentUser}}
+                <h2 align="center" style="">שינוי סיסמא</h2>
+                <hr class="my-4" />
+                <div class="wrapper">
+                    <div id="formContent">
+                        <form>
+                            <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא מקורית" required>
+                            <input type="password"  class="login_input_field" name="new_password" placeholder="סיסמא חדשה"
+                                   pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
+                                   title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת" required>
+                            <input type="password"  class="login_input_field" name="new_password_repeat" placeholder="סיסמא חדשה שנית"
+                                   pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
+                                   title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת" required>
+                            <input type="submit" class="login_submit_form" value="שינוי סיסמא">
+                        </form>
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+    </div>
 </template>
 
 <template name="welcome">

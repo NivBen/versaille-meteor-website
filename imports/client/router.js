@@ -11,6 +11,8 @@ Router.route('/', function () {
     this.render('navbar', {to: "navbar"});
     this.render('welcome', {to: "main"});
     this.render('footer', {to: "footer"});
+}, {
+    name: 'main_page'
 });
 
 let is_agent_logged_in = function() {
@@ -54,6 +56,26 @@ Router.route('/login', function () {
     this.render('navbar', {to: "navbar"});
     this.render('login', {to: "main"});
     this.render('footer', {to: "footer"});
+}, {
+    name: 'login'
+});
+
+
+Router.route('/changePassword', {
+    onBeforeAction: function(){ // only renders for logged in users
+        if(is_agent_logged_in()){
+            this.next();
+        } else {
+            this.render('navbar', {to: "navbar"});
+            this.render("login", {to: "main"});
+            this.render('footer', {to: "footer"});
+        }
+    },
+    action: function() {
+        document.title = 'שינוי סיסמא';
+        this.render('navbar', {to: "navbar"});
+        this.render('changePassword', {to: "main"});
+    }
 });
 
 Router.route('/search', function () {

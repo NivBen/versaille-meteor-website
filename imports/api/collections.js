@@ -4,7 +4,8 @@ import {Mongo} from 'meteor/mongo';
 import {Meteor} from "meteor/meteor";
 
 Accounts.config({
-    forbidClientAccountCreation: true
+    forbidClientAccountCreation: true,
+    loginExpirationInDays: 7
 });
 
 Images = new Mongo.Collection('images');
