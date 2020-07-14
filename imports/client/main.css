@@ -12,7 +12,7 @@ body{
 }
 
 /* navbar */
-@media (min-width: 992px) {
+@media (min-width: 991px) {
     #ul-navbar { /* on small displays there is a an issue where the navbar isn't vertical, so we apply this only for large displays*/
         flex-direction: row-reverse;
     }
@@ -25,7 +25,7 @@ body{
         margin-top: -20px
     }
 
-    .nav-item, .js-collapse-after-click{
+    .nav-item-font-size, .js-collapse-after-click{
         font-size: 20px;
     }
 
@@ -64,12 +64,12 @@ body{
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 991px) {
     /* center nav links on collapsed menu */
     #ul-navbar {
         text-align: center;
     }
-    .nav-item, .js-collapse-after-click{
+    .nav-item-font-size, .js-collapse-after-click{
         font-size: 3vh;
     }
 
@@ -294,7 +294,7 @@ input::-webkit-search-cancel-button {
 input[type=search] {
     background: #ededed url(https://versaillewatches.s3.eu-central-1.amazonaws.com/search-icon.png) no-repeat 9px center;
     border: solid 1px #ccc;
-    padding: 9px 10px 9px 32px;
+    padding: 12px 13px 12px 35px;
     width: 55px;
 
     -webkit-border-radius: 10em;
@@ -458,3 +458,46 @@ span.step {
 }
 /* END - Login form */
 
+
+
+.btn-success-round-ends {
+    color: #FFFFFF;
+    letter-spacing: 2px;
+    line-height: 40px;
+    border: 4px solid rgba(103, 192, 103, 0.75);
+    border-radius: 40px;
+    background: rgba(103, 192, 103, 0.75);
+    transition: all 0.3s ease 0s;
+}
+
+
+.btn-primary-round-ends {
+    font-size: 36px;
+    color: #FFFFFF;
+    letter-spacing: 2px;
+    line-height: 60px;
+    border: 4px solid rgba(58, 133, 191, 0.75);
+    border-radius: 40px;
+    background: rgba(58, 133, 191, 0.75);
+    transition: all 0.3s ease 0s;
+}
+
+
+.btn-danger-round-ends {
+    color: #FFF;
+    letter-spacing: 1px;
+    line-height: 40px;
+    border: 2px solid rgba(217, 83, 78, 0.75);
+    border-radius: 40px;
+    background: rgba(217, 83, 78, 0.75);
+    transition: all 0.3s ease 0s;
+}
+
+.btn-grey-round-ends {
+    color: #FFF;
+    letter-spacing: 1px;
+    line-height: 60px;
+    border-radius: 40px;
+    background: rgba(168, 180, 180, 0.84);
+    transition: all 0.3s ease 0s;
+}

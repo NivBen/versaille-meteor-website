@@ -109,7 +109,7 @@ Router.route('/orders', {
             this.render('orders', {
                 to: "main",
                 data: {
-                    cart: ShoppingCart.find({username: Meteor.user().username}, {sort: {sent_time: -1}, limit: 10})
+                    cart: ShoppingCart.find({username: Meteor.user().username}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")})
                 }
             });
         }
@@ -127,12 +127,13 @@ Router.route('/orders/:_id',{
     },
     action: function() {
         document.title = 'הזמנה';
-        Session.set("single_order_object", ShoppingCart.findOne({_id: this.params._id}));
+        let current_order_object = ShoppingCart.findOne({_id: this.params._id});
+        Session.set("single_order_object", current_order_object);
         this.render('navbar', {to: "navbar"});
         this.render('single_order', {
             to: "main",
             data: {
-                order: ShoppingCart.findOne({ _id: this.params._id }) //.fetch()
+                order: current_order_object //.fetch()
             }
         });
         this.render('footer', {to: "footer"});
@@ -252,10 +253,13 @@ Router.route('/catalog', function () {
 
 Router.route('/catalog_item/:_id', function () {
     document.title = 'שעוני ורסאי';
-    Session.set("single_item_object", Images.findOne({_id: this.params._id}));
-    Session.set("single_item_displayed_img_src", Session.get("single_item_object").img_src);
-    Session.set("single_item_displayed_desc", Session.get("single_item_object").first_img_desc);
-    Session.set("cart_quested_item_index", 1); // sets index to 1 whenever accessing the single item page
+    let current_item_object = Images.findOne({_id: this.params._id});
+    Session.set("single_item_object", current_item_object);
+    if(current_item_object) {
+        Session.set("single_item_displayed_img_src", Session.get("single_item_object").img_src);
+        Session.set("single_item_displayed_desc", Session.get("single_item_object").first_img_desc);
+        Session.set("cart_quested_item_index", 1); // sets index to 1 whenever accessing the single item page
+    }
     this.render('navbar', {to: "navbar"});
     this.render('single_item', {to: "main",});
     this.render('footer', {to: "footer"});

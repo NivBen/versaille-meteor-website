@@ -8,13 +8,13 @@
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto mt-2" id="ul-navbar">
-                <li class="nav-item js-collapse-after-click active">
+                <li class="nav-item-font-size js-collapse-after-click active">
                     <a class="nav-link" href="/" >ראשי<span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item js-collapse-after-click">
+                <li class="nav-item-font-size js-collapse-after-click">
                     <a class="nav-link" href="/catalog">קטלוג</a>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item-font-size dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">אודותינו</a>
                     <div class="dropdown-menu dropdown-menu-right" id="dropdown-menu-navbar">
                         <a class="dropdown-item js-collapse-after-click" href="/aboutus#about">על שעוני ורסאי</a>
@@ -24,25 +24,40 @@
                     </div>
                 </li>
 
-                <!--<li class="nav-item">
+                <!--<li class="nav-item-font-size">
                     <a class="nav-link js-collapse-after-click" href="/">צרו קשר</a>
                 </li>-->
 
                 {{#if currentUser}}
-                    <li class="nav-item">
-                        <a class="nav-link js-collapse-after-click" href="/login">התנתקות</a>
+                    <li class="nav-item-font-size">
+                        <a class="nav-link js-collapse-after-click" href="/login"><span class="fa fa-sign-out fa-lg"></span> <u>{{ currentUser.username }}</u></a>
                     </li>
 
-                    <li class="nav-item">
+                    <li class="nav-item-font-size">
                         <a class="nav-link js-collapse-after-click" href="/orders">הזמנות</a>
                     </li>
+
+                    {{#unless isThereAnOrderInPlace}}
+                        <li class="nav-item-font-size mx-2">
+                            <a href="#" data-toggle="modal" data-target="#new_order_form">
+                                <span class="fa fa-cart-plus fa-3x"></span>
+                            </a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item-font-size mx-2">
+                            <a href="/orders/{{ openedOrderID }}">
+                                <span class="fa fa-cart-arrow-down fa-3x"></span>
+                            </a>
+                        </li>
+                    {{/unless}}
+
                 {{else}}
-                    <li class="nav-item">
-                        <a class="nav-link js-collapse-after-click" href="/login">התחברות</a>
+                    <li class="nav-item-font-size">
+                        <a class="nav-link js-collapse-after-click" href="/login"><span class="fa fa-sign-in fa-lg"></span>התחברות </a>
                     </li>
                 {{/if}}
 
-                <form id="search-form-navbar" class="js-search-item">
+                <form id="search-form-navbar" class="js-search-item mx-2">
                     <div class="form-group">
                         {{> EasySearch.Input index=imagesIndex attributes=inputAttributes}}
                     </div>
@@ -51,4 +66,46 @@
             </ul>
         </div>
     </nav>
+
+
+    <!-- New Order Modal -->
+    <div id="new_order_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newOrderModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold">
+                        <i class="fa fa-cart-plus fa-3x"></i>
+                        <br/>הזמנה חדשה
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> <!-- / modal-header -->
+
+                <div class="modal-body mx-3"> <!-- modal-body -->
+                    <form class="js-open-new-order" style="direction: rtl; text-align: right;">
+                        <div class="form-group">
+                            <i class="fa fa-tag prefix grey-text"></i>
+                            <label data-error="wrong" data-success="right" for="store_name">שם החנות:</label>
+                            <input type="text" class="form-control validate" maxlength="100" id="store_name" name="store_name"
+                                   required/>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-responsive-font btn-success-round-ends">יצירת הזמנה חדשה</button>
+                        </div>
+
+                        <div class="text-left">
+                            <button class="btn btn-responsive-font btn-danger-round-ends" data-dismiss="modal">ביטול</button>
+                        </div>
+
+                    </form>
+                </div> <!-- modal-body -->
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
+    </div> <!-- / New Order Modal -->
+
 </template>

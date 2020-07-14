@@ -64,109 +64,131 @@
 
 <!-- Single Order page -->
 <template name="single_order">
-    <section class="order_header_area"  style="padding: 100px 0 0 0;" >
-        <div class="bg-light mt-0">
+    {{#if isEmptyOrder}}
+        <div class="bg-light mt-0" style="padding-top: 10rem;">
             <div class="container">
                 <div class="row flex-row-reverse">
-                    <div class="col-12 align-items-center justify-content-center">
-                        <h1 class="display-4 text-info text-center">
-                            הזמנה מ-{{getStoreName}}
+                    <div class="col-12 align-items-center justify-content-center" dir="rtl">
+                        <h2 class="display-4 text-info text-center" dir="rtl">
+                            לא נמצאה ההזמנה...
                             <br />
-                        </h1>
-                        {{#if isAdmin}}
-                        <h2 class="display-5 text-info text-center">
-                            {{#if getCheckmark }}
-                                <button class="btn btn-white fa fa-check-circle fa-3x js-flip-checkmark"></button>
-                            {{else}}
-                                <button class="btn btn-white fa fa-times-circle-o fa-3x js-flip-checkmark"></button>
-                            {{/if}}
-                            :מצב ההזמנה
-
-                        <br />
-                            <button type="button" class="btn btn-responsive-font btn-primary" data-toggle="modal"
-                                    data-target="#manager_notes_form">
-                                <b>הערת מנהל</b>
-                            </button>
-
+                            הקישור ככל הנראה שגוי
                         </h2>
-                        {{/if}}
                     </div>
-                    <div class="col-12 align-items-center">
-                        <p class="aboutus-text lead text-muted" style="text-align: right; line-height: 1.5" dir="rtl">
-                            <b>הערות: </b>
-                            {{getOrderNotes}}
-                        </p>
-                    </div>
-
                 </div>
             </div>
         </div>
-    </section>
+    {{else}}
+        <section class="order_header_area" style="padding-top: 10rem;">
+            <div class="bg-light mt-0">
+                <div class="container">
+                    <div class="row flex-row-reverse">
+                        <div class="col-12 align-items-center justify-content-center">
+                            <h1 class="display-4 text-info text-center">
+                                הזמנה מ-{{getStoreName}}
+                                <br />
+                            </h1>
+                            {{#if and isColsedOrder isAdmin}}
+                                <h2 class="display-5 text-info text-center">
+                                    {{#if getCheckmark }}
+                                        <button class="btn btn-white fa fa-check-circle fa-3x js-flip-checkmark"></button>
+                                    {{else}}
+                                        <button class="btn btn-white fa fa-times-circle-o fa-3x js-flip-checkmark"></button>
+                                    {{/if}}
+                                    :מצב ההזמנה
+                                <br />
+                                    <button type="button" class="btn btn-responsive-font btn-primary" data-toggle="modal"
+                                            data-target="#manager_notes_form">
+                                        <b>הערת מנהל</b>
+                                    </button>
 
-    <section class="order_details_area" style="padding: 0 0 100px 0;">
-        <div class="container" style="direction: rtl; text-align: right;">
-            <div class="row">
+                                </h2>
+                            {{/if}}
+                            {{#unless isColsedOrder}}
+                                {{> close_order }}
+                            {{/unless}}
+                        </div>
+                        <div class="col-12 align-items-center">
+                            <p class="aboutus-text lead text-muted" style="text-align: right; line-height: 1.5" dir="rtl">
+                                <b>הערות: </b>
+                                {{ getOrderNotes }}
+                            </p>
+                        </div>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">דגם</th>
-                            <th scope="col">תמונה</th>
-                            <th scope="col">תיאור</th>
-                            <th scope="col">כמות</th>
-                            <th scope="col">מחיר ליחידה</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {{#each order.products }}
-                        <tr>
-                            <th scope="row">{{getWatchCode}}</th>
-
-                            <td class="w-25">
-                                <img src="{{getWatchImgURL}}" class="img-fluid single-item-thumbnail img-thumbnail" alt="התמונה לא נמצאה...">
-                            </td>
-
-                            <td>{{getWatchImgDescription}} </td>
-
-                            <td>
-                                {{#if isOpenOrder }}
-                                    <button type="button" class="btn btn-success btn-circle js-increment-cart"><i class="fa fa-plus"></i></button>
-                                    {{ getAmount }}
-                                    <button type="button" class="btn btn-danger  btn-circle js-decrement-cart"><i class="fa fa-minus"></i></button>
-                                {{else}}
-                                    {{ getAmount }}
-                                {{/if }}
-                            </td>
-
-                            <td>{{getWatchPrice}} ₪</td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-
-                    <tfoot class="bg-light">
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <th> סה"כ כמות: </th>
-                            <th> {{getTotalAmount}} שעונים </th>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <th> סה"כ סכום (לצרכן): </th>
-                            <th> {{getTotalPrice}} ₪ </th>
-                        </tr>
-                    </tfoot>
-
-                </table>
-
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
+        <section class="order_details_area" style="padding: 0 0 60px 0;">
+            <div class="container" style="direction: rtl; text-align: right;">
+                <div class="row">
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">דגם</th>
+                                <th scope="col">תמונה</th>
+                                <th scope="col">תיאור</th>
+                                <th scope="col">כמות</th>
+                                <th scope="col">מחיר ליחידה</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {{#each order.products }}
+                            <tr>
+                                <th scope="row">{{getWatchCode}}</th>
+
+                                <td class="w-25">
+                                    <img src="{{getWatchImgURL}}" class="img-fluid single-item-thumbnail img-thumbnail" alt="התמונה לא נמצאה...">
+                                </td>
+
+                                <td>{{getWatchImgDescription}} </td>
+
+                                <td>
+                                    {{#if isOpenOrder }}
+                                        <button type="button" class="btn btn-success btn-circle js-increment-cart"><i class="fa fa-plus"></i></button>
+                                        {{ getAmount }}
+                                        <button type="button" class="btn btn-danger  btn-circle js-decrement-cart"><i class="fa fa-minus"></i></button>
+                                    {{else}}
+                                        {{ getAmount }}
+                                    {{/if }}
+                                </td>
+
+                                <td>{{getWatchPrice}} ₪</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+
+                        <tfoot class="bg-light">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th> סה"כ כמות: </th>
+                                <th> {{getTotalAmount}} שעונים </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th> סה"כ סכום (לצרכן): </th>
+                                <th> {{getTotalPrice}} ₪ </th>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                </div>
+            </div>
+        </section>
+
+        {{#unless isColsedOrder}}
+            {{> delete_order }}
+        {{/unless}}
+
+    {{/if}}
 
     <!-- Manager Notes Modal -->
     <div id="manager_notes_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="managerNoteModalLabel"
@@ -203,59 +225,14 @@
     </div> <!-- / Manager Notes Modal -->
 </template>
 
-<!-- Catalog page - new order button and modal -->
-<template name="new_order_form">
-    <button type="button" class="btn btn-responsive-font btn-info btn-block" data-toggle="modal"
-            data-target="#new_order_form"><b>הזמנה חדשה</b>
-    </button>
-
-    <!-- New Order Modal -->
-    <div id="new_order_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newOrderModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-
-                <div class="modal-header text-center"> <!-- modal-header -->
-                    <h4 class="modal-title w-100 font-weight-bold">
-                        <i class="fa fa-cart-plus fa-3x"></i>
-                        <br/>הזמנה חדשה
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div> <!-- / modal-header -->
-
-                <div class="modal-body mx-3"> <!-- modal-body -->
-                    <form class="js-open-new-order" style="direction: rtl; text-align: right;">
-                        <div class="form-group">
-                            <i class="fa fa-tag prefix grey-text"></i>
-                            <label data-error="wrong" data-success="right" for="store_name">שם החנות:</label>
-                            <input type="text" class="form-control validate" maxlength="100" id="store_name" name="store_name"
-                                   required/>
-                        </div>
-
-                        <button class="btn btn-responsive-font btn-success">יצירת הזמנה חדשה</button>
-                        <button class="btn btn-responsive-font btn-danger" data-dismiss="modal">ביטול</button>
-
-                    </form>
-                </div> <!-- modal-body -->
-
-            </div> <!-- / modal-content -->
-        </div> <!-- / modal-dialog-->
-    </div> <!-- / New Order Modal -->
-</template>
-
-<!-- Catalog page - Close and delete order buttons -->
+<!-- Catalog page - Close order button -->
 <template name="close_order">
-    <button type="button" class="btn btn-responsive-font btn-primary btn-block" data-toggle="modal"
-            data-target="#send_order_form">
-        <b>סיום ושליחת ההזמנה</b>
-    </button>
-    <button type="button" class="btn btn-responsive-font btn-danger" data-toggle="modal"
-            data-target="#delete_order_modal">
-        <b>מחיקת ההזמנה</b>
-    </button>
-
+    <div class="text-center">
+        <button type="button" class="nav-item-font-size btn-primary-round-ends btn btn-responsive-font" data-toggle="modal"
+                data-target="#send_order_form">
+            <b>סיום ושליחת ההזמנה</b>
+        </button>
+    </div>
 
     <!-- Send Order Modal -->
     <div id="send_order_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="senderModalLabel"
@@ -290,6 +267,16 @@
             </div> <!-- / modal-content -->
         </div> <!-- / modal-dialog-->
     </div> <!-- / Send Order Modal -->
+</template>
+
+<!-- Catalog page - Delete order button -->
+<template name="delete_order">
+    <div class="text-center">
+        <button type="button" class="nav-item-font-size btn-danger-round-ends btn btn-responsive-font" data-toggle="modal"
+                data-target="#delete_order_modal">
+            <b>מחיקת ההזמנה</b>
+        </button>
+    </div>
 
     <!-- delete order Modal -->
     <div id="delete_order_modal" class="modal fade">
@@ -313,7 +300,6 @@
             </div> <!-- / modal-content -->
         </div> <!-- / modal-dialog-->
     </div> <!-- / delete order Modal -->
-
 </template>
 
 <!-- Order template for email -->

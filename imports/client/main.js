@@ -70,6 +70,10 @@ let single_order_update_cart = function(id_index_amount_array, flag) {
     }
 }
 
+let is_there_an_order_in_place = function() {
+    return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
+}
+
 let find_product_index = function(products_array, image_id, index){
     let values;
     for (let i = 0; i < products_array.length; i++) {
@@ -463,6 +467,9 @@ Template.single_item.events({
 });
 
 Template.single_item.helpers({
+    isEmptyItem: function() {
+      return !Session.get("single_item_object");
+    },
     getWatchCode: function () {
         return Session.get("single_item_object").watch_code;
     },
@@ -620,13 +627,19 @@ Template.navbar.helpers({
         return {
             placeholder: 'חיפוש',
             type: 'search',
-            class: 'js-searchBox',
+            class: 'js-searchBox nav-item-font-size',
             id: 'search_box_input',
             name: 'search_box_input',
             dir: 'ltr',
             //value: Session.get(searchBoxValue),
         }
-    }
+    },
+    isThereAnOrderInPlace: function () {
+        return is_there_an_order_in_place();
+    },
+    openedOrderID: function () {
+        return ShoppingCart.findOne({username: Meteor.user().username , status: "open"})._id;
+    },
 });
 
 Template.navbar.events({
@@ -645,11 +658,6 @@ Template.navbar.events({
     'click .js-collapse-after-click': function (event) {
         $('.navbar-collapse').collapse('hide');
     },
-});
-// END ---- search bar ----
-
-// START ---- Shopping cart ----
-Template.catalog.events({
     'submit .js-open-new-order' : function (event) {
         let store_name = event.target.store_name.value;
         if(ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() === 0) {
@@ -667,6 +675,30 @@ Template.catalog.events({
             alert("קיימת הזמנה פתוחה, סגרו אותה על מנת לפתוח חדשה");
         }
     },
+});
+// END ---- search bar ----
+
+// START ---- Shopping cart ----
+Template.catalog.events({
+    'submit .js-open-new-order': function (event) {
+        let store_name = event.target.store_name.value;
+        if (ShoppingCart.find({username: Meteor.user().username, status: "open"}).count() === 0) {
+            ShoppingCart.insert({
+                username: Meteor.user().username,
+                store_name: store_name,
+                status: "open",
+                products: [],
+                sent_date: "הזמנה פתוחה",
+                checkmark: 0
+            });
+            $("#new_order_form").modal('hide');
+
+        } else {
+            alert("קיימת הזמנה פתוחה, סגרו אותה על מנת לפתוח חדשה");
+        }
+    },
+});
+Template.single_order.events({
     'submit .js-close-order' : function (event) {
         let notes = event.target.final_notes.value;
         let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
@@ -756,7 +788,7 @@ Template.catalog.helpers({
         return is_item_not_on_sale(item_id);
     },
     isThereAnOrderInPlace: function () {
-        return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
+        return is_there_an_order_in_place();
     },
 });
 
@@ -899,6 +931,9 @@ Template.single_order.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
     },
+    isEmptyOrder: function() {
+        return !Session.get("single_order_object");
+    },
     getStoreName: function () {
         return Session.get("single_order_object").store_name;
     },
@@ -983,6 +1018,9 @@ Template.single_order.helpers({
             }
         }
         return total_price;
+    },
+    isColsedOrder: function () {
+        return Session.get("single_order_object").status === "closed";
     }
 });
 // END ---- Shopping cart ----

@@ -19,10 +19,10 @@
     <div class="container py-5" style="margin-top: 100px;">
         <div class="jumbotron">
         {{#if currentUser}}
-            <h2 align="center">מחובר</h2>
+            <h1 align="center"><u>{{ currentUser.username }}</u> ,מחובר </h1>
                 <hr class="my-4" />
             <h2 class="text-center">
-              <button type="button" class="js-logout btn btn-responsive-font btn-info">
+              <button type="button" class="js-logout btn-danger-round-ends btn btn-responsive-font">
                   <span class="fa fa-sign-out"></span>התנתקות
               </button>
             </h2>
@@ -130,7 +130,7 @@
             שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב מהחומרים האיכותיים ביותר.
         </p>
   	  <div class="col text-center">
-          <a href="/catalog" class="btn btn btn-responsive-font btn-outline-secondary">לקטלוג לחצו כאן</a>
+          <a href="/catalog" class="btn btn-grey-round-ends btn-responsive-font">לקטלוג לחצו כאן</a>
   	  </div>
     </div>
   </div>
