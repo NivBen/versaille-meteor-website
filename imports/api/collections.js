@@ -2,11 +2,18 @@
 // so we need to import it
 import {Mongo} from 'meteor/mongo';
 import {Meteor} from "meteor/meteor";
+import {Accounts} from "meteor/accounts-base";
 
 Accounts.config({
     forbidClientAccountCreation: true,
     loginExpirationInDays: 7
 });
+
+if (Meteor.isClient) {
+    Accounts.ui.config({
+        passwordSignupFields: "USERNAME_ONLY"
+    });
+}
 
 Images = new Mongo.Collection('images');
 ShoppingCart = new Mongo.Collection("cart");
@@ -17,6 +24,25 @@ ImagesIndex = new EasySearch.Index({
     engine: new EasySearch.MongoDB()
 });
 
+let is_admin_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+
+let is_manager_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "David";
+    } else{
+        return false;
+    }
+}
+
+let is_agent_logged_in = function() {
+    return !!Meteor.user(); // TODO: change this to list of agents
+}
 
 // set up security on Images collection
 if (Meteor.isServer) {
@@ -28,27 +54,15 @@ if (Meteor.isServer) {
     Images.allow({
 
         update: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                return Meteor.user().username === admin;
-            } else {// user not logged in
-                return false;
-            }
+            return is_admin_logged_in() || is_manager_logged_in();
         },
 
         insert: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                return Meteor.user().username === admin;
-            } else {// user not logged in
-                return false;
-            }
+            return is_admin_logged_in() || is_manager_logged_in();
         },
 
         remove: function (userId, doc) {
-            if (Meteor.user()) {// logged in
-                return Meteor.user().username === admin;
-            } else {// user not logged in
-                return false;
-            }
+            return is_admin_logged_in() || is_manager_logged_in();
         }
     })
 }
@@ -60,13 +74,13 @@ if (Meteor.isServer) {
     });
     ShoppingCart.allow({
         update: function (userId, doc) {
-            return !!Meteor.user();
+            return is_agent_logged_in();
         },
         insert: function (userId, doc) {
-            return !!Meteor.user();
+            return is_agent_logged_in();
         },
         remove: function (userId, doc) {
-            return !!Meteor.user();
+            return is_agent_logged_in();
         }
     })
 }

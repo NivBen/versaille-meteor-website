@@ -26,6 +26,14 @@ let is_admin_logged_in = function() {
     }
 }
 
+let is_manager_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "David";
+    } else{
+        return false;
+    }
+}
+
 Router.route('/unsubscribe', {
     onBeforeAction: function () { // only renders for logged in users
         if (is_agent_logged_in()) {
@@ -97,7 +105,7 @@ Router.route('/orders', {
     action: function(){
         document.title = 'הזמנות שעוני ורסאי';
         this.render('navbar', {to: "navbar"});
-        if(is_admin_logged_in()){
+        if(is_admin_logged_in() || is_manager_logged_in()){
             this.render('orders', {
                 to: "main",
                 data: { // status: -1 means open orders will show first

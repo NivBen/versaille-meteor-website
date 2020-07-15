@@ -11,12 +11,16 @@ Meteor.startup(function () {
             password: Meteor.settings.user_default_password.admin_pass
         });
         Accounts.createUser({
-            username: 'agent1',
+            username: 'David',
             password: Meteor.settings.user_default_password.agent1_pass
         });
         Accounts.createUser({
-            username: 'agent2',
+            username: 'Itzik',
             password: Meteor.settings.user_default_password.agent2_pass
+        });
+        Accounts.createUser({
+            username: 'Bentzi',
+            password: Meteor.settings.user_default_password.agent3_pass
         });
     }
     // setting up MAIL_URL

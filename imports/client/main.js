@@ -3,17 +3,19 @@ import {Meteor} from 'meteor/meteor';
 import {Template} from 'meteor/templating';
 //import { Slingshot } from 'meteor/edgee:slingshot';
 
+Template.registerHelper('and',(a,b)=>{
+    return a && b;
+});
+Template.registerHelper('or',(a,b)=>{
+    return a || b;
+});
+
 let imageLimit = 16; // TODO: maybe limit this differently
 let ordersLimit = 8;
 Session.set("imageLimit", imageLimit);
 Session.set("ordersLimit", ordersLimit);
 let sender_email = Meteor.settings.public.sender_email;
 let email_recipient_list = Meteor.settings.public.email_recipient_list;
-
-/// accounts config
-Accounts.ui.config({
-    passwordSignupFields: "USERNAME_ONLY"
-});
 
 $('.carousel').carousel({
     pause: true,
@@ -28,6 +30,14 @@ let is_agent_logged_in = function() {
 let is_admin_logged_in = function() {
     if(Meteor.user()) {
         return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+
+let is_manager_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "David";
     } else{
         return false;
     }
@@ -143,13 +153,6 @@ Template.main_Layout.onCreated(function bodyOnCreated() {
     Meteor.subscribe('images');
     //Meteor.subscribe('s3_images');
     Meteor.subscribe('cart');
-});
-
-Template.registerHelper('and',(a,b)=>{
-    return a && b;
-});
-Template.registerHelper('or',(a,b)=>{
-    return a || b;
 });
 
 // Start ---- Login ----
@@ -776,6 +779,9 @@ Template.catalog.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
     },
+    isManager: function () {
+        return is_manager_logged_in();
+    },
     isAgent: function () {
        return is_agent_logged_in();
     },
@@ -795,6 +801,9 @@ Template.catalog.helpers({
 Template.single_item.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
+    },
+    isManager: function () {
+        return is_manager_logged_in();
     },
     isAgent: function () {
         return is_agent_logged_in();
@@ -836,7 +845,7 @@ Template.single_item.events({
     },
     'submit .js-on-sale': function (event) {
         //event.preventDefault();
-        if(is_admin_logged_in()){
+        if(is_admin_logged_in() || is_manager_logged_in()){
             let item_id = Session.get("single_item_object")._id; // grabbing image id
             let new_sale_watch_price = event.target.new_sale_watch_price.value;
                 Images.update( {_id: item_id},
@@ -847,7 +856,7 @@ Template.single_item.events({
     },
     'click .js-confirm-remove-from-sale': function (event) {
         //event.preventDefault();
-        if(is_admin_logged_in()){
+        if(is_admin_logged_in() || is_manager_logged_in()){
             let item_id = Session.get("single_item_object")._id; // grabbing image id
             Images.update( {_id: item_id},
                 { $set: { on_sale_price: -1 } });
@@ -862,11 +871,14 @@ Template.orders.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
     },
+    isManager: function () {
+        return is_manager_logged_in();
+    }
 });
 
 Template.orders.events({
     'click .js-flip-checkmark': function () {
-        if (is_admin_logged_in()) { // only admin can do this
+        if (is_admin_logged_in() || is_manager_logged_in()) { // only admin can do this
             let checkmark_status = parseInt(this.checkmark);
             if (checkmark_status === 1) {
                 checkmark_status = 0;
@@ -889,7 +901,7 @@ Template.orders.events({
 
 Template.single_order.events({
     'click .js-flip-checkmark': function () {
-        if (is_admin_logged_in()) { // only admin can do this
+        if (is_admin_logged_in() || is_manager_logged_in()) { // only admin can do this
             let checkmark_status = Session.get("single_order_object").checkmark;
             if (checkmark_status == 1) {
                 checkmark_status = 0;
@@ -913,7 +925,7 @@ Template.single_order.events({
         single_order_update_cart(this.split("_"), '-');
     },
     'submit .js-manager-notes': function(event) {
-        if (is_admin_logged_in()) { // only admin can do this
+        if (is_admin_logged_in() || is_manager_logged_in()) { // only admin or manager can do this
             let order_id = Session.get("single_order_object")._id;
             ShoppingCart.update({_id: order_id},
                 {
@@ -930,6 +942,9 @@ Template.single_order.events({
 Template.single_order.helpers({
     isAdmin: function () {
         return is_admin_logged_in();
+    },
+    isManager: function () {
+        return is_manager_logged_in();
     },
     isEmptyOrder: function() {
         return !Session.get("single_order_object");

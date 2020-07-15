@@ -501,3 +501,12 @@ span.step {
     background: rgba(168, 180, 180, 0.84);
     transition: all 0.3s ease 0s;
 }
+
+/* PDF display */
+.embed-responsive {
+    position: relative;
+    display: block;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+}

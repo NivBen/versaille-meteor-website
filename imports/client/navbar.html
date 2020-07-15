@@ -45,7 +45,7 @@
                         </li>
                     {{else}}
                         <li class="nav-item-font-size mx-2">
-                            <a href="/orders/{{ openedOrderID }}">
+                            <a class="js-collapse-after-click" href="/orders/{{ openedOrderID }}">
                                 <span class="fa fa-cart-arrow-down fa-3x"></span>
                             </a>
                         </li>
@@ -89,16 +89,16 @@
                         <div class="form-group">
                             <i class="fa fa-tag prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="store_name">שם החנות:</label>
-                            <input type="text" class="form-control validate" maxlength="100" id="store_name" name="store_name"
+                            <input type="text" class="nav-item-font-size form-control validate" maxlength="100" id="store_name" name="store_name"
                                    required/>
                         </div>
 
                         <div class="text-center">
-                            <button class="btn btn-responsive-font btn-success-round-ends">יצירת הזמנה חדשה</button>
+                            <button class="js-collapse-after-click btn btn-responsive-font btn-success-round-ends">יצירת הזמנה חדשה</button>
                         </div>
 
                         <div class="text-left">
-                            <button class="btn btn-responsive-font btn-danger-round-ends" data-dismiss="modal">ביטול</button>
+                            <button class="js-collapse-after-click btn btn-responsive-font btn-danger-round-ends" data-dismiss="modal">ביטול</button>
                         </div>
 
                     </form>

@@ -24,7 +24,7 @@
                         <th scope="col">שם החנות</th>
                         <th scope="col">תאריך</th>
                         <th scope="col">הערות מנהל</th>
-                        {{#if isAdmin }}
+                        {{#if or isManager isAdmin }}
                             <th scope="col">סוכן</th>
                             <th scope="col">מצב ההזמנה</th>
                         {{/if}}
@@ -34,11 +34,11 @@
                     <tbody>
                     {{#each cart}}
                         <tr>
-                            <th scope="row">{{store_name}}</th>
+                            <a href="orders/{{_id}}"><th scope="row">{{store_name}}</th></a>
                             <td>{{sent_date}}</td>
                             <td>{{manager_notes}}</td>
 
-                            {{#if isAdmin}}
+                            {{#if or isManager isAdmin}}
                                 <td>{{username}}</td>
                                 {{#if checkmark }}
                                     <td><button class="btn btn-light fa fa-check-circle fa-3x js-flip-checkmark"></button></td>
@@ -70,9 +70,12 @@
                 <div class="row flex-row-reverse">
                     <div class="col-12 align-items-center justify-content-center" dir="rtl">
                         <h2 class="display-4 text-info text-center" dir="rtl">
-                            לא נמצאה ההזמנה...
+                            טוען...
                             <br />
-                            הקישור ככל הנראה שגוי
+                            <i class="fa fa-spinner fa-spin fa-3x"></i>
+                        </h2>
+                        <h2 class="display-5 text-info text-center" dir="rtl">
+                            אם לאחר כמה שניות הטעינה לא מצליחה ייתכן וההזמנה לא קיימת
                         </h2>
                     </div>
                 </div>
@@ -88,7 +91,7 @@
                                 הזמנה מ-{{getStoreName}}
                                 <br />
                             </h1>
-                            {{#if and isColsedOrder isAdmin}}
+                            {{#if and isColsedOrder isManager}}
                                 <h2 class="display-5 text-info text-center">
                                     {{#if getCheckmark }}
                                         <button class="btn btn-white fa fa-check-circle fa-3x js-flip-checkmark"></button>
@@ -211,7 +214,7 @@
                         <div class="form-group">
                             <i class="fa fa-commenting-o prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="final_notes">הערות:</label>
-                            <input type="text" class="form-control validate" maxlength="500" id="manager_notes" name="manager_notes"/>
+                            <textarea rows="4" type="text" class="nav-item-font-size form-control validate" maxlength="500" id="manager_notes" name="manager_notes"></textarea>
                         </div>
 
                         <button class="btn btn-responsive-font btn-success">סיום</button>
@@ -255,7 +258,7 @@
                         <div class="form-group">
                             <i class="fa fa-commenting-o prefix grey-text"></i>
                             <label data-error="wrong" data-success="right" for="final_notes">הערות להזמנה:</label>
-                            <input type="text" class="form-control validate" maxlength="500" id="final_notes" name="final_notes"/>
+                            <textarea type="text" rows="4" class="nav-item-font-size form-control validate" maxlength="500" id="final_notes" name="final_notes"></textarea>
                         </div>
 
                         <button class="btn btn-responsive-font btn-success">סיום ושליחת ההזמנה</button>

@@ -305,10 +305,14 @@
                     <div class="row flex-row-reverse">
                         <div class="col-12 align-items-center justify-content-center">
                             <h2 class="display-4 text-info text-center" dir="rtl">
-                                לא נמצא השעון...
+                                טוען...
                                 <br />
-                                הקישור ככל הנראה שגוי
+                                <i class="fa fa-spinner fa-spin fa-3x"></i>
                             </h2>
+                            <h2 class="display-5 text-info text-center" dir="rtl">
+                                אם לאחר כמה שניות הטעינה לא מצליחה ייתכן והקישור שגוי
+                            </h2>
+
                         </div>
                     </div>
                 </div>
@@ -351,7 +355,7 @@
                                     </div>
                                 {{/if}}
 
-                                {{#if and isNotOnSale isAdmin}}
+                                {{#if and isNotOnSale isManager}}
                                     <div class="col">
                                         <button type="button" class="btn btn-responsive-font btn-warning"
                                                 data-toggle="modal" data-target="#on_sale_form_modal">הוספה למבצעים</button>
@@ -388,7 +392,7 @@
                                     </div> <!-- / Add On Sale Item Modal -->
                                 {{/if}}
 
-                                {{#if and isOnSale isAdmin}}
+                                {{#if and isOnSale isManager}}
                                     <div class="col">
                                         <button type="button" class="btn btn-responsive-font btn-danger"
                                                 data-toggle="modal" data-target="#remove_from_sale_modal">הסרה ממבצעים וחזרה למחיר המקורי</button>
