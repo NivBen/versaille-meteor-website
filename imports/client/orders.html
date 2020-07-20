@@ -1,19 +1,35 @@
-<!-- Order page - List of orders -->
+<!-- Orders page - List of orders -->
 <template name="orders">
     <!--================Cart Area =================-->
-    <section style="padding: 100px 0 0 0;" >
-        <div class="bg-light mt-0" id="about" name="about">
-            <div class="container">
-                <div class="row flex-row-reverse">
-                    <div class="col-12 align-items-center justify-content-center">
-                        <h1 class="display-4 text-info text-center">
-                            הזמנות
-                        </h1>
-                    </div>
-                </div>
-            </div>
+
+    <section class="order_header_area" style="padding-top: 5rem;">
+        <div class="bg-light mt-0 py-5">
+            <h1 class="display-4 text-info text-center">הזמנות</h1>
         </div>
     </section>
+
+    <div class="container">
+        <div class="row flex-row-reverse">
+            <div class="col-12 text-center border border-dark" >
+                {{#if or isManager isAdmin}}
+                    <a href="update_balances_pdf" type="button" class="btn btn-grey-round-ends" style="font-size: 36px;">
+                        <i class="fa fa-balance-scale" aria-hidden="true"></i>
+                        עדכון יתרות
+                    </a>
+                {{/if}}
+                    {{#if balance_last_updated}}
+                    <a href="balance" type="button" class="btn btn-primary-round-ends">
+                        <i class="fa fa-balance-scale" aria-hidden="true"></i>
+                        צפייה ביתרות
+                    </a>
+                    <br />
+                        עדכון אחרון: <b>{{balance_last_updated}}</b>
+                    {{else}}
+                        <b>לא קיים דף יתרות</b>
+                {{/if}}
+            </div>
+        </div>
+    </div>
 
     <section class="cart_area" style="overflow-y: auto; overflow-x: auto;">
         <div class="container overflow-auto" style="direction: rtl; text-align: right;">
@@ -874,6 +890,137 @@
     </html>
 </template>
 
+<!-- Page to update agents balances -->
+<template name="update_balances_pdf">
+    <section class="order_header_area" style="padding-top: 5rem;">
+        <div class="bg-light mt-0 py-5">
+            <h1 class="display-4 text-info text-center">עדכון יתרות</h1>
+        </div>
+    </section>
+
+    <section class="order_details_area" style="padding: 0 0 60px 0;">
+        <div class="container" style="direction: rtl; text-align: right;">
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-10 align-items-center justify-content-center">
+                    <form class="js-upload-s3-pdf">
+
+                        <div class="form-group">
+                            <select class="browser-default custom-select form-control validate" id="agent_name"
+                                    name="agent_name" required>
+                                <option value="">בחר סוכן</option>
+                                <option value="David">דוד</option>
+                                <option value="Itzik">איציק</option>
+                                <option value="Bentzi">בנצי</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="uploadPdfFile" class="btn btn-outline-secondary btn-grey-round-ends" dir="rtl">בחרו קובץ pdf</label>
+                            <input type="file" class="uploadPdfFile" id="uploadPdfFile" style="display: none">
+                            <button type="button" class="btn btn-danger-round-ends js-remove-previewed-file">ביטול</button>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+                                            <span class="sr-only">{{progress}}% Complete</span>{{progress}}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class='embed-responsive' style='padding-bottom:100%'>
+                                <object id="temp_file_preview" type='application/pdf' width='100%' height='100%'></object>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-round-ends">
+                            <i class="fa fa-upload" aria-hidden="true"></i>
+                            העלאה
+                        </button>
+                    </form>
+
+                </div>
+                <div class="col-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Short script that previews the file that is about to be uploaded on the client side only
+        // An html5 trick - https://stackoverflow.com/a/14069481
+        document.getElementById("uploadPdfFile").onchange = function () {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                // get loaded data and render thumbnail.
+                document.getElementById("temp_file_preview").data = e.target.result;
+                $(".js-remove-previewed-file").click(function(){
+                    document.getElementById("temp_file_preview").data = '';
+                    document.getElementById("uploadPdfFile").value = '';
+                });
+            };
+            // read the file as a data URL.
+            reader.readAsDataURL(this.files[0]);
+        };
+    </script>
+
+
+    <section class="order_header_area">
+        <div class="bg-light mt-0 py-2">
+            <h1 class="display-4 text-info text-center">מחיקת יתרות</h1>
+        </div>
+    </section>
+
+    <section class="order_details_area">
+        <div class="container" style="direction: rtl; text-align: right;">
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-10 text-center">
+                    <button type="button" class="btn btn-danger-round-ends"
+                            data-toggle="modal" data-target="#delete_balance_modal">מחיקת קובץ יתרות לסוכן ספציפי
+                    </button>
+                </div>
+                <div class="col-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="delete_balance_modal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+
+                <div class="modal-header text-center"> <!-- modal-header -->
+                    <h4 class="modal-title w-100 font-weight-bold"><i class="fa fa-trash fa-4x"></i><br/>מחיקה</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div> <!-- / modal-header -->
+
+                <form class="js-delete-balances">
+                    <div class="form-group">
+                        <select class="browser-default custom-select form-control validate"
+                                name="agent_name" required>
+                            <option value="">בחר סוכן</option>
+                            <option value="David">דוד</option>
+                            <option value="Itzik">איציק</option>
+                            <option value="Bentzi">בנצי</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-danger-round-ends">מחיקת קובץ יתרות לסוכן שנבחר</button>
+                    <button type="button" class="btn btn-primary-round-ends" data-dismiss="modal">ביטול</button>
+                </form>
+
+            </div> <!-- / modal-content -->
+        </div> <!-- / modal-dialog-->
+    </div> <!-- / delete Modal -->
+
+</template>
+
+<!-- agent stores balance pdf -->
+<template name="balance_pdf_viewer">
+    <div class='embed-responsive' style='height: 100vh'>
+        <object data='{{ balance_pdf_url }}' type='application/pdf' width='100%' height='100%'></object>
+    </div>
+</template>
 
 <!-- Unsubscribe page - unsubscribe from mailing list -->
 <template name="Unsubscribe">

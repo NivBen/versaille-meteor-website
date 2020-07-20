@@ -143,6 +143,26 @@ let email_template_new_products_format = function(opened_order) {
     }
     return [new_products_format, total_amount, total_price];
 }
+
+function getJerusalemDate() { // returns date in jerusalem in the following format: "dd.mm.yy, hh:mm" ()
+    let date = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Jerusalem",
+        hour12: false, timeStyle: "short", dateStyle: "short"
+    })
+    return (date.split('/')[1] + '.' + date.split('/')[0] + '.' + date.split('/')[2]);
+}
+
+function getHebrewDay() { // returns string containing the current hebrew day
+    switch ((new Date()).getDay()) {
+        case 0: return 'ראשון';
+        case 1: return 'שני';
+        case 2: return 'שלישי';
+        case 3: return 'רביעי';
+        case 4: return 'חמישי';
+        case 5: return 'שישי';
+        case 6: return 'שבת';
+    }
+}
 // END ---- local helper functions ----
 
 Template.searchBox.onCreated(function bodyOnCreated() {
@@ -151,7 +171,7 @@ Template.searchBox.onCreated(function bodyOnCreated() {
 
 Template.main_Layout.onCreated(function bodyOnCreated() {
     Meteor.subscribe('images');
-    //Meteor.subscribe('s3_images');
+    Meteor.subscribe('agents_PDF');
     Meteor.subscribe('cart');
 });
 
@@ -371,7 +391,7 @@ Template.catalog.events({
                         watch_price: parseInt(watch_price, 10),
                         watch_category: watch_category,
                         watch_description: watch_description,
-                        editedOn: new Date(),
+                        editedOn: getJerusalemDate(),
                     }
                 });
         }
@@ -425,7 +445,7 @@ Template.add_item_form.events({
                 watch_price: parseInt(watch_price, 10),
                 watch_category: watch_category,
                 watch_description: watch_description,
-                createdOn: new Date(),
+                createdOn: getJerusalemDate(),
                 createdBy: Meteor.user().username
             });
             console.log("added catalog item")
@@ -701,36 +721,14 @@ Template.catalog.events({
         }
     },
 });
+
 Template.single_order.events({
     'submit .js-close-order' : function (event) {
         let notes = event.target.final_notes.value;
         let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
-        let hebrew_day = 'ראשון';
-        let date = new Date();
+
         if(opened_order) {
-            switch(date.getDay()) { // day to hebrew
-                case 0:
-                    break;
-                case 1:
-                    hebrew_day = 'שני';
-                    break;
-                case 2:
-                    hebrew_day = 'שלישי';
-                    break;
-                case 3:
-                    hebrew_day = 'רביעי';
-                    break;
-                case 4:
-                    hebrew_day = 'חמישי';
-                    break;
-                case 5:
-                    hebrew_day = 'שישי';
-                    break;
-                case 6:
-                    hebrew_day = 'שבת';
-                    break;
-            }
-            Meteor.call('server_close_order', opened_order._id, Meteor.user().username, notes, hebrew_day);
+            Meteor.call('server_close_order', opened_order._id, Meteor.user().username, notes);
 
             // sending notification email
             opened_order = ShoppingCart.findOne({_id: opened_order._id});
@@ -741,17 +739,17 @@ Template.single_order.events({
                 order_store_name: opened_order.store_name,
                 order_notes: notes,
                 order_prodcuts: new_products_format,
-                /*
-                    img_url: img_url,
-                    watch_code: watch_code,
-                    watch_desc: watch_desc,
-                    amount: amount,
-                    price: price
+                /* the new format is of the following:
+                        img_url: img_url,
+                        watch_code: watch_code,
+                        watch_desc: watch_desc,
+                        amount: amount,
+                        price: price
                 */
                 order_total_amount: total_amount,
                 order_total_price: total_price,
                 order_website_url:"https://www.versaille.co.il/orders/" + opened_order._id,
-                order_sent_date: new Date().toLocaleString("en-US", {timeZone: "Asia/Jerusalem", hour12: false }) + " " + hebrew_day,
+                order_sent_date: getJerusalemDate() + " " + getHebrewDay(),
                 order_agent_name: opened_order.username
             };
             Meteor.call(
@@ -1043,3 +1041,87 @@ Template.single_order.helpers({
 Template.Unsubscribe.events({
     'click .js-unsubscribe': function(){alert("thank you!");}
 });
+
+// START ---- pdf S3 balances pdf uploads ----
+var uploader = new ReactiveVar();
+
+Template.update_balances_pdf.events({
+    'submit .js-upload-s3-pdf': function(event, template) {
+        event.preventDefault();
+        let agent_name = event.target.agent_name.value;
+        let file_object = document.getElementById('uploadPdfFile').files[0];
+        if(!file_object){
+            alert("בחרו קובץ");
+        } else {
+            var upload = new Slingshot.Upload("pdfUploads", {agent: agent_name});
+            upload.send(file_object, function (error, file_s3_url) {
+                uploader.set();
+                if (error) {
+                    console.error('Error uploading' + error);
+                    console.error(error);
+                    alert (" שגיאה! ");
+                }
+                else{
+                    alert("ההעלאה בוצעה בהצלחה")
+                    let old_agent_pdf_object = Agents_PDF.findOne({agent: agent_name});
+                    if(old_agent_pdf_object) { // if older version exists
+                        Meteor.call('delete_s3_item', old_agent_pdf_object.file_url) ; //Remove old file in s3 container
+                        Agents_PDF.remove({_id: old_agent_pdf_object._id});
+                    }
+                    Agents_PDF.insert({
+                        file_url: file_s3_url,
+                        sent_date: getJerusalemDate() + " " + getHebrewDay(),
+                        sent_time: Date.now(),
+                        agent: agent_name
+                    });
+                    location.replace("orders");
+                }
+            });
+            uploader.set(upload);
+        }
+    },
+    'submit .js-delete-balances': function () {
+        let agent_name = event.target.agent_name.value;
+        let old_agent_pdf_object = Agents_PDF.findOne({agent: agent_name});
+        if(old_agent_pdf_object) { // if exists
+            Meteor.call('delete_s3_item', old_agent_pdf_object.file_url) ; //Remove old file in s3 container
+            Agents_PDF.remove({_id: old_agent_pdf_object._id});
+            alert("קובץ היתרות של הסוכן " + agent_name + " נמחק בהצלחה");
+        } else {
+            alert("לא קיים לסוכן " + agent_name + " קובץ יתרות");
+        }
+    }
+});
+
+Template.update_balances_pdf.helpers({
+    progress: function () {
+        var upload = uploader.get();
+        if (upload)
+            return Math.round(upload.progress() * 100);
+        else
+            return 0;
+    },
+});
+
+Template.balance_pdf_viewer.helpers({
+    balance_pdf_url: function () {
+        let agent_pdf_object = Agents_PDF.findOne({ agent: Meteor.user().username });
+        if(agent_pdf_object){
+            return agent_pdf_object.file_url;
+        } else {
+            return null;
+        }
+    },
+});
+
+Template.orders.helpers({
+    balance_last_updated: function () {
+        let agent_pdf_object = Agents_PDF.findOne({ agent: Meteor.user().username });
+        if(agent_pdf_object){
+            return agent_pdf_object.sent_date;
+        } else {
+            return null;
+        }
+    },
+});
+// END ---- pdf S3 balances pdf uploads ----

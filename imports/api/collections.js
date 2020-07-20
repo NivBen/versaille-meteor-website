@@ -1,5 +1,3 @@
-// we need to use the Mongo compoent
-// so we need to import it
 import {Mongo} from 'meteor/mongo';
 import {Meteor} from "meteor/meteor";
 import {Accounts} from "meteor/accounts-base";
@@ -81,6 +79,32 @@ if (Meteor.isServer) {
         },
         remove: function (userId, doc) {
             return is_agent_logged_in();
+        }
+    })
+}
+
+
+
+
+
+Agents_PDF = new Mongo.Collection('agents_PDF');
+// set up security on S3_images collection
+if (Meteor.isServer) {
+    Meteor.publish('agents_PDF', function () {
+        return Agents_PDF.find();
+    });
+
+    Agents_PDF.allow({
+        update: function () {
+            return is_admin_logged_in() || is_manager_logged_in();
+        },
+
+        insert: function () {
+            return is_admin_logged_in() || is_manager_logged_in();
+        },
+
+        remove: function () {
+            return is_admin_logged_in() || is_manager_logged_in();
         }
     })
 }

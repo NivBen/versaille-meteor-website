@@ -31,4 +31,6 @@ underscore
 meteortoys:allthings          # analyzing tools for developing TODO: remove later - use for developing
 easy:search                   # simple search engine
 rcy:nouislider                # price range slider
-email
+email                         # emailing service
+edgee:slingshot               # s3 file upload
+peerlibrary:aws-sdk           # aws sdk (S3, EC2, DynamoDB and SWF)

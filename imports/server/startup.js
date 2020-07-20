@@ -1,6 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import '/imports/api/collections.js';
-//import { Slingshot } from 'meteor/edgee:slingshot';
+import { AWS } from 'meteor/peerlibrary:aws-sdk';
 
 // ---- Startup function ----
 Meteor.startup(function () {
@@ -93,16 +93,15 @@ Meteor.methods({
                 } )
         }
     },
-
-    server_close_order : function(order_id, agent_username, notes, hebrew_day) {
-        let date = new Date();
+    // method to close order *single order* page
+    server_close_order : function(order_id, agent_username, notes) {
         ShoppingCart.update({_id: order_id, username: agent_username},
             {
                 $set: {
                     status: "closed",
                     notes: notes,
-                    sent_date: new Date().toLocaleString("en-US", {timeZone: "Asia/Jerusalem", hour12: false }) + " " + hebrew_day,
-                    sent_time: date.getTime()
+                    sent_date: getJerusalemDate() + " " + getHebrewDay(),
+                    sent_time: Date.now()
                 }
             },
             function(err, result) {
@@ -111,19 +110,106 @@ Meteor.methods({
                 }
             });
     },
-
+    // method to send email
     server_send_email(options) {
-        // Make sure that all arguments are strings.
-        //check([to, from, subject, text], [String]);
-
         // Let other method calls from the same client start running, without waiting for the email sending to complete.
         this.unblock();
-
         Email.send(options);
+    },
+    // method to delete s3 item given an object url
+    delete_s3_item: function(object_url) {
+        if (is_admin_logged_in() || is_manager_logged_in()) {
+            AWS.config.update({
+                accessKeyId: Meteor.settings.S3_Delete_credentials.AWSAccessKeyId,
+                secretAccessKey: Meteor.settings.S3_Delete_credentials.AWSSecretAccessKey,
+                region: Meteor.settings.S3_Delete_credentials.region
+            });
+            var s3 = new AWS.S3();
+            let key = object_url.replace("https://" + Meteor.settings.S3_Delete_credentials.bucket + ".s3." + Meteor.settings.S3_Delete_credentials.region + ".amazonaws.com/", '');
+            key = object_url.replace("https://" + Meteor.settings.S3_Delete_credentials.bucket + ".s3-" + Meteor.settings.S3_Delete_credentials.region + ".amazonaws.com/", '');
+            var params = {
+                Bucket: Meteor.settings.S3_Delete_credentials.bucket,
+                Key: key
+            }; // key is the path to the object
+            var deleteObject = Meteor.wrapAsync(s3.deleteObject(params, function (error, data) {
+                if (error) {
+                    console.log('ERROR in S3 delete:' + error);
+                } else {
+                    console.log('Successful S3 delete of the following key: ' + key);
+                    console.log(data);
+                }
+            }));
+        }
     }
 });
 
-function addZero(i) { // for date
-    if (i < 10) { i = "0" + i; }
-    return i;
+let is_agent_logged_in = function() {
+    return !!Meteor.user(); // TODO: change this to list of agents
 }
+let is_admin_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+let is_manager_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "David";
+    } else{
+        return false;
+    }
+}
+
+function getJerusalemDate() { // returns date in jerusalem in the following format: "dd.mm.yy, hh:mm"
+    let date = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Jerusalem",
+        hour12: false, timeStyle: "short", dateStyle: "short"
+    })
+    return (date.split('/')[1] + '.' + date.split('/')[0] + '.' + date.split('/')[2]);
+}
+
+function getHebrewDay() { // returns string containing the current hebrew day
+    switch ((new Date()).getDay()) { // day to hebrew
+        case 0: return 'ראשון';
+        case 1: return 'שני';
+        case 2: return 'שלישי';
+        case 3: return 'רביעי';
+        case 4: return 'חמישי';
+        case 5: return 'שישי';
+        case 6: return 'שבת';
+    }
+}
+
+
+
+// ---- AWS S3 handling ----
+Slingshot.fileRestrictions("pdfUploads", {
+    allowedFileTypes: ["application/pdf"],
+    maxSize: 30 * 1024 * 1024 // 30 MB (null for unlimited)
+});
+
+Slingshot.createDirective("pdfUploads", Slingshot.S3Storage, {
+    AWSAccessKeyId: Meteor.settings.S3_credentials.AWSAccessKeyId,
+    AWSSecretAccessKey: Meteor.settings.S3_credentials.AWSSecretAccessKey,
+    bucket: Meteor.settings.S3_credentials.bucket,
+    acl: "public-read",
+    region: Meteor.settings.S3_credentials.region,
+
+    authorize: function () {
+        if (is_admin_logged_in() || is_manager_logged_in()) {
+            return true;
+        } else {
+            let message = "Attempted S3 pdf file upload without permission";
+            console.log("ERROR:" + message);
+            throw new Meteor.Error("Login Required", message);
+        }
+    },
+
+    // How To Modifying The Filename Before Uploading
+    // https://stackoverflow.com/questions/42610307/how-to-modifying-the-filename-before-uploading-when-using-meteor-edgeeslingshot
+    key: function (file, metacontext) {
+        return "PDFs" + "/" + metacontext.agent + '/' + file.name;
+    }
+
+});
