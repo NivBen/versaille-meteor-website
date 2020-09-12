@@ -10,13 +10,48 @@ Template.registerHelper('or',(a,b)=>{
     return a || b;
 });
 
+/// infiniscroll for catalog items
 let imageLimit = 16; // TODO: maybe limit this differently
-let ordersLimit = 8;
 Session.set("imageLimit", imageLimit);
+let catalogLastScrollTop = 0;
+
+$(window).scroll(function (event) {
+    if(window.location.pathname === "/catalog") {
+        // test if we are near the bottom of the window
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            // where are we in the page?
+            var scrollTop = $(this).scrollTop();
+            // test if we are going down
+            if (scrollTop > catalogLastScrollTop) {
+                // yes we are heading down...
+                Session.set("imageLimit", Session.get("imageLimit") + imageLimit / 2);
+            }
+            catalogLastScrollTop = scrollTop;
+        }
+    }
+})
+
+let ordersLimit = 10;
 Session.set("ordersLimit", ordersLimit);
+let ordersLastScrollTop = 0;
+$(window).scroll(function (event) {
+    if(window.location.pathname === "/orders") {
+        // test if we are near the bottom of the window
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            // where are we in the page?
+            var scrollTop = $(this).scrollTop();
+            // test if we are going down
+            if (scrollTop > ordersLastScrollTop) {
+                // yes we are heading down...
+                Session.set("ordersLimit", Session.get("ordersLimit") + ordersLimit / 2);
+            }
+            ordersLastScrollTop = scrollTop;
+        }
+    }
+})
+
 let sender_email = Meteor.settings.public.sender_email;
 let email_recipient_list = Meteor.settings.public.email_recipient_list;
-
 $('.carousel').carousel({
     pause: true,
     interval: "1000"
@@ -144,6 +179,18 @@ let email_template_new_products_format = function(opened_order) {
     return [new_products_format, total_amount, total_price];
 }
 
+// converts an s3 full size link from versaillewatches bucket to thumbnail version from versaillewatches-resized bucket
+// (such as "https://versaillewatches.s3.eu-central-1.amazonaws.com/3800/3807_1.jpg"
+// to "https://versaillewatches-resized.s3.eu-central-1.amazonaws.com/resized-3800/3807_1.jpg")
+let convert_full_size_to_thumbnail_link = function(full_sized_image_link){
+    let thumbnail_link = full_sized_image_link.replace("versaillewatches", "versaillewatches-resized"); // update bucket
+    let link_suffix = full_sized_image_link.replace(/(^https:\/\/[^\/]+\/)/g, '').split('/'); // link suffix ("3800/3807_1.jpg")
+    let folder_name = link_suffix[0], file_name = link_suffix[1];
+    let link_prefix = thumbnail_link.split(/(^https:\/\/[^\/]+\/)/g)[1];
+    thumbnail_link = link_prefix + 'resized-' + folder_name + '/' + file_name;
+    return thumbnail_link
+}
+
 function getJerusalemDate() { // returns date in jerusalem in the following format: "dd.mm.yy, hh:mm" ()
     let date = new Date().toLocaleString("en-US", {
         timeZone: "Asia/Jerusalem",
@@ -179,18 +226,21 @@ Template.main_Layout.onCreated(function bodyOnCreated() {
 Template.login.events({
     'submit form': function(event){
         event.preventDefault();
+        //setTimeout(() => { // TODO: remove
         let input_username = event.target.loginUsername.value;
         let input_password = event.target.loginPassword.value;
         Meteor.loginWithPassword(input_username, input_password, function(error){
             if(error){
                 let reason = error.reason;
                 if(reason === "Incorrect password" || reason === "User not found"){
-                    alert("פרטי התחברות שגויים")
+                    alert("פרטי התחברות שגויים");
+                    location.reload();
                 }
             } else {
-                //Router.go("main");
+                // stay on the same page
             }
         });
+        //}, 1000);
     },
     'click .js-logout': function(event){
         event.preventDefault();
@@ -234,6 +284,9 @@ Template.catalog.helpers({
         } else {
             return "anon";
         }
+    },
+    getThumbnailImgLink: function() {
+        return convert_full_size_to_thumbnail_link(this.img_src);
     },
     getImgSrc: function () {
         try {
@@ -399,10 +452,19 @@ Template.catalog.events({
         $("#edit_item_modal").modal('hide');
         return false;
     },
-    'click .js-load-more': function (event) {
-        Session.set("imageLimit", Session.get("imageLimit") + imageLimit);
-        $('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
-    },
+    'click .js-link-to-single-item': function(event) {
+        Session.set("last_scroll_position", $(window).scrollTop() /* + $(window).height() */);
+    }
+});
+
+
+
+$(window).on('popstate', function(event) {
+    if(window.location.pathname === "/catalog") {
+        setTimeout(function () {
+            window.scrollTo(0, Session.get("last_scroll_position"));
+        },100);
+    }
 });
 
 Template.add_item_form.events({
@@ -509,31 +571,31 @@ Template.single_item.helpers({
         return Session.get("single_item_object").img_src;
     },
     getFirstImgThumbnail: function () {
-        return Session.get("single_item_object").img_src;
+        return convert_full_size_to_thumbnail_link(Session.get("single_item_object").img_src);
     },
     getSecondImgSrc: function () {
         return Session.get("single_item_object").second_img_src;
     },
     getSecondImgThumbnail: function () {
-        return Session.get("single_item_object").second_img_src;
+        return convert_full_size_to_thumbnail_link(Session.get("single_item_object").second_img_src);
     },
     getThirdImgSrc: function () {
         return Session.get("single_item_object").third_img_src;
     },
     getThirdImgThumbnail: function () {
-        return Session.get("single_item_object").third_img_src;
+        return convert_full_size_to_thumbnail_link(Session.get("single_item_object").third_img_src);
     },
     getForthImgSrc: function () {
         return Session.get("single_item_object").forth_img_src;
     },
     getForthImgThumbnail: function () {
-        return Session.get("single_item_object").forth_img_src;
+        return convert_full_size_to_thumbnail_link(Session.get("single_item_object").forth_img_src);
     },
     getFifthImgSrc: function () {
         return Session.get("single_item_object").fifth_img_src;
     },
     getFifthImgThumbnail: function () {
-        return Session.get("single_item_object").fifth_img_src;
+        return convert_full_size_to_thumbnail_link(Session.get("single_item_object").fifth_img_src);
     },
     getMainImgSrc: function () {
         return Session.get("single_item_displayed_img_src");
@@ -595,7 +657,9 @@ Template.sidebar.events({
     'click .sidebar-number-link1100': function (event) {
         location.replace("catalog?q=1100");
     },
-
+    'click .js-sidebar-link': function (event) {
+        Session.set("last_scroll_position", 0);
+    }
 });
 
 Session.setDefault("price-slider", [0, 1200]);
@@ -697,6 +761,9 @@ Template.navbar.events({
         } else {
             alert("קיימת הזמנה פתוחה, סגרו אותה על מנת לפתוח חדשה");
         }
+    },
+    'click .nav-link': function(event) { // reset last_scroll_position
+        Session.set("last_scroll_position", 0);
     },
 });
 // END ---- search bar ----
@@ -890,10 +957,6 @@ Template.orders.events({
                     }
                 });
         }
-    },
-    'click .js-load-more-orders': function (event) {
-        Session.set("ordersLimit", Session.get("ordersLimit") + ordersLimit);
-        // $('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
     },
 });
 

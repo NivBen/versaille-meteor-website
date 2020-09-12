@@ -34,12 +34,38 @@
             <div class="wrapper">
                 <div id="formContent">
                     <!-- Login Form -->
-                    <form>
+
+                    <form id="login_form" role="form">
                         <input type="text" class="login_input_field" name="loginUsername" placeholder="שם משתמש" required>
                         <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא" required>
-                        <input type="submit" class="login_submit_form" value="התחברות">
+
+                        <input type="submit" id="submitButton" class="login_submit_form" value="התחברות">
                     </form>
-                    <!-- change password -->
+
+                    <script>
+                        // Show "Loading..." when login button is pressed only if fields are filled
+                        $(document).ready(function() {
+
+                            $("#submitButton").click(function() {
+                                $('input:submit').click(function(){
+                                    if(ValidateForm())
+                                        $(this).val('Loading...');
+                                });
+                            });
+                        });
+
+                        function ValidateForm() {
+                            var formInvalid = false;
+                            $('#login_form input').each(function() {
+                                if ($(this).val() === '') {
+                                    formInvalid = true;
+                                }
+                            });
+                            return !formInvalid
+                        }
+                    </script>
+
+                    <!-- Login Form -->
                 </div>
             </div>
         {{/if}}
@@ -87,22 +113,29 @@
     <div class="carousel-inner" role="listbox">
       <div class="carousel-item active">
         <div class="carousel-view">
-          <img class="d-block w-100" src="carousel1.jpg" alt="First slide">
+          <img class="d-block w-100" src="carousel4.jpg" alt="First slide">
           <div class="mask rgba-black-light"></div>
         </div>
       </div>
       <div class="carousel-item">
         <!--Mask color-->
         <div class="carousel-view">
-          <img class="d-block w-100" src="carousel2.jpg" alt="Second slide">
+          <img class="d-block w-100" src="carousel3.jpg" alt="Second slide">
           <div class="mask rgba-black-strong"></div>
         </div>
       </div>
       <div class="carousel-item">
         <!--Mask color-->
         <div class="carousel-view">
-          <img class="d-block w-100" src="carousel3.jpg" alt="Third slide">
+          <img class="d-block w-100" src="carousel2.jpg" alt="Third slide">
           <div class="mask rgba-black-slight"></div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <!--Mask color-->
+        <div class="carousel-view">
+            <img class="d-block w-100" src="carousel1.jpg" alt="Third slide">
+            <div class="mask rgba-black-slight"></div>
         </div>
       </div>
     </div><!--/.Slides-->

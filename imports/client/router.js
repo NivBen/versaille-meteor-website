@@ -102,81 +102,108 @@ Router.route('/catalog', function () {
     if (typeof query.q === 'undefined' || query.q === null || query.q === '') { //there's NO filter!
         this.render('catalog', {
             to: "main",
-            data: {
-                images: Images.find({ $and: [ {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]} ,
-                    { sort: { watch_code: -1, rating: -1 }, limit: Session.get("imageLimit") }) //.fetch()
+            data: function() {
+                let images = Images.find({$and: [{watch_price: {$gte: min_price}}, {watch_price: {$lte: max_price}}]},
+                    {sort: {watch_code: -1}, limit: Session.get("imageLimit")});
+                return {
+                    images: images
+                }
             }
         });
     } else { // there's a filter
         switch (query.q) {
             case 'women-versaille':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {'watch_category': '1'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {'watch_category': '1'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
                             })
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
 
             case 'men-versaille':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {'watch_category': '2'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {'watch_category': '2'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
                             })
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
 
             case 'women-vegas':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {'watch_category': '3'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {'watch_category': '3'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
                             })
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
 
             case 'men-vegas':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {'watch_category': '4'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {'watch_category': '4'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
-                            })
+                            });
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
 
             case 'digital-children':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {'watch_category': '5'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {'watch_category': '5'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
                             })
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
 
             case 'on-sale':
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ {on_sale_price: { $gte: 0 }}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ {on_sale_price: { $gte: 0 }}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
-                            })
+                            });
+                        return {
+                            images: images
+                        }
                     }
                 });
                 break;
@@ -185,12 +212,16 @@ Router.route('/catalog', function () {
                 var find_query = {};
                 find_query['watch_code_str'] = new RegExp('^99' + query.q.substring(0, 2), ''); // reg_exp=/^9911/
                 this.render('catalog', {
-                    to: "main", data: {
-                        images: Images.find({ $and: [ find_query, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                    to: "main",
+                    data: function() {
+                        let images = Images.find({ $and: [ find_query, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
                                 sort: {watch_code: -1, rating: -1},
                                 limit: Session.get("imageLimit")
-                            })
+                            });
+                        return {
+                            images: images
+                        }
                     }
                 });
             // code block
@@ -232,16 +263,22 @@ Router.route('/orders', {
         if(is_admin_logged_in() || is_manager_logged_in()){
             this.render('orders', {
                 to: "main",
-                data: { // status: -1 means open orders will show first
-                    cart: ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")})
+                data: function() { // status: -1 means open orders will show first
+                    let cart = ShoppingCart.find({}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")});
+                    return {
+                        cart: cart
+                    }
                 }
             });
         }
         else { // other agents
             this.render('orders', {
                 to: "main",
-                data: {
-                    cart: ShoppingCart.find({username: Meteor.user().username}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")})
+                data: function() { // status: -1 means open orders will show first
+                    let cart = ShoppingCart.find({username: Meteor.user().username}, {sort: {status: -1, sent_time: -1}, limit: Session.get("ordersLimit")})
+                    return {
+                        cart: cart
+                    }
                 }
             });
         }
@@ -264,8 +301,11 @@ Router.route('/orders/:_id',{
         this.render('navbar', {to: "navbar"});
         this.render('single_order', {
             to: "main",
-            data: {
-                order: current_order_object //.fetch()
+            data: function() {
+                let order = current_order_object
+                return {
+                    order: order
+                }
             }
         });
         this.render('footer', {to: "footer"});
