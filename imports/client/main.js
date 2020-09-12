@@ -54,7 +54,7 @@ let sender_email = Meteor.settings.public.sender_email;
 let email_recipient_list = Meteor.settings.public.email_recipient_list;
 $('.carousel').carousel({
     pause: true,
-    interval: "1000"
+    interval: "100"
 })
 
 // START ---- local helper functions ----
@@ -452,6 +452,14 @@ Template.catalog.events({
         $("#edit_item_modal").modal('hide');
         return false;
     },
+    'click .js-load-more': function (event) {
+        Session.set("imageLimit", Session.get("imageLimit") + imageLimit);
+        let current_scroll_position = $(window).scrollTop();
+        setTimeout(function () {
+            window.scrollTo(0, current_scroll_position);
+        },100);
+        //$('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
+    },
     'click .js-link-to-single-item': function(event) {
         Session.set("last_scroll_position", $(window).scrollTop() /* + $(window).height() */);
     }
@@ -786,6 +794,10 @@ Template.catalog.events({
         } else {
             alert("קיימת הזמנה פתוחה, סגרו אותה על מנת לפתוח חדשה");
         }
+    },
+    'click .js-load-more-orders': function (event) {
+        Session.set("ordersLimit", Session.get("ordersLimit") + ordersLimit);
+        // $('html,body').animate({scrollTop: document.body.scrollHeight},"fast"); // scrolling to bottom of page
     },
 });
 
