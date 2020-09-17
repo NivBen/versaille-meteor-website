@@ -118,7 +118,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {'watch_category': '1'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             })
                         return {
@@ -134,7 +134,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {'watch_category': '2'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             })
                         return {
@@ -150,7 +150,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {'watch_category': '3'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             })
                         return {
@@ -166,7 +166,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {'watch_category': '4'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             });
                         return {
@@ -182,7 +182,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {'watch_category': '5'}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             })
                         return {
@@ -198,7 +198,7 @@ Router.route('/catalog', function () {
                     data: function() {
                         let images = Images.find({ $and: [ {on_sale_price: { $gte: 0 }}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             });
                         return {
@@ -209,14 +209,13 @@ Router.route('/catalog', function () {
                 break;
 
             default: // catalog number like 1100, 3600, 4000
-                var find_query = {};
-                find_query['watch_code_str'] = new RegExp('^99' + query.q.substring(0, 2), ''); // reg_exp=/^9911/
+                let catalog_number = 990000 + parseInt(query.q); // catalog first number like 991100, 993600, 994000
                 this.render('catalog', {
                     to: "main",
                     data: function() {
-                        let images = Images.find({ $and: [ find_query, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price } }]},
+                        let images = Images.find({ $and: [ {watch_code: { $gte: catalog_number }}, {watch_code: { $lt: catalog_number + 100 }}, {watch_price: { $gte: min_price }}, {watch_price: { $lte: max_price }} ]},
                             {
-                                sort: {watch_code: -1, rating: -1},
+                                sort: {watch_code: -1},
                                 limit: Session.get("imageLimit")
                             });
                         return {

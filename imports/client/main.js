@@ -53,8 +53,8 @@ $(window).scroll(function (event) {
 let sender_email = Meteor.settings.public.sender_email;
 let email_recipient_list = Meteor.settings.public.email_recipient_list;
 $('.carousel').carousel({
-    pause: true,
-    interval: "100"
+    pause: false,
+    interval: "500",
 })
 
 // START ---- local helper functions ----
@@ -145,23 +145,23 @@ let email_template_new_products_format = function(opened_order) {
         // Retrieve URL and Description
         switch(parseInt(displayed_image_index)) {
             case 1:
-                img_url = image.img_src;
+                img_url = convert_full_size_to_thumbnail_link(image.img_src);
                 watch_desc = image.first_img_desc
                 break;
             case 2:
-                img_url = image.second_img_src;
+                img_url = convert_full_size_to_thumbnail_link(image.second_img_src);
                 watch_desc = image.second_img_desc
                 break;
             case 3:
-                img_url = image.third_img_src;
+                img_url = convert_full_size_to_thumbnail_link(image.third_img_src);
                 watch_desc = image.third_img_desc
                 break;
             case 4:
-                img_url = image.forth_img_src;
+                img_url = convert_full_size_to_thumbnail_link(image.forth_img_src);
                 watch_desc = image.forth_img_desc
                 break;
             case 5:
-                img_url = image.fifth_img_src;
+                img_url = convert_full_size_to_thumbnail_link(image.fifth_img_src);
                 watch_desc = image.fifth_img_desc
                 break;
         }
@@ -388,14 +388,6 @@ Template.catalog.events({
             });
         } else {
             alert("Sign in to delete")
-        }
-    },
-    'click .js-rate-image': function (event) {
-        var rating = $(event.currentTarget).data("userrating");
-        var image_id = this.data_id;
-        if (is_admin_logged_in()) {
-            Images.update({_id: image_id},
-                {$set: {rating: rating}});
         }
     },
     'click .js-edit_item_button': function (event) {
@@ -707,6 +699,9 @@ Template.searchBox.helpers({
             dir: 'rtl',
             style: "margin-top: 20px;",
         }
+    },
+    getThumbnailImgLink: function() {
+        return convert_full_size_to_thumbnail_link(this.img_src);
     },
     searchResults: () => {
         var items = ImagesIndex.config.mongoCollection.find().fetch().slice(1) //removing the first element - contains metadata
@@ -1053,15 +1048,15 @@ Template.single_order.helpers({
         let image = Images.findOne({ _id: values[0] });
         switch(parseInt(values[1])) {
             case 1:
-                return image.img_src;
+                return convert_full_size_to_thumbnail_link(image.img_src);
             case 2:
-                return image.second_img_src;
+                return convert_full_size_to_thumbnail_link(image.second_img_src);
             case 3:
-                return image.third_img_src;
+                return convert_full_size_to_thumbnail_link(image.third_img_src);
             case 4:
-                return image.forth_img_src;
+                return convert_full_size_to_thumbnail_link(image.forth_img_src);
             case 5:
-                return image.fifth_img_src;
+                return convert_full_size_to_thumbnail_link(image.fifth_img_src);
         }
         return "";
     },
