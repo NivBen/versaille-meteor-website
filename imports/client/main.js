@@ -57,27 +57,22 @@ $('.carousel').carousel({
     interval: "500",
 })
 
+// treating popstate events (back button, refresh, etc...)
+$(window).on('popstate', function(event) {
+    // trick to return to last scroll position
+    if(window.location.pathname === "/catalog") {
+        setTimeout(function () {
+            window.scrollTo(0, Session.get("last_scroll_position"));
+        },100);
+    }
+
+    // Bug fix - popstate like back button did not remove modal backdrop
+    $('.modal').modal('hide') // closes all active pop ups.
+    $('.modal-backdrop').remove() // removes the grey overlay.
+    $('body').removeClass('modal-open');
+});
+
 // START ---- local helper functions ----
-let is_agent_logged_in = function() {
-    return !!Meteor.user(); // TODO: change this to list of agents
-}
-
-let is_admin_logged_in = function() {
-    if(Meteor.user()) {
-        return Meteor.user().username === "admin";
-    } else{
-        return false;
-    }
-}
-
-let is_manager_logged_in = function() {
-    if(Meteor.user()) {
-        return Meteor.user().username === "David";
-    } else{
-        return false;
-    }
-}
-
 let is_item_on_sale = function(item_id) {
     let on_sale = Images.findOne({_id: item_id}).on_sale_price;
     if(on_sale !== null) { // if not null
@@ -92,7 +87,7 @@ let is_item_not_on_sale = function(item_id) {
 }
 
 let single_item_update_cart = function(image_id, flag) {
-    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+    let opened_order = AgentCart.findOne({username: Meteor.user().username, status: "open"});
     if (opened_order){
         let displayed_image_index = Session.get("cart_quested_item_index");
         let products_array = opened_order.products;
@@ -104,7 +99,7 @@ let single_item_update_cart = function(image_id, flag) {
 }
 
 let single_order_update_cart = function(id_index_amount_array, flag) {
-    let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+    let opened_order = AgentCart.findOne({username: Meteor.user().username, status: "open"});
     if (opened_order){
         let image_id = id_index_amount_array[0];
         let displayed_image_index = id_index_amount_array[1];
@@ -116,7 +111,7 @@ let single_order_update_cart = function(id_index_amount_array, flag) {
 }
 
 let is_there_an_order_in_place = function() {
-    return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
+    return AgentCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
 }
 
 let find_product_index = function(products_array, image_id, index){
@@ -217,40 +212,86 @@ Template.searchBox.onCreated(function bodyOnCreated() {
 });
 
 Template.main_Layout.onCreated(function bodyOnCreated() {
+    Meteor.subscribe('roles');
     Meteor.subscribe('images');
     Meteor.subscribe('agents_PDF');
     Meteor.subscribe('cart');
 });
 
 // Start ---- Login ----
+Template.login.created = function(){
+    // attach a reactive var to the template instance to change button to loading icon
+    this.loading_attempted_login = new ReactiveVar(false);
+    this.wrong_login_credentials = new ReactiveVar(false);
+};
+
+Template.login.helpers({
+    loading_attempted_login: function(){
+        // return the value of the reactive var attached to this template instance
+        return Template.instance().loading_attempted_login.get();
+    },
+    wrong_login_credentials: function(){
+        // return the value of the reactive var attached to this template instance
+        return Template.instance().wrong_login_credentials.get();
+    }
+});
+
 Template.login.events({
-    'submit form': function(event){
+    'submit form': function(event, tmpl){
         event.preventDefault();
+        tmpl.wrong_login_credentials.set(false);
+        tmpl.loading_attempted_login.set(true);
+
         //setTimeout(() => { // TODO: remove
-        let input_username = event.target.loginUsername.value;
-        let input_password = event.target.loginPassword.value;
-        Meteor.loginWithPassword(input_username, input_password, function(error){
+        let input_username_or_email = event.target.inputUser.value;
+        let input_password = event.target.loginInputPassword.value;
+        Meteor.loginWithPassword(input_username_or_email, input_password, function(error){
+            tmpl.loading_attempted_login.set(false);
             if(error){
                 let reason = error.reason;
                 if(reason === "Incorrect password" || reason === "User not found"){
-                    alert("פרטי התחברות שגויים");
-                    location.reload();
+                    tmpl.wrong_login_credentials.set(true);
                 }
             } else {
-                // stay on the same page
+                // stay on the same page, template changed to "logged in"
             }
         });
         //}, 1000);
     },
     'click .js-logout': function(event){
         event.preventDefault();
+        let btn = document.getElementById("btn-logout");
+        btn.innerHTML = '<i class=\"fa fa-circle-o-notch fa-spin fa-4x\"></i>...מתנתק';
+        btn.classList.remove("btn-danger-round-ends");
+        btn.classList.add("btn-light")
+        btn.disabled = true;
         Meteor.logout();
+    },
+    'click #forgot_pswd': function(event){
+        event.preventDefault();
+        alert("השירות אינו זמין כעת...");
+    },
+    'click #btn-signup': function(event){
+        event.preventDefault();
+        alert("השירות אינו זמין כעת...");
+    }
+});
+
+Template.changePassword.created = function(){
+    // attach a reactive var to the template instance to change button to loading icon
+    this.changed_password = new ReactiveVar(false);
+};
+
+Template.changePassword.helpers({
+    changed_password: function(){
+        return Template.instance().changed_password.get();
     }
 });
 
 Template.changePassword.events({
-    'submit form': function(event){
+    'submit form': function(event, tmpl){
         event.preventDefault();
+        tmpl.changed_password.set(true);
         let current_password = event.target.loginPassword.value;
         let new_password = event.target.new_password.value;
         let new_password_repeat = event.target.new_password_repeat.value;
@@ -260,14 +301,15 @@ Template.changePassword.events({
             return false;
         }
         if(new_password === new_password_repeat) {
-            Accounts.changePassword(current_password, new_password, function (error) {
-                if (error) {
-                    alert("סיסמא שגויה");
-                } else {
-                    alert("הסיסמא שונתה בהצלחה!");
-                    Router.go('/login')
-                }
-            });
+                Accounts.changePassword(current_password, new_password, function (error) {
+                    tmpl.changed_password.set(false);
+                    if (error) {
+                        alert("סיסמא שגויה");
+                    } else {
+                        alert("הסיסמא שונתה בהצלחה!");
+                        Router.go('/login')
+                    }
+                });
         } else {
             alert("סיסמא חדשה לא תואמת")
         }
@@ -378,13 +420,11 @@ Template.catalog.events({
     'click .js-del-image': function (event) {
         var image_id = this._id;
         if (is_admin_logged_in()) {
-            //console.log("id of image quested for deletion: " + image_id);
             $('.confirm-delete').click(function () {
                 $('#delete_' +
                     '').modal('hide');
                 Images.remove({"_id": image_id});
                 $("#delete_item_modal").modal('hide');
-                //console.log("Deleted image of id: " + image_id);
             });
         } else {
             alert("Sign in to delete")
@@ -454,16 +494,6 @@ Template.catalog.events({
     },
     'click .js-link-to-single-item': function(event) {
         Session.set("last_scroll_position", $(window).scrollTop() /* + $(window).height() */);
-    }
-});
-
-
-
-$(window).on('popstate', function(event) {
-    if(window.location.pathname === "/catalog") {
-        setTimeout(function () {
-            window.scrollTo(0, Session.get("last_scroll_position"));
-        },100);
     }
 });
 
@@ -728,7 +758,7 @@ Template.navbar.helpers({
         return is_there_an_order_in_place();
     },
     openedOrderID: function () {
-        return ShoppingCart.findOne({username: Meteor.user().username , status: "open"})._id;
+        return AgentCart.findOne({username: Meteor.user().username , status: "open"})._id;
     },
 });
 
@@ -750,8 +780,8 @@ Template.navbar.events({
     },
     'submit .js-open-new-order' : function (event) {
         let store_name = event.target.store_name.value;
-        if(ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() === 0) {
-            ShoppingCart.insert({
+        if(AgentCart.find({username: Meteor.user().username , status: "open"}).count() === 0) {
+            AgentCart.insert({
                 username: Meteor.user().username,
                 store_name: store_name,
                 status: "open",
@@ -771,12 +801,12 @@ Template.navbar.events({
 });
 // END ---- search bar ----
 
-// START ---- Shopping cart ----
+// START ---- Agent cart ----
 Template.catalog.events({
     'submit .js-open-new-order': function (event) {
         let store_name = event.target.store_name.value;
-        if (ShoppingCart.find({username: Meteor.user().username, status: "open"}).count() === 0) {
-            ShoppingCart.insert({
+        if (AgentCart.find({username: Meteor.user().username, status: "open"}).count() === 0) {
+            AgentCart.insert({
                 username: Meteor.user().username,
                 store_name: store_name,
                 status: "open",
@@ -799,13 +829,13 @@ Template.catalog.events({
 Template.single_order.events({
     'submit .js-close-order' : function (event) {
         let notes = event.target.final_notes.value;
-        let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
+        let opened_order = AgentCart.findOne({username: Meteor.user().username, status: "open"});
 
         if(opened_order) {
             Meteor.call('server_close_order', opened_order._id, Meteor.user().username, notes);
 
             // sending notification email
-            opened_order = ShoppingCart.findOne({_id: opened_order._id});
+            opened_order = AgentCart.findOne({_id: opened_order._id});
             let new_products_format, total_amount, total_price;
             [new_products_format, total_amount, total_price] = email_template_new_products_format(opened_order);
 
@@ -826,23 +856,30 @@ Template.single_order.events({
                 order_sent_date: getJerusalemDate() + " " + getHebrewDay(),
                 order_agent_name: opened_order.username
             };
-            Meteor.call(
-                'server_send_email',
-                {
-                    to: email_recipient_list,
-                    from: sender_email,
-                    subject: "הזמנה חדשה מ-" + opened_order.store_name,
-                    html: Blaze.toHTMLWithData(Template.orderEmailContent, dataContext)
-                });
+            let email_args = {
+                to: email_recipient_list,
+                from: sender_email,
+                subject: "הזמנה חדשה מ-" + opened_order.store_name,
+                html: Blaze.toHTMLWithData(Template.orderEmailContent, dataContext)
+            }
+            Meteor.call('server_send_email', email_args, function (error) {
+                if (!error) {
+                    sAlert.info("Successfully sent email!");
+                } else {
+                    console.log("First Error sending email:");
+                    console.log(error);
+                    Meteor.call('server_send_email', email_args); // retry sending email
+                }
+            });
         } else {
             alert("לא קיימת הזמנה פתוחה");
         }
     },
     'click .js-delete-order' : function(event){
-        let opened_order = ShoppingCart.findOne({username: Meteor.user().username, status: "open"});
-        ShoppingCart.remove({"_id": opened_order._id});
+        let opened_order = AgentCart.findOne({username: Meteor.user().username, status: "open"});
+        AgentCart.remove({"_id": opened_order._id});
         $("#delete_order_modal").modal('hide');
-        location.reload(); // otherwise the page goes muted
+        location.replace("/orders");
         return false;
 }
 })
@@ -889,10 +926,10 @@ Template.single_item.helpers({
         return is_item_not_on_sale(item_id);
     },
     isThereAnOrderInPlace: function () {
-        return ShoppingCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
+        return AgentCart.find({username: Meteor.user().username , status: "open"}).count() > 0;
     },
     orderAmount: function(){
-        let products_array = ShoppingCart.findOne({username: Meteor.user().username, status: "open"}).products;
+        let products_array = AgentCart.findOne({username: Meteor.user().username, status: "open"}).products;
         let displayed_image_index = Session.get("cart_quested_item_index");
         let image_id = Session.get("single_item_object")._id; // grabbing image id
         let products_array_index = find_product_index(products_array, image_id, displayed_image_index);
@@ -957,7 +994,7 @@ Template.orders.events({
             } else {
                 checkmark_status = 1;
             } // logical not
-            ShoppingCart.update({_id: this._id},
+            AgentCart.update({_id: this._id},
                 {
                     $set: {
                         checkmark: checkmark_status
@@ -976,7 +1013,7 @@ Template.single_order.events({
             } else {
                 checkmark_status = 1;
             } // logical not
-            ShoppingCart.update({_id: Session.get("single_order_object")._id},
+            AgentCart.update({_id: Session.get("single_order_object")._id},
                 {
                     $set: {
                         checkmark: checkmark_status
@@ -995,7 +1032,7 @@ Template.single_order.events({
     'submit .js-manager-notes': function(event) {
         if (is_admin_logged_in() || is_manager_logged_in()) { // only admin or manager can do this
             let order_id = Session.get("single_order_object")._id;
-            ShoppingCart.update({_id: order_id},
+            AgentCart.update({_id: order_id},
                 {
                     $set: {
                         manager_notes: event.target.manager_notes.value
@@ -1106,7 +1143,7 @@ Template.single_order.helpers({
         return Session.get("single_order_object").status === "closed";
     }
 });
-// END ---- Shopping cart ----
+// END ---- Agent cart ----
 
 Template.Unsubscribe.events({
     'click .js-unsubscribe': function(){alert("thank you!");}

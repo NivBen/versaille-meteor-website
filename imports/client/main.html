@@ -19,55 +19,46 @@
     <div class="container py-5" style="margin-top: 100px;">
         <div class="jumbotron">
         {{#if currentUser}}
-            <h1 align="center"><u>{{ currentUser.username }}</u> ,מחובר </h1>
-                <hr class="my-4" />
+            <h1 class="text-center"><u>{{ currentUser.username }}</u> ,מחובר </h1>
+            <hr class="my-4" />
             <h2 class="text-center">
-              <button type="button" class="js-logout btn-danger-round-ends btn btn-responsive-font">
-                  <span class="fa fa-sign-out"></span>התנתקות
-              </button>
+                <button type="button" id="btn-logout" class="js-logout btn-danger-round-ends btn btn-responsive-font">
+                    <span class="fa fa-sign-out"></span>התנתקות
+                </button>
             </h2>
             <h2 class="text-center my-4">
                 <a href="changePassword"><u>שינוי סיסמא</u></a>
             </h2>
         {{else}}
-            <h2 align="center" style="">התחברות למערכת</h2>
-            <div class="wrapper">
-                <div id="formContent">
-                    <!-- Login Form -->
+            <h1 class="text-center">התחברות למערכת</h1>
+            <hr class="my-4" />
 
-                    <form id="login_form" role="form">
-                        <input type="text" class="login_input_field" name="loginUsername" placeholder="שם משתמש" required>
-                        <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא" required>
+            <form id="logreg-forms" class="wrapper form-signin text-center">
+                <label for="inputUser"><span style="font-weight:bold">כתובת אימייל או שם משתמש</span></label>
+                <input type="text" id="inputUser" class="form-control login_input_field" placeholder="" required>
+                <label for="loginInputPassword"><span style="font-weight:bold">סיסמא</span></label>
+                <input type="password" id="loginInputPassword" class="form-control login_input_field" placeholder="" required>
 
-                        <input type="submit" id="submitButton" class="login_submit_form" value="התחברות">
-                    </form>
+                <script> // focus first input field
+                    $('#inputUser').focus();
+                </script>
 
-                    <script>
-                        // Show "Loading..." when login button is pressed only if fields are filled
-                        $(document).ready(function() {
+                {{#if loading_attempted_login}}
+                    <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+                {{else}}
+                    {{#if wrong_login_credentials}}
+                        <h4 style="color:#e50b2c; font-size: 22px;">פרטי התחברות שגויים</h4>
+                    {{/if}}
+                    <button class="btn btn-success btn-responsive-font btn-block" type="submit"><i class="fa fa-sign-in"></i> כניסה</button>
+                {{/if}}
+                <!--
+                <a href="#" id="forgot_pswd" dir="rtl">שכחתם סיסמא?</a>
+                <hr>
+                <p dir="rtl">אין חשבון?</p>
+                <button class="btn btn-primary btn-responsive-font btn-block" type="button" id="btn-signup"><i class="fa fa-external-link"></i> הצטרפות</button>
+                -->
+            </form>
 
-                            $("#submitButton").click(function() {
-                                $('input:submit').click(function(){
-                                    if(ValidateForm())
-                                        $(this).val('Loading...');
-                                });
-                            });
-                        });
-
-                        function ValidateForm() {
-                            var formInvalid = false;
-                            $('#login_form input').each(function() {
-                                if ($(this).val() === '') {
-                                    formInvalid = true;
-                                }
-                            });
-                            return !formInvalid
-                        }
-                    </script>
-
-                    <!-- Login Form -->
-                </div>
-            </div>
         {{/if}}
         </div>
     </div>
@@ -77,11 +68,11 @@
     <div class="container py-5" style="margin-top: 100px;">
         <div class="jumbotron">
             {{#if currentUser}}
-                <h2 align="center" style="">שינוי סיסמא</h2>
+                <h1 class="text-center">שינוי סיסמא</h1>
                 <hr class="my-4" />
-                <div class="wrapper">
+
                     <div id="formContent">
-                        <form>
+                        <form class="wrapper text-center">
                             <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא מקורית" required>
                             <input type="password"  class="login_input_field" name="new_password" placeholder="סיסמא חדשה"
                                    pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
@@ -89,10 +80,13 @@
                             <input type="password"  class="login_input_field" name="new_password_repeat" placeholder="סיסמא חדשה שנית"
                                    pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
                                    title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת" required>
-                            <input type="submit" class="login_submit_form" value="שינוי סיסמא">
+                            {{#if changed_password}}
+                                <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+                            {{else}}
+                                <button type="submit" class="login_submit_form btn btn-info btn-responsive-font btn-block"><i class="fa fa-pencil-square-o"></i> שינוי סיסמא</button>
+                            {{/if}}
                         </form>
                     </div>
-                </div>
             {{/if}}
         </div>
     </div>
@@ -153,11 +147,11 @@
 
 
   <div class="jumbotron jumbotron-fluid">
-    <div class="container" style="margin-top: 10px; text-align: right;">
-      <h2 align="center">!ברוכים הבאים לשעוני ורסאי</h2>
+    <div class="container text-right" style="margin-top: 10px;">
+      <h2 class="text-center">!ברוכים הבאים לשעוני ורסאי</h2>
       <hr class="my-4" />
         <p class="text-center" dir="rtl">
-            חברת <i>שעוני ורסאי</i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
+            חברת <i><strong>שעוני ורסאי</strong></i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
             <br />
             החברה מתמחה בייצור, ייבוא, שיווק והפצה של שעוני גברים נשים וילדים המתאימים לכל יד וכיס.
             <br />

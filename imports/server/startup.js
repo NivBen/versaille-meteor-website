@@ -30,16 +30,19 @@ Meteor.startup(function () {
         server:   Meteor.settings.smtp.server,
         port: Meteor.settings.smtp.port
     }
-    process.env.MAIL_URL = 'smtp://' + encodeURIComponent(smtp.username) + ':' + encodeURIComponent(smtp.password) + '@' + encodeURIComponent(smtp.server) + ':' + smtp.port;
+    // '?tls.rejectUnauthorized=false' to fix 'Error: self signed certificate in certificate chain'
+    // according to https://forums.meteor.com/t/email-messages-cant-be-sent/38188/10
+    process.env.MAIL_URL = 'smtp://' + encodeURIComponent(smtp.username) + ':' + encodeURIComponent(smtp.password) + '@' + encodeURIComponent(smtp.server) + ':' + smtp.port + '?tls.rejectUnauthorized=false';
 });
 
+// ---- Meteor Methods ----
 Meteor.methods({
     // method to update cart on *single item* page
     server_single_item_update_cart : function(flag, opened_order, products_array_index, image_id, displayed_image_index) {
         let products_array = opened_order.products;
         if(products_array_index < 0) { // amount is 0 and not in cart
             if(flag === '+') {
-                ShoppingCart.update({_id: opened_order._id},
+                AgentCart.update({_id: opened_order._id},
                     {
                         $addToSet: {
                             products: image_id + '_' + displayed_image_index + '_1'
@@ -52,14 +55,14 @@ Meteor.methods({
             let new_amount = parseInt(products_array[products_array_index].split("_")[2]);
             if(flag === '+'){ new_amount = new_amount + 1; } else { new_amount = new_amount - 1; } // '-'
             let regex = new RegExp('^' + image_id + '_' + displayed_image_index, ''); // /^image_id_index/
-            ShoppingCart.update( { _id: opened_order._id }, // pull (remove) element with old amount
+            AgentCart.update( { _id: opened_order._id }, // pull (remove) element with old amount
                 {
                     $pull: {
                         products: regex
                     }
                 } )
             if(new_amount > 0) {
-                ShoppingCart.update( { _id: opened_order._id }, // push element with new amount
+                AgentCart.update( { _id: opened_order._id }, // push element with new amount
                     {
                         $addToSet: {
                             products: image_id + '_' + displayed_image_index + '_' + new_amount
@@ -78,14 +81,14 @@ Meteor.methods({
             new_amount = new_amount - 1;
         }
         let regex = new RegExp('^' + image_id + '_' + displayed_image_index, ''); // /^image_id_index/
-        ShoppingCart.update( { _id: opened_order._id }, // pull (remove) element with old amount
+        AgentCart.update( { _id: opened_order._id }, // pull (remove) element with old amount
             {
                 $pull: {
                     products: regex
                 }
             } )
         if(new_amount > 0) {
-            ShoppingCart.update( { _id: opened_order._id }, // push element with new amount
+            AgentCart.update( { _id: opened_order._id }, // push element with new amount
                 {
                     $addToSet: {
                         products: image_id + '_' + displayed_image_index + '_' + new_amount
@@ -95,7 +98,7 @@ Meteor.methods({
     },
     // method to close order *single order* page
     server_close_order : function(order_id, agent_username, notes) {
-        ShoppingCart.update({_id: order_id, username: agent_username},
+        AgentCart.update({_id: order_id, username: agent_username},
             {
                 $set: {
                     status: "closed",
@@ -140,12 +143,10 @@ Meteor.methods({
                 }
             }));
         }
-    }
+    },
 });
 
-let is_agent_logged_in = function() {
-    return !!Meteor.user(); // TODO: change this to list of agents
-}
+// ---- Helper functions ----
 let is_admin_logged_in = function() {
     if(Meteor.user()) {
         return Meteor.user().username === "admin";
@@ -153,10 +154,20 @@ let is_admin_logged_in = function() {
         return false;
     }
 }
+
 let is_manager_logged_in = function() {
     if(Meteor.user()) {
         return Meteor.user().username === "David";
     } else{
+        return false;
+    }
+}
+
+let is_agent_logged_in = function() {
+    let verified_agents = ["admin", "manager", "agent"];
+    if(Meteor.userId()) {
+        return verified_agents.includes(Meteor.users.findOne(Meteor.userId()).role);
+    } else {
         return false;
     }
 }
@@ -180,8 +191,6 @@ function getHebrewDay() { // returns string containing the current hebrew day
         case 6: return 'שבת';
     }
 }
-
-
 
 // ---- AWS S3 handling ----
 Slingshot.fileRestrictions("pdfUploads", {
@@ -213,3 +222,5 @@ Slingshot.createDirective("pdfUploads", Slingshot.S3Storage, {
     }
 
 });
+
+export let temp = 'hello';

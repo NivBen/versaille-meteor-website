@@ -228,7 +228,7 @@ article {
 /* Smaller than standard 1200 (devices and browsers) */
 @media only screen and (min-width: 960px) and (max-width: 1200px) {
     .carousel-view {
-        height: 600px;
+        height: 700px;
     }
 
     .thumbnail-img{
@@ -249,7 +249,7 @@ article {
 /* Tablet Portrait size to standard 960 (devices and browsers) */
 @media only screen and (min-width: 768px) and (max-width: 959px) {
     .carousel-view {
-        height: 500px;
+        height: 600px;
     }
 
 
@@ -388,78 +388,6 @@ span.step {
     text-align: center;
 }
 
-/* START - Login form */
-.wrapper {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    min-height: 100%;
-    padding: 20px;
-}
-
-#formContent {
-    -webkit-border-radius: 10px 10px 10px 10px;
-    border-radius: 10px 10px 10px 10px;
-    background: #fff;
-    padding: 30px;
-    width: 90%;
-    max-width: 450px;
-    position: relative;
-    padding: 0px;
-    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
-    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
-    text-align: center;
-}
-
-/* FORM TYPOGRAPHY*/
-.login_submit_form  {
-    background-color: #56baed;
-    border: none;
-    color: white;
-    padding: 15px 80px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    font-size: 22px;
-    -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-    box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    margin: 5px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-}
-
-.login_input_field {
-    background-color: #f6f6f6;
-    border: none;
-    color: #0d0d0d;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 22px;
-    margin: 5px;
-    width: 85%;
-    border: 2px solid #f6f6f6;
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -ms-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-}
-/* END - Login form */
-
-
-
 .btn-success-round-ends {
     color: #FFFFFF;
     letter-spacing: 2px;
@@ -469,7 +397,6 @@ span.step {
     background: rgba(103, 192, 103, 0.75);
     transition: all 0.3s ease 0s;
 }
-
 
 .btn-primary-round-ends {
     font-size: 36px;
@@ -481,7 +408,6 @@ span.step {
     background: rgba(58, 133, 191, 0.75);
     transition: all 0.3s ease 0s;
 }
-
 
 .btn-danger-round-ends {
     color: #FFF;
@@ -510,3 +436,40 @@ span.step {
     padding: 0;
     overflow: hidden;
 }
+
+/* START - login FORM */
+.wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 75%;
+    margin: auto;
+    min-height: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+#logreg-forms form {
+    width: 100%;
+    padding: 15px;
+    margin: auto;
+
+}
+#logreg-forms button[type="submit"]{ margin-top:12px; }
+.login_input_field {
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 22px;
+    margin: 5px;
+    width: 85%;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+/* END - sign in FORM */

@@ -13,8 +13,41 @@ if (Meteor.isClient) {
     });
 }
 
+// Security fix - Deny users modification
+Meteor.users.deny({
+    update: function() {
+        return true;
+    }
+});
+
+// global user role functions
+is_admin_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "admin";
+    } else{
+        return false;
+    }
+}
+is_manager_logged_in = function() {
+    if(Meteor.user()) {
+        return Meteor.user().username === "David";
+    } else{
+        return false;
+    }
+}
+is_agent_logged_in = function() {
+    let verified_agents = ["admin", "manager", "agent"];
+    if(Meteor.userId()) {
+        return verified_agents.includes(Meteor.users.findOne(Meteor.userId()).role);
+    } else {
+        return false;
+    }
+}
+
+// global collection variables
+Agents_PDF = new Mongo.Collection('agents_PDF');
 Images = new Mongo.Collection('images');
-ShoppingCart = new Mongo.Collection("cart");
+AgentCart = new Mongo.Collection("cart");
 // Easy-serach index
 ImagesIndex = new EasySearch.Index({
     collection: Images,
@@ -22,24 +55,11 @@ ImagesIndex = new EasySearch.Index({
     engine: new EasySearch.MongoDB()
 });
 
-let is_admin_logged_in = function() {
-    if(Meteor.user()) {
-        return Meteor.user().username === "admin";
-    } else{
-        return false;
-    }
-}
-
-let is_manager_logged_in = function() {
-    if(Meteor.user()) {
-        return Meteor.user().username === "David";
-    } else{
-        return false;
-    }
-}
-
-let is_agent_logged_in = function() {
-    return !!Meteor.user(); // TODO: change this to list of agents
+// publishing a limited users collection containing _id, username and role
+if (Meteor.isServer) {
+    Meteor.publish('roles', function rolePublication() {
+        return Meteor.users.find({}, {fields: {username: 1, role: 1}});
+    });
 }
 
 // set up security on Images collection
@@ -65,12 +85,12 @@ if (Meteor.isServer) {
     })
 }
 
-// set up security on ShoppingCart collection
+// set up security on AgentCart collection
 if (Meteor.isServer) {
     Meteor.publish('cart', function () {
-        return ShoppingCart.find();
+        return AgentCart.find();
     });
-    ShoppingCart.allow({
+    AgentCart.allow({
         update: function (userId, doc) {
             return is_agent_logged_in();
         },
@@ -83,11 +103,6 @@ if (Meteor.isServer) {
     })
 }
 
-
-
-
-
-Agents_PDF = new Mongo.Collection('agents_PDF');
 // set up security on S3_images collection
 if (Meteor.isServer) {
     Meteor.publish('agents_PDF', function () {
