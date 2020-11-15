@@ -585,6 +585,12 @@ Template.single_item.helpers({
     isEmptyItem: function() {
       return !Session.get("single_item_object");
     },
+    getURL: function() {
+        return "https://www.versaille.co.il/catalog_item/" + Session.get("single_item_object")._id;
+    },
+    getWhatsappNumber: function () {
+        return Meteor.settings.public.whatsapp_number;
+    },
     getWatchCode: function () {
         return Session.get("single_item_object").watch_code;
     },
@@ -632,6 +638,12 @@ Template.single_item.helpers({
     },
     getCurrentImgDesc: function () { //currently displayed image description
         return Session.get("single_item_displayed_desc");
+    },
+});
+
+Template.welcome.helpers({
+    getWhatsappNumber: function () {
+        return Meteor.settings.public.whatsapp_number;
     },
 });
 
@@ -908,6 +920,9 @@ Template.catalog.helpers({
 });
 
 Template.single_item.helpers({
+    isNotLoggedIn: function () {
+        return is_not_logged_in();
+    },
     isAdmin: function () {
         return is_admin_logged_in();
     },

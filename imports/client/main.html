@@ -18,48 +18,52 @@
 <template name="login">
     <div class="container py-5" style="margin-top: 100px;">
         <div class="jumbotron">
-        {{#if currentUser}}
-            <h1 class="text-center"><u>{{ currentUser.username }}</u> ,מחובר </h1>
-            <hr class="my-4" />
-            <h2 class="text-center">
-                <button type="button" id="btn-logout" class="js-logout btn-danger-round-ends btn btn-responsive-font">
-                    <span class="fa fa-sign-out"></span>התנתקות
-                </button>
-            </h2>
-            <h2 class="text-center my-4">
-                <a href="changePassword"><u>שינוי סיסמא</u></a>
-            </h2>
-        {{else}}
-            <h1 class="text-center">התחברות למערכת</h1>
-            <hr class="my-4" />
+            {{#if currentUser}}
+                <h1 class="text-center"><u>{{ currentUser.username }}</u> ,מחובר </h1>
+                <hr class="my-4"/>
+                <h2 class="text-center">
+                    <button type="button" id="btn-logout"
+                            class="js-logout btn-danger-round-ends btn btn-responsive-font">
+                        <span class="fa fa-sign-out"></span>התנתקות
+                    </button>
+                </h2>
+                <h2 class="text-center my-4">
+                    <a href="changePassword"><u>שינוי סיסמא</u></a>
+                </h2>
+            {{else}}
+                <h1 class="text-center">התחברות למערכת</h1>
+                <hr class="my-4"/>
 
-            <form id="logreg-forms" class="wrapper form-signin text-center">
-                <label for="inputUser"><span style="font-weight:bold">כתובת אימייל או שם משתמש</span></label>
-                <input type="text" id="inputUser" class="form-control login_input_field" placeholder="" required>
-                <label for="loginInputPassword"><span style="font-weight:bold">סיסמא</span></label>
-                <input type="password" id="loginInputPassword" class="form-control login_input_field" placeholder="" required>
+                <form id="logreg-forms" class="wrapper form-signin text-center">
+                    <label for="inputUser"><span style="font-weight:bold">כתובת אימייל או שם משתמש</span></label>
+                    <input type="text" id="inputUser" class="form-control login_input_field" placeholder="" required>
+                    <label for="loginInputPassword"><span style="font-weight:bold">סיסמא</span></label>
+                    <input type="password" id="loginInputPassword" class="form-control login_input_field" placeholder=""
+                           required>
 
-                <script> // focus first input field
+                    <script> // focus first input field
                     $('#inputUser').focus();
-                </script>
+                    </script>
 
-                {{#if loading_attempted_login}}
-                    <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
-                {{else}}
-                    {{#if wrong_login_credentials}}
-                        <h4 style="color:#e50b2c; font-size: 22px;">פרטי התחברות שגויים</h4>
+                    {{#if loading_attempted_login}}
+                        <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+                    {{else}}
+                        {{#if wrong_login_credentials}}
+                            <h4 style="color:#e50b2c; font-size: 22px;">פרטי התחברות שגויים</h4>
+                        {{/if}}
+                        <button class="btn btn-success btn-responsive-font btn-block" type="submit"><i
+                                class="fa fa-sign-in"></i> כניסה
+                        </button>
                     {{/if}}
-                    <button class="btn btn-success btn-responsive-font btn-block" type="submit"><i class="fa fa-sign-in"></i> כניסה</button>
-                {{/if}}
-                <!--
-                <a href="#" id="forgot_pswd" dir="rtl">שכחתם סיסמא?</a>
-                <hr>
-                <p dir="rtl">אין חשבון?</p>
-                <button class="btn btn-primary btn-responsive-font btn-block" type="button" id="btn-signup"><i class="fa fa-external-link"></i> הצטרפות</button>
-                -->
-            </form>
+                    <!--
+                    <a href="#" id="forgot_pswd" dir="rtl">שכחתם סיסמא?</a>
+                    <hr>
+                    <p dir="rtl">אין חשבון?</p>
+                    <button class="btn btn-primary btn-responsive-font btn-block" type="button" id="btn-signup"><i class="fa fa-external-link"></i> הצטרפות</button>
+                    -->
+                </form>
 
-        {{/if}}
+            {{/if}}
         </div>
     </div>
 </template>
@@ -69,98 +73,126 @@
         <div class="jumbotron">
             {{#if currentUser}}
                 <h1 class="text-center">שינוי סיסמא</h1>
-                <hr class="my-4" />
+                <hr class="my-4"/>
 
-                    <div id="formContent">
-                        <form class="wrapper text-center">
-                            <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא מקורית" required>
-                            <input type="password"  class="login_input_field" name="new_password" placeholder="סיסמא חדשה"
-                                   pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
-                                   title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת" required>
-                            <input type="password"  class="login_input_field" name="new_password_repeat" placeholder="סיסמא חדשה שנית"
-                                   pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
-                                   title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת" required>
-                            {{#if changed_password}}
-                                <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
-                            {{else}}
-                                <button type="submit" class="login_submit_form btn btn-info btn-responsive-font btn-block"><i class="fa fa-pencil-square-o"></i> שינוי סיסמא</button>
-                            {{/if}}
-                        </form>
-                    </div>
+                <div id="formContent">
+                    <form class="wrapper text-center">
+                        <input type="password" class="login_input_field" name="loginPassword" placeholder="סיסמא מקורית"
+                               required>
+                        <input type="password" class="login_input_field" name="new_password" placeholder="סיסמא חדשה"
+                               pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
+                               title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת"
+                               required>
+                        <input type="password" class="login_input_field" name="new_password_repeat"
+                               placeholder="סיסמא חדשה שנית"
+                               pattern="^((?=.*[a-zA-Z])(?=.*[0-9]))(?=.{8,16})\w+"
+                               title="הסיסמא חייבת להיות באורך 8 תווים לפחות ו-16 לכל היותר, ולהכיל אות אחת וספרה אחת"
+                               required>
+                        {{#if changed_password}}
+                            <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+                        {{else}}
+                            <button type="submit" class="login_submit_form btn btn-info btn-responsive-font btn-block">
+                                <i class="fa fa-pencil-square-o"></i> שינוי סיסמא
+                            </button>
+                        {{/if}}
+                    </form>
+                </div>
             {{/if}}
         </div>
     </div>
 </template>
 
 <template name="welcome">
-  <!--Carousel Wrapper-->
-  <div id="carousel" class="carousel slide carousel-fade bg-dark" data-ride="carousel" data-interval="3500">
-    <!-- Note: backgorund set to linear-gradient(..., ...); in style tag and bg-dark for unsupported browsers -->
-    <!--Indicators-->
-    <ol class="carousel-indicators">
-      <li data-target="#carousel" data-slide-to="0" class="active"></li>
-      <li data-target="#carousel" data-slide-to="1"></li>
-      <li data-target="#carousel" data-slide-to="2"></li>
-        <li data-target="#carousel" data-slide-to="3"></li>
-    </ol>
-    <!--/.Indicators-->
-    <!--Slides-->
-    <div class="carousel-inner" role="listbox">
-      <div class="carousel-item active">
-        <div class="carousel-view">
-          <img class="d-block w-100" src="carousel5.jpg" alt="First slide">
-          <div class="mask rgba-black-light"></div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <!--Mask color-->
-        <div class="carousel-view">
-          <img class="d-block w-100" src="carousel4.jpg" alt="Second slide">
-          <div class="mask rgba-black-strong"></div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <!--Mask color-->
-        <div class="carousel-view">
-          <img class="d-block w-100" src="carousel1.jpg" alt="Third slide">
-          <div class="mask rgba-black-slight"></div>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <!--Mask color-->
-        <div class="carousel-view">
-            <img class="d-block w-100" src="carousel2.jpg" alt="Forth slide">
-            <div class="mask rgba-black-slight"></div>
-        </div>
-      </div>
-    </div><!--/.Slides-->
-    <!--Controls-->
-    <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a><!--/.Controls-->
-  </div><!--/.Carousel Wrapper-->
+    <!--Carousel Wrapper-->
+    <div id="carousel" class="carousel slide carousel-fade bg-dark" data-ride="carousel" data-interval="3500">
+        <!-- Note: backgorund set to linear-gradient(..., ...); in style tag and bg-dark for unsupported browsers -->
+        <!--Indicators-->
+        <ol class="carousel-indicators">
+            <li data-target="#carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel" data-slide-to="1"></li>
+            <li data-target="#carousel" data-slide-to="2"></li>
+            <li data-target="#carousel" data-slide-to="3"></li>
+        </ol>
+        <!--/.Indicators-->
+        <!--Slides-->
+        <div class="carousel-inner" role="listbox">
+            <div class="carousel-item active">
+                <div class="carousel-view">
+                    <img class="d-block w-100" src="carousel5.jpg" alt="First slide">
+                    <div class="mask rgba-black-light"></div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <!--Mask color-->
+                <div class="carousel-view">
+                    <img class="d-block w-100" src="carousel4.jpg" alt="Second slide">
+                    <div class="mask rgba-black-strong"></div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <!--Mask color-->
+                <div class="carousel-view">
+                    <img class="d-block w-100" src="carousel1.jpg" alt="Third slide">
+                    <div class="mask rgba-black-slight"></div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <!--Mask color-->
+                <div class="carousel-view">
+                    <img class="d-block w-100" src="carousel2.jpg" alt="Forth slide">
+                    <div class="mask rgba-black-slight"></div>
+                </div>
+            </div>
+        </div><!--/.Slides-->
+        <!--Controls-->
+        <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a><!--/.Controls-->
+    </div><!--/.Carousel Wrapper-->
 
 
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container text-right" style="margin-top: 10px;">
-      <h2 class="text-center">!ברוכים הבאים לשעוני ורסאי</h2>
-      <hr class="my-4" />
-        <p class="text-center" dir="rtl">
-            חברת <i><strong>שעוני ורסאי</strong></i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
-            <br />
-            החברה מתמחה בייצור, ייבוא, שיווק והפצה של שעוני גברים נשים וילדים המתאימים לכל יד וכיס.
-            <br />
-            שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב מהחומרים האיכותיים ביותר.
-        </p>
-  	  <div class="col text-center">
-          <a href="/catalog" class="btn btn-grey-round-ends btn-responsive-font">לקטלוג לחצו כאן</a>
-  	  </div>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container text-right" style="margin-top: 10px;">
+            <h2 class="text-center text-responsive-font-size">!ברוכים הבאים לשעוני ורסאי</h2>
+            <hr class="my-4"/>
+            <p class="text-center" dir="rtl">
+                חברת <i><strong>שעוני ורסאי</strong></i> היא אחת החברות המובילות והוותיקות בענף השעונים בישראל.
+                <br/>
+                החברה מתמחה בייצור, ייבוא, שיווק והפצה של שעוני גברים נשים וילדים המתאימים לכל יד וכיס.
+                <br/>
+                שעוני החברה כוללים בתוכם מנגנונים מהאיכותיים בשוק, כגון מנגנונים יפנים ושוויצרים ובנוסף גוף השעון מורכב
+                מהחומרים האיכותיים ביותר.
+            </p>
+            <div class="col text-center">
+                <a href="/catalog" class="btn btn-grey-round-ends btn-responsive-font">לקטלוג לחצו כאן</a>
+            </div>
+
+            <hr class="my-4"/>
+
+            <h2 class="text-center text-responsive-font-size" dir="rtl">ניתן לבצע הזמנות עם משלוח <strong>חינם!</strong></h2>
+            <p class="text-center" dir="rtl">
+                גלשו באתר ומצאו את השעון שמוצא חן בעיניכם,
+                <br/>
+                מוזמנים <a href="tel:048662272">להתקשר</a> בשעות הפעילות 9:00-17:00 בימים א'-ה'
+                <br/>
+                או להשאיר הודעה ונחזור אליכם בהקדם.
+                <br/>
+                ניתן ליצור קשר בדרכים הבאות:
+                <br/>
+                בווטסאפ:
+                <a href="whatsapp://send?text=שלום, אני לקוח מהאתר של שעוני ורסאי. %0a &phone={{getWhatsappNumber}}">
+                    <i class="fa fa-whatsapp fa-3x" style="background: #00b489; color: white; padding: 10px;"></i>
+                </a>
+                או בדואר אלקטרוני:
+                <a href="mailto:versaille2000@gmail.com?subject=התייעצות ורכישה ללקוח מאתר שעוני ורסאי&body=">
+                    <i class="fa fa-envelope-o fa-3x" aria-hidden="true" style="background: #9b9898; color: white; padding: 10px;"></i>
+                </a>
+            </p>
+        </div>
     </div>
-  </div>
-
 </template>

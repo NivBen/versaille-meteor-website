@@ -342,7 +342,27 @@
                                     <br/>
                                     <br/>
                                     12 חודשי אחריות
+                                    <br/>
+                                    <br/>
+                                    {{#if isNotLoggedIn }}
+                                        <hr class="my-2"/>
+                                        להתייעצות ורכישה:
+                                        <br/>
+                                        בווטסאפ:
+                                        <a href="whatsapp://send?text=שלום, אני לקוח מהאתר של שעוני ורסאי.%0aאני מעוניין בדגם {{getWatchCode}} &quot;{{getCurrentImgDesc}}&quot;%0a{{getURL}}%0a%0a&phone={{getWhatsappNumber}}">
+                                            <i class="fa fa-whatsapp fa-3x" style="background: #00b489; color: white; padding: 10px;"></i>
+                                        </a>
+                                        או בדואר אלקטרוני:
+                                        <a href="mailto:versaille2000@gmail.com?subject=התייעצות ורכישה ללקוח מאתר שעוני ורסאי&body=אני מעוניין בדגם {{getWatchCode}} &quot;{{getCurrentImgDesc}}&quot;%0a{{getURL}}%0a%0a">
+                                            <i class="fa fa-envelope-o fa-3x" aria-hidden="true" style="background: #9b9898; color: white; padding: 10px;"></i>
+                                        </a>
+                                        <br/>
+                                        או בטלפון <a href="tel:048662272">04-8662272</a> בשעות הפעילות 9:00-17:00 בימים א'-ה'
+                                    {{/if}}
+
                                 </p>
+
+
 
                                 {{#if isAgent }}
                                     {{#if isThereAnOrderInPlace }}

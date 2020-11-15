@@ -21,6 +21,13 @@ Meteor.users.deny({
 });
 
 // global user role functions
+is_not_logged_in = function() {
+    if(Meteor.user()) {
+        return false;
+    } else{
+        return true;
+    }
+}
 is_admin_logged_in = function() {
     if(Meteor.user()) {
         return Meteor.user().username === "admin";

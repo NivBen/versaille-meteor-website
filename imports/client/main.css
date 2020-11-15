@@ -473,3 +473,7 @@ span.step {
     border-radius: 5px 5px 5px 5px;
 }
 /* END - sign in FORM */
+
+.fa:hover {
+    opacity: 0.7;
+}
