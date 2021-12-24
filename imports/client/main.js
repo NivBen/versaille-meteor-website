@@ -648,6 +648,9 @@ Template.welcome.helpers({
 });
 
 Template.sidebar.events({
+    'click .sidebar-number-link4400': function (event) {
+        location.replace("catalog?q=4400");
+    },
     'click .sidebar-number-link4300': function (event) {
         location.replace("catalog?q=4300");
     },

@@ -487,7 +487,7 @@
                 <!-- HEADER - order and notes details -->
                 <div style="background-color:transparent;">
                     <div class="block-grid" style="Margin: 0 auto; min-width: 200px; max-width: 700px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #D6E7F0;">
-                        <div style="border-collapse: collapse;display: table;width: 100%;background-color:#D6E7F0;background-image:url('');background-position:top center;background-repeat:no-repeat">
+                        <div style="border-collapse: collapse;display: table;width: 100%;background-color:#D6E7F0;background-position:top center;background-repeat:no-repeat">
                             <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:700px"><tr class="layout-full-width" style="background-color:#D6E7F0"><![endif]-->
                             <!--[if (mso)|(IE)]><td align="center" width="700" style=";width:700px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:0px;"><![endif]-->
                             <div class="col num12" style="min-width: 200px; max-width: 700px; display: table-cell; vertical-align: top; width: 700px;">
@@ -1017,9 +1017,32 @@
 
 <!-- agent stores balance pdf -->
 <template name="balance_pdf_viewer">
+    <!-- Obsolete - does not work on mobile
     <div class='embed-responsive' style='height: 100vh'>
         <object data='{{ balance_pdf_url }}' type='application/pdf' width='100%' height='100%'></object>
-    </div>
+    </div>-->
+    {{#if balance_pdf_url }}
+        <section class="order_header_area" style="padding-top: 5rem;">
+            <div class="bg-light mt-0 py-2">
+                <h1 class="display-4 text-info text-center">{{ currentUser.username }} דף יתרות עבור הסוכן </h1>
+            </div>
+        </section>
+    <object data="{{ balance_pdf_url }}" type="application/pdf" width='100%' height='1000vh'>
+        <iframe src="https://docs.google.com/gview?url={{ balance_pdf_url }}&embedded=true#view=fitv"></iframe>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container text-right" style="margin-top: 10px;">
+                <p class="text-center" dir="rtl">שגיאה בהצגת הקובץ</p>
+                <p class="text-center" dir="rtl"><u></u><a href="{{ balance_pdf_url }} ">לחצו כאן בשביל להוריד</a><u></u></p>
+            </div>
+        </div>
+    </object>
+    {{else}}
+        <section class="order_header_area" style="padding-top: 5rem;">
+            <div class="bg-light mt-0 py-2">
+                <h1 class="display-4 text-info text-center">...{{ currentUser.username }} לא נמצא דף יתרות עבור הסוכן </h1>
+            </div>
+        </section>
+    {{/if}}
 </template>
 
 <!-- Unsubscribe page - unsubscribe from mailing list -->
