@@ -36,6 +36,7 @@
                                     <div class="card-footer">
                                         {{#if isNotOnSale}}
                                             <p class="card-text">מחיר מומלץ: ₪{{watch_price}}</p>
+
                                         {{else}}
                                             <p class="card-text">מחיר מומלץ: <del>{{watch_price}}</del> <strong>₪{{on_sale_price}}</strong></p>
                                         {{/if}}
@@ -346,7 +347,7 @@
                                     <br/>
                                     {{#if isNotLoggedIn }}
                                         <hr class="my-2"/>
-                                        להתייעצות ורכישה:
+                                        להתייעצות ורכישה <strong>וקבלת 10% הנחה:</strong>
                                         <br/>
                                         בווטסאפ:
                                         <a href="whatsapp://send?text=שלום, אני לקוח מהאתר של שעוני ורסאי.%0aאני מעוניין בדגם {{getWatchCode}} &quot;{{getCurrentImgDesc}}&quot;%0a{{getURL}}%0a%0a&phone={{getWhatsappNumber}}">
