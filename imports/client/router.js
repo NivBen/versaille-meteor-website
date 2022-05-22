@@ -354,5 +354,5 @@ Router.onAfterAction(function () {
 
 
 Router.route('/test', function () {
-    this.render('test', {to: 'main'});
+    this.render('404notfound', {to: 'main'});
 });
