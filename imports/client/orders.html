@@ -195,6 +195,13 @@
                                 <th> סה"כ סכום (לצרכן): </th>
                                 <th> {{getTotalPrice}} ₪ </th>
                             </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th> סה"כ סכום (לחנות): </th>
+                                <th> {{getHalvedTotalPrice}} ₪ </th>
+                            </tr>
                         </tfoot>
 
                     </table>
@@ -923,7 +930,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="progress">
-                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%">
                                             <span class="sr-only">{{progress}}% Complete</span>{{progress}}%
                                         </div>
                                     </div>
