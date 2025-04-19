@@ -648,6 +648,9 @@ Template.welcome.helpers({
 });
 
 Template.sidebar.events({
+    'click .sidebar-number-link4500': function (event) {
+        location.replace("catalog?q=4500");
+    },
     'click .sidebar-number-link4400': function (event) {
         location.replace("catalog?q=4400");
     },
@@ -1149,13 +1152,26 @@ Template.single_order.helpers({
         let total_price = 0;
         let values= [], image;
         for(let i=0; i<products.length; i++){
-            let values = products[i].split("_");
+            values = products[i].split("_");
             image = Images.findOne({ _id: values[0] });
             if(image) {
                 total_price = total_price + parseInt(values[2]) * image.watch_price;
             }
         }
         return total_price;
+    },
+    getHalvedTotalPrice: function () {
+        let products = Session.get("single_order_object").products;
+        let total_price = 0;
+        let values= [], image;
+        for(let i=0; i<products.length; i++){
+            values = products[i].split("_");
+            image = Images.findOne({ _id: values[0] });
+            if(image) {
+                total_price = total_price + parseInt(values[2]) * image.watch_price;
+            }
+        }
+        return total_price / 2;
     },
     isColsedOrder: function () {
         return Session.get("single_order_object").status === "closed";

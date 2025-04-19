@@ -2,7 +2,7 @@
   "name": "versaille_watches",
   "private": true,
   "scripts": {
-    "start": "meteor run"
+    "start": "meteor run --settings Settings.json"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",

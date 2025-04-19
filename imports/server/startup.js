@@ -22,6 +22,18 @@ Meteor.startup(function () {
             username: 'Bentzi',
             password: Meteor.settings.user_default_password.agent3_pass
         });
+        Accounts.createUser({
+            username: 'customer',
+            password: Meteor.settings.user_default_password.customer1_pass
+        });
+        Accounts.createUser({
+            username: 'customer2',
+            password: Meteor.settings.user_default_password.customer2_pass
+        });
+        Accounts.createUser({
+            username: 'customer3',
+            password: Meteor.settings.user_default_password.customer3_pass
+        });
     }
     // setting up MAIL_URL
     let smtp = {
